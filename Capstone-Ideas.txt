@@ -10,10 +10,10 @@ Inputs/User Data:
 Spotify user profile and playlist information.
 
 Tech Stack:
--React
--Vite
 -MongoDB
--RESTful API
+-Express.js
+-React.js
+-Node.js
 
 API:
 Spotify Web API: https://api.spotify.com/v1/
@@ -39,10 +39,10 @@ Inputs/User Data:
 User-provided symptoms (e.g., cough, congestion, fever, inflammation).
 
 Tech Stack:
--React
--Vite
 -MongoDB
--RESTful API
+-Express.js
+-React.js
+-Node.js
 
 API:
 Infermedica API: https://api.intermedica.com/api/mgp/v1/
@@ -68,10 +68,10 @@ Inputs/User Data:
 User health data (e.g., weight, age, BMI)
 
 Tech Stack:
--React
--Vite
 -MongoDB
--RESTful API
+-Express.js
+-React.js
+-Node.js
 
 API:
 wger Workout Manager API: https://wger.de/api/v2/
