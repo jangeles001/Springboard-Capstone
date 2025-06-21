@@ -1,0 +1,85 @@
+Capstone Ideas
+🎵 1. Spotify Playlist Manager
+Purpose Statement:
+Helps Spotify users manage their playlists by allowing them to remove songs in bulk based on artist or genre. The app uses the Spotify API and requires user authentication.
+
+Problem:
+Spotify does not support bulk removal of songs by artist or genre within a playlist, making manual cleanup time-consuming and tedious.
+
+Inputs/User Data:
+Spotify user profile and playlist information.
+
+Tech Stack:
+-React
+-Vite
+-MongoDB
+-RESTful API
+
+API:
+Spotify Web API: https://api.spotify.com/v1/
+
+Actions/App Functions:
+-Load user's playlists
+-Let users select an artist or genre to filter songs
+-Remove matching songs from selected playlists
+
+Desired Outcome:
+Empower users to manage large playlists more efficiently by adding flexible filtering and removal tools.
+
+
+🧑‍⚕️ 2. Web PA (Physician Assistant)
+Purpose Statement:
+A web application that provides users with a list of potential medical conditions based on symptoms they input. Requires user authentication.
+
+Problem:
+Many individuals rely on unreliable symptom checkers or search engines to self-diagnose. 
+There is a need for a more accurate and interactive tool that helps users understand their symptoms and prepares them to have better conversations with their doctors.
+
+Inputs/User Data:
+User-provided symptoms (e.g., cough, congestion, fever, inflammation).
+
+Tech Stack:
+-React
+-Vite
+-MongoDB
+-RESTful API
+
+API:
+Infermedica API: https://api.intermedica.com/api/mgp/v1/
+
+Actions/App Functions:
+-Accept symptoms from the user
+-Return a list of possible conditions
+-Prompt for follow-up questions to narrow down results
+
+Desired Outcome:
+Provide users with structured health information to increase awareness and improve communication with healthcare providers.
+
+
+🏋️ 3. Workout Manager
+Purpose Statement:
+A fitness and diet management web app that recommends personalized plans and stores user data in a self-hosted database. Requires user authentication.
+
+Problem:
+Many workout tracking tools require users to adopt rigid plans without personalization. 
+Users need a customizable platform that tailors workouts and diets based on their own health metrics.
+
+Inputs/User Data:
+User health data (e.g., weight, age, BMI)
+
+Tech Stack:
+-React
+-Vite
+-MongoDB
+-RESTful API
+
+API:
+wger Workout Manager API: https://wger.de/api/v2/
+
+Actions/App Functions:
+-Collect and store user health data
+-Generate workout and diet plans tailored to their needs
+-Allow users to track progress over time
+
+Desired Outcome:
+Help users achieve their health goals through personalized, data-driven fitness and diet plans.
