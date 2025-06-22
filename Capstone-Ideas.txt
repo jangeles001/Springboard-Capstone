@@ -1,5 +1,5 @@
 Capstone Ideas
-🎵 1. Spotify Playlist Manager
+🎵 1. Spotify Playlist Manager (broom)
 Purpose Statement:
 Helps Spotify users manage their playlists by allowing them to remove songs in bulk based on artist or genre. The app uses the Spotify API and requires user authentication.
 
