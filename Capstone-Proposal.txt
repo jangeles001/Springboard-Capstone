@@ -1,65 +1,9 @@
-Capstone Ideas
-🎵 1. Spotify Playlist Manager (broom)
-Purpose Statement:
-Helps Spotify users manage their playlists by allowing them to remove songs in bulk based on artist or genre. The app uses the Spotify API and requires user authentication.
-
-Problem:
-Spotify does not support bulk removal of songs by artist or genre within a playlist, making manual cleanup time-consuming and tedious.
-
-Inputs/User Data:
-Spotify user profile and playlist information.
-
-Tech Stack:
--MongoDB
--Express.js
--React.js
--Node.js
-
-API:
-Spotify Web API: https://api.spotify.com/v1/
-
-Actions/App Functions:
--Load user's playlists
--Let users select an artist or genre to filter songs
--Remove matching songs from selected playlists
-
-Desired Outcome:
-Empower users to manage large playlists more efficiently by adding flexible filtering and removal tools.
-
-
-🧑‍⚕️ 2. Web PA (Physician Assistant)
-Purpose Statement:
-A web application that provides users with a list of potential medical conditions based on symptoms they input. Requires user authentication.
-
-Problem:
-Many individuals rely on unreliable symptom checkers or search engines to self-diagnose. 
-There is a need for a more accurate and interactive tool that helps users understand their symptoms and prepares them to have better conversations with their doctors.
-
-Inputs/User Data:
-User-provided symptoms (e.g., cough, congestion, fever, inflammation).
-
-Tech Stack:
--MongoDB
--Express.js
--React.js
--Node.js
-
-API:
-Infermedica API: https://api.intermedica.com/api/mgp/v1/
-
-Actions/App Functions:
--Accept symptoms from the user
--Return a list of possible conditions
--Prompt for follow-up questions to narrow down results
-
-Desired Outcome:
-Provide users with structured health information to increase awareness and improve communication with healthcare providers.
-
-
 [🏋️ 3. Workout Manager]
 Purpose Statement:
 A fitness and diet management web app that recommends personalized plans and stores user data in a self-hosted database. A user will be able 
-to enter their login credentials to access their personalized diet and fitness plans.
+to enter their login credentials to access their personalized diet and fitness plans. I intend to make an evenly focused full-stack web application
+and I will implement full CRUD functionality across all core user activities, giving users control over their fitness and diet journey.
+
 
 Problem:
 Many workout tracking tools require users to adopt rigid plans without personalization. 
@@ -68,11 +12,14 @@ Users need a customizable platform that tailors workouts and diets based on thei
 Inputs/Data:
 User inputed health data. (e.g., weight, age, BMI, injuries)
 
+User base: Health-conscious individuals of any fitness level whom want to manage their workouts-
+and diet in one personalized, data-driven platform.
+
 External API: 
 wger Workout Manager: https://wger.de/api/v2/
--Exercise databases
--Muscle group info
--Pre-made workout templates
+-Exercise databases.
+-Muscle group info.
+-Pre-made workout templates.
 
 I will use this data with personalization engine to generate tailored plans for users.
 
@@ -83,26 +30,26 @@ Firebase will provide easy-to-use SDK, and UI libraries that I can use to authen
 2.) Frontend: React.js          Difficulty: Medium
 React efficiently builds modular, scalable interfaces. My app will benefit from:
 -Reusable Components for tracking, data forms, and plan displays.
--Hooks and Context API to manage UI state and user sessions.
+-Hooks and Context API to manage UI state.
 -Flexibility for integrating charts (e.g., using Chart.js for tracking and displaying various user metrics).
 
-3.) Backend: Node.js + Express.js       Difficulty: Medium
+3.) Backend: Node.js + Express.js       Difficulty: Medium/Hard
 Node.js handles asynchronous operations, which will help with fetching data from the external API and managing the personalized recommendations.
 Express.js is lightweight and can manage user authentication, health data, and workout plans. AI Engine will also be plugged in here either via a microservice/middleware
 
 
-4.) AI Component: Recommendation Engine     Difficulty: Hard
+4.) AI Component: Recommendation Engine     Difficulty: Hard [Stretch Goal]
 Option 1: Simple Rule-based AI
 
 Use formulas and conditional logic to suggest plans based on age, BMI, activity level.
 
 Option 2:
 
-Use GPT for generating personalized diet and exercise plans based on input data.
+Use GPT for generating personalized diet and exercise plans based on user input data.
 
 
 5.) Database: MongoDB       Difficulty: Easy/Medium
-Stores dynamic or evolving user data well (e.g., different combinations of health metrics). No SQL.
+Stores dynamic or evolving user data well (e.g., different combinations of health metrics). **No SQL**.
 Example Collections:
 users: 
   { _id, username, role, createdAt }
@@ -129,14 +76,21 @@ progressPhotos:
   { userId, imageURL, timestamp }
 
 6.)Visualization: Chart.js     Difficulty: Medium
-Modern looking graphs and chart animations will provide unique ways to display graphs, show calorie intake vs. burn, and
+Modern looking graphs and chart animations will provide unique and interesting ways to display graphs and
 compare metrics over time.
 
 Security:
-- Firebase Auth to handle secure sign-in
-- HTTPS for secure data transmission
-- Firebase tokens for session management
-- MongoDB access limited via role permissions
+- Firebase Auth to handle secure sign-in.
+- HTTPS for secure data transmission.
+- Firebase tokens for session management.
+- MongoDB access limited via role permissions.
+
+Hosting:
+Vercel or Netlify for free website hosting.
+
+Content Management: (Stretch Goal)
+Use something like Netlify CMS to manage blog posts if implemented in the future.
+
 
 Actions/App Functions:
 Custom Workout Routines – Create flexible routines with automatic weight progression rules.
