@@ -4,9 +4,8 @@ A fitness and diet management web app that recommends personalized plans and sto
 to enter their login credentials to access their personalized diet and fitness plans. I intend to make an evenly focused full-stack web application
 and I will implement full CRUD functionality across all core user activities, giving users control over their fitness and diet journey.
 
-
 Problem:
-Many workout tracking tools require users to adopt rigid plans without personalization. 
+Many workout tracking tools require users to adopt rigid plans without personalization.
 Users need a customizable platform that tailors workouts and diets based on their own health metrics and physical needs.
 
 Inputs/Data:
@@ -23,7 +22,7 @@ wger Workout Manager: https://wger.de/api/v2/
 
 I will use this data with personalization engine to generate tailored plans for users.
 
-Tech Stack:
+Tech Stack: [Arrange Dependacies, Types -> Service -> State Management -> Interface]
 1.) Authentication: Firebase    Difficulty: Medium
 Firebase will provide easy-to-use SDK, and UI libraries that I can use to authenticate users.
 
@@ -33,26 +32,33 @@ React efficiently builds modular, scalable interfaces. My app will benefit from:
 -Hooks and Context API to manage UI state.
 -Flexibility for integrating charts (e.g., using Chart.js for tracking and displaying various user metrics).
 
+State Management: Zustand
+Lightweight and lower learning curve than redux. A better fit for the size of my project.
+
+Routing: Tanstack Router
+File-based routing and integrated data fetching and caching. Seems to be easier to work with than React Router.
+
+UI: Tailwind
+More utilities and greater control of design customization.
+
 3.) Backend: Node.js + Express.js       Difficulty: Medium/Hard
 Node.js handles asynchronous operations, which will help with fetching data from the external API and managing the personalized recommendations.
 Express.js is lightweight and can manage user authentication, health data, and workout plans. AI Engine will also be plugged in here either via a microservice/middleware
 
+Middleware: [CORS, Multer + Cloudinary [file uploads]]
 
-4.) AI Component: Recommendation Engine     Difficulty: Hard [Stretch Goal]
+4.) AI Component: Recommendation Engine     Difficulty: Hard 
 Option 1: Simple Rule-based AI
-
 Use formulas and conditional logic to suggest plans based on age, BMI, activity level.
-
-Option 2:
-
-Use GPT for generating personalized diet and exercise plans based on user input data.
+Option 2: (AGI + MCP) [Stretch Goal]
+Use GPT for generating personalized diet and exercise plans based on user input data. 
 
 
 5.) Database: MongoDB       Difficulty: Easy/Medium
 Stores dynamic or evolving user data well (e.g., different combinations of health metrics). **No SQL**.
 Example Collections:
 users: 
-  { _id, username, role, createdAt }
+  { _id, username, role, createdAt, healthTraits[] }
 
 routines: 
   { _id, userId, intensity, createdAt, exercises[] }
@@ -72,7 +78,7 @@ ingredients[] inside meals:
 ingredients: 
   { _id, name }
 
-progressPhotos: 
+progressPhotos: (Stretch Goal)
   { userId, imageURL, timestamp }
 
 6.)Visualization: Chart.js     Difficulty: Medium
@@ -80,7 +86,7 @@ Modern looking graphs and chart animations will provide unique and interesting w
 compare metrics over time.
 
 Security:
-- Firebase Auth to handle secure sign-in.
+- Crypto + JWT to handle secure sign-in. 
 - HTTPS for secure data transmission.
 - Firebase tokens for session management.
 - MongoDB access limited via role permissions.
@@ -88,23 +94,23 @@ Security:
 Hosting:
 Vercel or Netlify for free website hosting.
 
-Content Management: (Stretch Goal)
-Use something like Netlify CMS to manage blog posts if implemented in the future.
-
+Content Management:     Difficulty: Hard (Stretch Goal) [Sentry?]
+Use something like Netlify CMS to manage user blog posts if implemented in the future.
 
 Actions/App Functions:
-Custom Workout Routines – Create flexible routines with automatic weight progression rules.
+Custom Workout Routines – Create flexible routines with automatic weight progression rules based on specific user needs.
 Comprehensive Tracking – Track diet plans, body weight, and custom measurements.
-Nutrition Management – Log your calories with a food database from Open Food Facts.
-Progress Gallery – Upload and track your fitness progress with photos.
-Exercise Wiki – Access and contribute to the built-in exercises.(maybe)
+Generates Charts - Generates charts based on tracked metrics.
+Nutrition Management – Log your calories with a food database from Open Food Facts. (Stretch Goal)
+Progress Gallery – Upload and track your fitness progress with photos. (Stretch Goal)
+Exercise Wiki – Access and contribute to the built-in exercises.(stretch goal - maybe)
 
-User Flow:
-1. User signs up or logs in via Firebase Authentication.
-2. Enters personal health data through an onboarding form.
-3. Gets AI-generated workout/diet plan.
-4. Tracks workouts and logs food/calories.
-5. Reviews progress through charts and photo uploads.
+User Flow: 
+1. User signs up or logs in via Firebase Authentication. (Crypto + JWT)
+2. Enters personal health data through an onboarding form. (Privacy Banner: What is being collected and why?)
+3. Gets AI-generated workout/diet plan. (Stretch goal: something like AGI)
+4. Tracks workouts and logs food/calories.  (Link to privacy page)
+5. Reviews progress through charts and photo uploads + Weekly overview. [Offer advice based on progress] [ex. Airbuds]
 
 Desired Outcome:
 Help users achieve their health goals through personalized, data-driven fitness and diet plans.
