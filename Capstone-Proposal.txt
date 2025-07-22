@@ -60,6 +60,9 @@ Example Collections:
 users: 
   { _id, username, role, createdAt, healthTraits[] }
 
+healthTraits:
+  { height, weight, BMI, injuries[] }
+
 routines: 
   { _id, userId, intensity, createdAt, exercises[] }
 
@@ -73,7 +76,7 @@ meals:
   { _id, name, calories, createdAt, ingredients[] }
 
 ingredients[] inside meals: 
-    { ingredientId, amount }
+  { ingredientId, amount }
 
 ingredients: 
   { _id, name }
