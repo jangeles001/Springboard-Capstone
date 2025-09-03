@@ -10,13 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as _notFoundRouteImport } from './routes/__not-found'
+import { Route as LegalRouteRouteImport } from './routes/legal/route'
 import { Route as LandingRouteRouteImport } from './routes/landing/route'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LegalIndexRouteImport } from './routes/legal/index'
 import { Route as LandingIndexRouteImport } from './routes/landing/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
+import { Route as LegalTermsRouteImport } from './routes/legal/terms'
+import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as LandingAboutRouteImport } from './routes/landing/about'
 import { Route as DashboardWorkoutsRouteImport } from './routes/dashboard/workouts'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
@@ -24,6 +28,11 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
 const _notFoundRoute = _notFoundRouteImport.update({
   id: '/__not-found',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRouteRoute = LegalRouteRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LandingRouteRoute = LandingRouteRouteImport.update({
@@ -46,6 +55,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalIndexRoute = LegalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LegalRouteRoute,
+} as any)
 const LandingIndexRoute = LandingIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -60,6 +74,16 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthRouteRoute,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => LegalRouteRoute,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => LegalRouteRoute,
 } as any)
 const LandingAboutRoute = LandingAboutRouteImport.update({
   id: '/about',
@@ -87,13 +111,17 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/landing': typeof LandingRouteRouteWithChildren
+  '/legal': typeof LegalRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/auth/': typeof AuthIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/landing/': typeof LandingIndexRoute
+  '/legal/': typeof LegalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,9 +129,12 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/auth': typeof AuthIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/landing': typeof LandingIndexRoute
+  '/legal': typeof LegalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -111,14 +142,18 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/landing': typeof LandingRouteRouteWithChildren
+  '/legal': typeof LegalRouteRouteWithChildren
   '/__not-found': typeof _notFoundRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/auth/': typeof AuthIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/landing/': typeof LandingIndexRoute
+  '/legal/': typeof LegalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -127,13 +162,17 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/landing'
+    | '/legal'
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/workouts'
     | '/landing/about'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/auth/'
     | '/dashboard/'
     | '/landing/'
+    | '/legal/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -141,23 +180,30 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/dashboard/workouts'
     | '/landing/about'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/auth'
     | '/dashboard'
     | '/landing'
+    | '/legal'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/dashboard'
     | '/landing'
+    | '/legal'
     | '/__not-found'
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/workouts'
     | '/landing/about'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/auth/'
     | '/dashboard/'
     | '/landing/'
+    | '/legal/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -165,6 +211,7 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   LandingRouteRoute: typeof LandingRouteRouteWithChildren
+  LegalRouteRoute: typeof LegalRouteRouteWithChildren
   _notFoundRoute: typeof _notFoundRoute
 }
 
@@ -175,6 +222,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof _notFoundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/landing': {
@@ -205,6 +259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/': {
+      id: '/legal/'
+      path: '/'
+      fullPath: '/legal/'
+      preLoaderRoute: typeof LegalIndexRouteImport
+      parentRoute: typeof LegalRouteRoute
+    }
     '/landing/': {
       id: '/landing/'
       path: '/'
@@ -225,6 +286,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/'
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof AuthRouteRoute
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof LegalRouteRoute
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof LegalRouteRoute
     }
     '/landing/about': {
       id: '/landing/about'
@@ -301,11 +376,28 @@ const LandingRouteRouteWithChildren = LandingRouteRoute._addFileChildren(
   LandingRouteRouteChildren,
 )
 
+interface LegalRouteRouteChildren {
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalTermsRoute: typeof LegalTermsRoute
+  LegalIndexRoute: typeof LegalIndexRoute
+}
+
+const LegalRouteRouteChildren: LegalRouteRouteChildren = {
+  LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalTermsRoute: LegalTermsRoute,
+  LegalIndexRoute: LegalIndexRoute,
+}
+
+const LegalRouteRouteWithChildren = LegalRouteRoute._addFileChildren(
+  LegalRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   LandingRouteRoute: LandingRouteRouteWithChildren,
+  LegalRouteRoute: LegalRouteRouteWithChildren,
   _notFoundRoute: _notFoundRoute,
 }
 export const routeTree = rootRouteImport

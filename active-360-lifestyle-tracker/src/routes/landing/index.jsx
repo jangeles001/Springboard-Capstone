@@ -1,5 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import Carousel from '../../components/Carousel'
+import CookiesNotification from '../../features/cookies/component/CookiesNotification';
 
 export const Route = createFileRoute('/landing/')({
   component: RouteComponent,
@@ -22,6 +23,7 @@ function RouteComponent() {
 
   return (
     <div>
+      <CookiesNotification />
       <section class="text-center py-20 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
         <h1 class="text-5xl font-bold mb-4">Your Workout, Personalized</h1>
         <p class="text-lg mb-6">Get custom fitness recommendations based on your health data and goals.</p>
@@ -61,8 +63,8 @@ function RouteComponent() {
       <footer class="bg-gray-900 text-gray-300 py-6 text-center">
         <p>&copy; 2025 Active360. All rights reserved.</p>
         <div class="mt-2">
-          <a href="#" class="mx-2 hover:text-white">Privacy Policy</a>
-          <a href="#" class="mx-2 hover:text-white">Terms of Service</a>
+          <Link to="/legal/privacy" class="mx-2 hover:text-white">Privacy Policy</Link>
+          <Link to="/legal/" class="mx-2 hover:text-white">Terms of Service</Link>
         </div>
       </footer>
     </div>
