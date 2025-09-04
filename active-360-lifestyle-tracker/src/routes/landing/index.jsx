@@ -23,7 +23,6 @@ function RouteComponent() {
 
   return (
     <div>
-      <CookiesNotification />
       <section class="text-center py-20 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
         <h1 class="text-5xl font-bold mb-4">Your Workout, Personalized</h1>
         <p class="text-lg mb-6">Get custom fitness recommendations based on your health data and goals.</p>

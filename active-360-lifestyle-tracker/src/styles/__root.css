@@ -9,3 +9,19 @@
     @apply mb-1 font-medium text-gray-700;
   }
 }
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%);
+    visibility: visible;
+  }
+  100% {
+    transform: translateY(0);
+    visibility: visible;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 1s ease-out forwards;
+  animation-delay: 2s;
+}

@@ -1,5 +1,6 @@
 import { Outlet } from '@tanstack/react-router'
 import logo from '../assets/360_thunder.png'
+import CookiesNotification from '../features/cookies/component/CookiesNotification'
 //import logo from '../../assets/360_hand.png'
 //import logo from '../../assets/360_modern.png'
 
@@ -22,6 +23,7 @@ export default function Default_Nav({ links }) {
       <main>
         <Outlet />
       </main>
+      <CookiesNotification />
     </>
   )
 }

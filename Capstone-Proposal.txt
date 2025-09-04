@@ -23,8 +23,8 @@ wger Workout Manager: https://wger.de/api/v2/
 I will use this data with personalization engine to generate tailored plans for users.
 
 Tech Stack: [Arrange Dependacies, Types -> Service -> State Management -> Interface]
-1.) Authentication: Firebase    Difficulty: Medium
-Firebase will provide easy-to-use SDK, and UI libraries that I can use to authenticate users.
+1.) Authentication:  Crypto + JWT    Difficulty: Medium
+Crypto + Json WebToken will provide the tools I will need to authenticate users.
 
 2.) Frontend: React.js          Difficulty: Medium
 React efficiently builds modular, scalable interfaces. My app will benefit from:
@@ -51,8 +51,7 @@ Middleware: [CORS, Multer + Cloudinary [file uploads]]
 Option 1: Simple Rule-based AI
 Use formulas and conditional logic to suggest plans based on age, BMI, activity level.
 Option 2: (AGI + MCP) [Stretch Goal]
-Use GPT for generating personalized diet and exercise plans based on user input data. 
-
+Use GPT for generating personalized diet and exercise plans based on user input data.
 
 5.) Database: MongoDB       Difficulty: Easy/Medium
 Stores dynamic or evolving user data well (e.g., different combinations of health metrics). **No SQL**.
@@ -109,7 +108,7 @@ Progress Gallery – Upload and track your fitness progress with photos. (Stretc
 Exercise Wiki – Access and contribute to the built-in exercises.(stretch goal - maybe)
 
 User Flow: 
-1. User signs up or logs in via Firebase Authentication. (Crypto + JWT)
+1. User signs up or logs in via JWT Authentication. (Crypto + JWT)
 2. Enters personal health data through an onboarding form. (Privacy Banner: What is being collected and why?)
 3. Gets AI-generated workout/diet plan. (Stretch goal: something like AGI)
 4. Tracks workouts and logs food/calories.  (Link to privacy page)
