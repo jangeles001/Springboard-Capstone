@@ -32,7 +32,7 @@ export default function LoginForm() {
                     <div className="flex flex-col col-span-1 md:col-span-1">
                         <label htmlFor="userName" className='form-label'>Username:</label>
                         <input
-                        className='form-input'
+                        className='form-input focus:bg-blue-100'
                         type='text'
                         name='userName'
                         value={formData.userName}
@@ -43,7 +43,7 @@ export default function LoginForm() {
                     <div className='flex flex-col col-span-1 md:col-span-1'>   
                         <label htmlFor="password" className='form-label'>Password:</label>
                         <input
-                        className='form-input'
+                        className='form-input focus:bg-blue-100'
                         type='text'
                         name='password'
                         value={formData.password}
@@ -52,7 +52,7 @@ export default function LoginForm() {
                         />
                     </div>
                     <div className="col-span-1 md:col-span-1 flex justify-center max-h-20">
-                        <button type='submit' className='border-1 border rounded-lg w-50'>Login</button>
+                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100'>Login</button>
                     </div>
                 </form>
             </div>

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import RegistrationForm from '../../features/registration/components/RegistrationForm'
+import PrivacyNotification from '../../components/PrivacyNotification'
 
 export const Route = createFileRoute('/auth/signup')({
   component: RouteComponent,
@@ -14,6 +15,7 @@ function RouteComponent() {
             <section className='pb-40'><Link to='/landing/' className='text-white hover:underline'>&lt; Back to landing page</Link></section>
             <section className='pb-40 pl-80'><Link to='/auth/login/' className='text-white hover:underline'>Already have an account?</Link></section>
         </div>
+        <PrivacyNotification />
     </div>
   )
 }
