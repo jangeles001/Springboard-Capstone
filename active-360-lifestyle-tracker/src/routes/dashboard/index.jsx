@@ -8,6 +8,8 @@ export const Route = createFileRoute('/dashboard/')({
 
 function RouteComponent() {
   
+  // const data = null;
+
   const data = {
     labels: ['Jan', 'Feb', 'Mar'],
     datasets: [
@@ -38,9 +40,9 @@ function RouteComponent() {
 ];
 
   return (
-    <div className='flex flex-col justify-center w-full'>
-      <div className="flex flex-col items-center mx-auto p-15">
-        {data ? <Graph type='line' data={data} /> : <section className='flex flex-row justify-center p-20'>NO DATA</section>}
+    <div className='flex flex-col'>
+      <div className="flex flex-col p-15">
+        {data ? <section className='flex justify-center w-full'><Graph type='line' data={data} options={{ responsive: true, maintainAspectRatio: false }}/></section> : <section className='flex flex-row justify-center p-20 text-gray-400 opacity-40'>NO DATA</section>}
       </div>
       <div className='grid grid-cols-3'>
         <div className='flex flex-col items-center col-span-2 border-3'>
@@ -53,7 +55,7 @@ function RouteComponent() {
             )
           })}
         </div>
-        <div className='flex flex-col items-center border-3 min-h-screen'>
+        <div className='flex flex-col items-center border-3 min--screen'>
           <div className='min-h-[50%]'>Friends</div>
           <div className=''>Posts</div>
         </div>
