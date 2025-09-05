@@ -20,7 +20,7 @@ const initialErrors ={
   password: null,
 };
 
-export const useRegisterFormStore = create((set) => ({
+export const useRegisterFormStore = create((set, get) => ({
     formData: initialFormData,
     formErrors: initialErrors,
     setFormField: (field, value) => set((state) => ({ 
@@ -29,7 +29,8 @@ export const useRegisterFormStore = create((set) => ({
             [field]: value,
         },
     })),
-    validateForm: (formData) => {
+    validateForm: () => {
+        const { formData } = get();
         const formErrors = {};
         Object.entries(formData).forEach(([key,value]) => {
             switch(key){

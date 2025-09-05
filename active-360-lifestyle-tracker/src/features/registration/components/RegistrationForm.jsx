@@ -16,6 +16,7 @@ export default function RegistrationForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
         validateForm();
+        console.log(formErrors)
         if(formErrors){
             setHasErrors(true);
         }else{
@@ -32,7 +33,7 @@ export default function RegistrationForm() {
                     <div className="flex flex-col col-span-1 md:col-span-2">
                         <label htmlFor="firstName" className='form-label'>First Name:</label>
                         <input
-                        className='form-input'
+                        className={`form-input`}
                         type='text'
                         name='firstName'
                         value={formData.firstName}

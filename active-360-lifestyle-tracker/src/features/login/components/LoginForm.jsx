@@ -16,6 +16,7 @@ export default function LoginForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
         validateForm();
+        console.log(hasErrors)
         if(formErrors){
             setHasErrors(true);
         }else{

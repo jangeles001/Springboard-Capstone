@@ -5,5 +5,7 @@ export const Route = createFileRoute('/dashboard/workouts')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/dashboard/workouts"!</div>
+  return <div>
+    Hello "/dashboard/workouts"!
+    </div>
 }
