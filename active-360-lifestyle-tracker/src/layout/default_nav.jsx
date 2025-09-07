@@ -1,4 +1,4 @@
-import { Outlet } from '@tanstack/react-router'
+import { Outlet, Link } from '@tanstack/react-router'
 import logo from '../assets/360_thunder.png'
 import CookiesNotification from '../features/cookies/component/CookiesNotification'
 //import logo from '../../assets/360_hand.png'
@@ -13,9 +13,9 @@ export default function Default_Nav({ links }) {
             </header>
             <nav className="flex mt-auto ml-[4%] gap-4">
                 {links.map((link) => {
-                    return <a key={link.path} href={link.path} className="hover:underline">
+                    return <Link key={link.path} to={link.path} activeOptions={{ exact: true }} activeProps={{ className: " font-bold text-red-600"}} className="hover:underline">
                         {link.label}
-                    </a>
+                    </Link>
                     })}
             </nav>
         </div>

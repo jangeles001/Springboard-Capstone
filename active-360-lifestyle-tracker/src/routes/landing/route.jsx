@@ -7,7 +7,7 @@ export const Route = createFileRoute('/landing')({
 
 function RouteComponent() {
   const navLinks = [
-    { label: "Home", path: "/" },
+    { label: "Home", path: "/landing" },
     { label: "About", path: "/landing/about" },
     { label: "Dashboard", path: "/dashboard" },
   ];

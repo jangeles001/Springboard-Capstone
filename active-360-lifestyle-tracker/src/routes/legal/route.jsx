@@ -9,8 +9,8 @@ function RouteComponent() {
 
     const navLinks = [
     { label: "Home", path: "/" },
-    { label: "Terms", path: "/legal/terms" },
     { label: "Privacy Policy", path: "/legal/privacy" },
+    { label: "Terms", path: "/legal/terms" },
   ];
 
 

@@ -8,7 +8,7 @@ export const Route = createFileRoute('/dashboard')({
 function dashboard() {
 
   const navLinks = [
-    { label: "Home", path: "/dashboard" },
+    { label: "Dashboard", path: "/dashboard/dash" },
     { label: "Workouts", path: "/dashboard/workouts" },
     { label: "Logout", path: "/" },
   ];

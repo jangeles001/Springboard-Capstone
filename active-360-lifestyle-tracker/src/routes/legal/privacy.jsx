@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import ReactMarkdown from "react-markdown"
+import remarkSlug from "remark-slug"
 
 export const Route = createFileRoute('/legal/privacy')({
   component: Privacy,
@@ -18,11 +19,36 @@ function Privacy() {
     },[])
 
   return (
-    <div className='prose prose-lg prose-indigo dark:prose-invert max-w-4xl mx-auto p-6'>
-        <ReactMarkdown>{content}</ReactMarkdown>
+    <div className='prose prose-lg prose-indigo dark:prose-invert max-w-4xl mx-auto p-'>
+        <ReactMarkdown 
+        remarkPlugins={[remarkSlug]} 
+        components={{
+          h1: ({ node, ...props}) => (
+            <h1 className='text-3xl' {...props} />
+          ),
+          p: ({ node, ...props}) => (
+            <p className='text-1xl p-3' {...props}/>
+          ),
+          h2: ({ node, ...props}) => (
+            <h2 className='text-2xl' {...props}/>
+          ),
+          a: ({ node, ...props}) => (
+            <a className='text-1xl hover:underline' {...props}/>
+          ),
+          ol: ({ node, ...props}) => (
+            <ol className='flex flex-col items-center p-5 gap-3 bg-gray-200 m-3' {...props}/>
+          ),
+          ul: ({ node, ...props }) => (
+            <ul className='flex flex-col p-5 gap-3' {...props}/>
+          )
+        }}
+        >{content}</ReactMarkdown>
     </div>
 
-    //   <div className="flex items-center justify-center">
+    )
+}
+
+//   <div className="flex items-center justify-center">
     //         <div className="bg-gray-50 text-gray-800">
     //             <header className="max-w-4xl mx-auto p-6 border-b border-gray-200">
     //                 <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Privacy</p>
@@ -162,5 +188,3 @@ function Privacy() {
     //             </footer>
     //         </div>
     //     </div>
-    )
-}
