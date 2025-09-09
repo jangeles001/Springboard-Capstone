@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import Carousel from '../../components/Carousel'
-import CookiesNotification from '../../features/cookies/component/CookiesNotification';
 
 export const Route = createFileRoute('/landing/')({
   component: RouteComponent,
