@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+
+@theme {
+  --font-Header: Great Vibes, cursive;
+}
+
 @layer components {
   .form-input {
     @apply w-full border rounded-lg px-3 py-2 mb-5 focus:outline-none focus:ring focus:ring-blue-400;

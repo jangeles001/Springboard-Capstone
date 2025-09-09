@@ -22,7 +22,7 @@ import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as LegalTermsRouteImport } from './routes/legal/terms'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as LandingAboutRouteImport } from './routes/landing/about'
-import { Route as DashboardWorkoutsRouteImport } from './routes/dashboard/workouts'
+import { Route as DashboardExercisesRouteImport } from './routes/dashboard/exercises'
 import { Route as DashboardDashRouteImport } from './routes/dashboard/dash'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -91,9 +91,9 @@ const LandingAboutRoute = LandingAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => LandingRouteRoute,
 } as any)
-const DashboardWorkoutsRoute = DashboardWorkoutsRouteImport.update({
-  id: '/workouts',
-  path: '/workouts',
+const DashboardExercisesRoute = DashboardExercisesRouteImport.update({
+  id: '/exercises',
+  path: '/exercises',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardDashRoute = DashboardDashRouteImport.update({
@@ -121,7 +121,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/dash': typeof DashboardDashRoute
-  '/dashboard/workouts': typeof DashboardWorkoutsRoute
+  '/dashboard/exercises': typeof DashboardExercisesRoute
   '/landing/about': typeof LandingAboutRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -135,7 +135,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/dash': typeof DashboardDashRoute
-  '/dashboard/workouts': typeof DashboardWorkoutsRoute
+  '/dashboard/exercises': typeof DashboardExercisesRoute
   '/landing/about': typeof LandingAboutRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -155,7 +155,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/dash': typeof DashboardDashRoute
-  '/dashboard/workouts': typeof DashboardWorkoutsRoute
+  '/dashboard/exercises': typeof DashboardExercisesRoute
   '/landing/about': typeof LandingAboutRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -175,7 +175,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/dash'
-    | '/dashboard/workouts'
+    | '/dashboard/exercises'
     | '/landing/about'
     | '/legal/privacy'
     | '/legal/terms'
@@ -189,7 +189,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/dash'
-    | '/dashboard/workouts'
+    | '/dashboard/exercises'
     | '/landing/about'
     | '/legal/privacy'
     | '/legal/terms'
@@ -208,7 +208,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/dash'
-    | '/dashboard/workouts'
+    | '/dashboard/exercises'
     | '/landing/about'
     | '/legal/privacy'
     | '/legal/terms'
@@ -320,11 +320,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LandingAboutRouteImport
       parentRoute: typeof LandingRouteRoute
     }
-    '/dashboard/workouts': {
-      id: '/dashboard/workouts'
-      path: '/workouts'
-      fullPath: '/dashboard/workouts'
-      preLoaderRoute: typeof DashboardWorkoutsRouteImport
+    '/dashboard/exercises': {
+      id: '/dashboard/exercises'
+      path: '/exercises'
+      fullPath: '/dashboard/exercises'
+      preLoaderRoute: typeof DashboardExercisesRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/dash': {
@@ -369,13 +369,13 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface DashboardRouteRouteChildren {
   DashboardDashRoute: typeof DashboardDashRoute
-  DashboardWorkoutsRoute: typeof DashboardWorkoutsRoute
+  DashboardExercisesRoute: typeof DashboardExercisesRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardDashRoute: DashboardDashRoute,
-  DashboardWorkoutsRoute: DashboardWorkoutsRoute,
+  DashboardExercisesRoute: DashboardExercisesRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
