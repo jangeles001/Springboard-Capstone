@@ -8,7 +8,9 @@ export const Route = createFileRoute('/dashboard/exercises')({
 
 function RouteComponent() {
 
-  const URL = "https://wger.de/api/v2/exerciseinfo/?limit=20";
+  const URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
+
+  // const URL = "https://wger.de/api/v2/exerciseinfo/?category=10&language=2" URL reference to implement dropwdown menu
 
   const [ response, setResponse ] = useState([]);
   const [ prev, setPrev ] = useState(null);
@@ -26,27 +28,22 @@ function RouteComponent() {
       try {
         const res = await fetch(URL);
         const json = await res.json();
-        
-        
+
         const filtered = json.results.map((exercise) => {
-          
           const englishTranslation = exercise.translations = exercise.translations.filter((description) => {
               return description.language === 2;
             }) 
 
             return {...exercise, translations: englishTranslation}; 
         })
-
         setResponse(filtered);
         setNext(json.next);
         setPrev(json.previous);
-
       } catch (err) {
         console.error("Error fetching workouts:", err);
+      }finally{
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
-
     }
 
     const handleNext = () =>{
@@ -59,23 +56,34 @@ function RouteComponent() {
 
   return (
     <div className='flex flex-col'>
-    <h1 className='flex font-inter text-5xl p-3 font-header'>Exercises</h1>
-    <div className='flex flex-col items-center gap-10 pt-4'> {/* On click go to exercise details page */}
-      { isLoading && <Loading type='full-page' /> }
-       { !isLoading && response?.map((exercise) => {
-        return (
-          <div key={exercise.id} className='flex flex-col items-center border-1 w-[900px] h-auto rounded-xl shadow p-2 gap-1'>
-            <h1 className='font-bold'>{exercise.translations[0].name}</h1>
-            <img src={exercise.muscles[0]?.image_url_main}></img>
-            <h2>Exercise Category: {exercise.category.name}</h2>
-            <p key={exercise.translations[0].name} className=''>{exercise.translations[0].description ? exercise.translations[0].description.replace(/<[^>]*>/g, "") : "No Description Provided"}</p>
-          </div>
-          )})}
+      <div className='flex flex-row'>
+        <h1 className='font-inter text-5xl p-3 font-header'>Exercises</h1>
+        <select
+        type='text'
+        name='search'
+        className='ml-auto mr-25 m-5 border-1 rounded w-30'
+        >
+          <option>Categories</option>
+          {/* CategoryStore category names */}
+        </select>
+      </div>
+        <div className='flex flex-col items-center gap-10 pt-4'> {/* On click go to exercise details page */}
+          { isLoading && <Loading type='full-page' /> }
+          { !isLoading && response?.map((exercise) => {
+            return (
+              <div key={exercise.id} className='flex flex-col items-center border-1 w-[900px] h-auto rounded-xl shadow p-2 gap-1'>
+                <h1 className='font-bold'>{exercise.translations[0].name.toUpperCase()}</h1>
+                <img src={exercise.muscles[0]?.image_url_main}></img>
+                <h2>Exercise Category: {exercise.category.name}</h2>
+                <p key={exercise.translations[0].name} className=''>{exercise.translations[0].description ? exercise.translations[0].description.replace(/<[^>]*>/g, "") : "No Description Provided"}</p>
+              </div> 
+            )})
+          }
 
-          {!isLoading && <div className='flex flex-row pb-10 gap-4'>
-             {prev ? <button onClick={handlePrev} className='hover:underline'>Prev</button> : ""}
-             {next ? <button onClick={handleNext} className='hover:underline'>Next</button> : ""}
-          </div>} 
+        {!isLoading && <div className='flex flex-row pb-10 gap-4'>
+          {prev ? <button onClick={handlePrev} className='hover:underline'>Prev</button> : ""}
+          {next ? <button onClick={handleNext} className='hover:underline'>Next</button> : ""}
+        </div>} 
       </div> 
     </div>  
   ) 

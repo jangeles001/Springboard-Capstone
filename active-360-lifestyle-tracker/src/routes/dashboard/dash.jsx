@@ -46,20 +46,20 @@ function dash() {
             {data ? <section className='flex justify-center w-full h-[400px]'><Graph type='line' data={data} options={{ responsive: true, maintainAspectRatio: false }}/></section> : 
             <section className='flex flex-col items-center p-20 text-gray-400 opacity-40 h-[300px]'><span className='mt-10'>NO DATA</span>Record a workout to begin tracking your progress.</section>}
           </div>
-          <div className='grid grid-cols-3'>
-            <div className='flex flex-col items-center col-span-2 border-3'>
+          <div className='grid grid-cols-1 w-full md:grid-cols-4'>
+            <div className='flex flex-col items-center col-span-3 border-3'>
               <section>Previous Workouts</section>
               {prevWorkouts.map((workout) => {
                 return (
-                  <div className='flex p-5'>
+                  <div key={workout.name} className='flex p-5'>
                     <ContentBox title={workout.name} content={workout.information} />
                   </div>
                 )
               })}
             </div>
-            <div className='flex flex-col items-center border-3 min--screen'>
-              <div className='min-h-[50%]'>Friends</div>
-              <div className=''>Posts</div>
+            <div className='flex flex-col items-center col-span-1 border-3 h-full md:col-span-1'>
+              <div className='h-[50%]'>Friends</div>
+              <div className='h-[50%]'>Posts</div>
             </div>
             
           </div>

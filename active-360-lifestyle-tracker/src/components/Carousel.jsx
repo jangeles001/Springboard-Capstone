@@ -66,7 +66,7 @@ export default function Carousel({ items, interval = 3000 }){
             style={{ transform: `translateX(-${activeIndex * 100}%)` }}
             onTransitionEnd={handleTransitionEnd}>
 
-                <div className="flex w-full items-center justify-center flex-shrink-0">
+                <div className="flex w-full items-center justify-center pb-15 flex-shrink-0">
                     <img src={items[totalSlides - 1]} alt="Clone last" />
                 </div>
 
@@ -76,7 +76,7 @@ export default function Carousel({ items, interval = 3000 }){
                 </div>
                 ))}
 
-                <div className="flex w-full items-center justify-center flex-shrink-0">
+                <div className="flex w-full items-center justify-center pb-15 flex-shrink-0">
                     <img src={items[0]} alt="Clone first" />
                 </div>
 
