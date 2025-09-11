@@ -12,7 +12,7 @@ export default function PrivacyNotification() {
             <div className='flex flex-col items-center'>
                 <button className='border-2 p-1 ml-auto hover:border-blue-800' onClick={() => setVisible(false)}>X</button>
                 <div className='max-w-4xl mx-auto text-center flex flex-col gap-4'>
-                    <section>To generate personalized workout recommendations, we process the information you enter (e.g., age, height, weight, goals). This data stays private, is used only to deliver recommendations and improve accuracy, and can be deleted anytime in Settings. See our <Link className='hover:underline'>Privacy Policy.</Link></section>
+                    <section>To generate personalized workout recommendations, we process the information you enter (e.g., age, height, weight, goals). This data stays private, is used only to deliver recommendations and improve accuracy, and can be deleted anytime in Settings. See our <Link className='hover:underline'>Privacy Policy↗.</Link></section>
                     <section>California residents: You may have the right to know, delete, correct, and opt out of sale/sharing of personal information. We do not sell personal information for money. To exercise your rights, use Privacy Requests or email complaints@active.360</section>
                 </div>
             </div>

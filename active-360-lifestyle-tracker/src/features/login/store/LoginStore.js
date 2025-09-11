@@ -1,36 +1,50 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
 const initialFormData = {
-    userName: '',
-    password: '',
-}
+  userName: null,
+  password: null,
+};
 
-const initialFormErrors = {
-    userName: null,
-    password: null,
-}
+const validators = {
+  userName: [(value) => (!value ? "Username is required" : "")],
+  password: [(value) => (!value ? "password is required" : "")],
+};
 
-export const useLoginFormStore = create((set) => ({
-    formData: initialFormData,
-    formErrors: initialFormErrors,
-    setFormField: (field, value) => set((state) => ({
-        formData: {
-            ...state.formData,
-            [field]: value,
-        },
+export const useLoginFormStore = create((set, get) => ({
+  formData: initialFormData,
+  formErrors: null,
+  isValid: false,
+  setFormField: (field, value) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        [field]: value,
+      },
     })),
-    validateForm: (formData) => {
-        const formErrors = {};
-        Object.entries(formData).forEach(([key,value]) => {
-            switch(key){
-                case "userName":
-                    if(!value) formErrors[key] = "Username required"
-                    break;
-                case"password":
-                if(!value) formErrors[key] = "Password required"
-                break;
-            }   
-        })
-        set({ formErrors })
-    },
+  resetForm: () => {
+    set({
+      formData: initialFormData,
+      formErrors: null,
+      isValid: false,
+    });
+  },
+  validateForm: () => {
+    const { formData } = get();
+    const formErrors = {};
+
+    for (const [field, rules] of Object.entries(validators)) {
+      for (const validate of rules) {
+        const error = validate(formData[field]);
+        if (error) {
+          formErrors[field] = [...(formErrors[field] || []), error];
+        }
+      }
+    }
+
+    const isValid = Object.keys(formErrors)?.length === 0;
+
+    set({ formErrors, isValid });
+
+    return { isValid };
+  },
 }));

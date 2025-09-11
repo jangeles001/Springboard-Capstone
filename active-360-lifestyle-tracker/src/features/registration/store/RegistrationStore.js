@@ -1,67 +1,88 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
 const initialFormData = {
-  firstName: '',
-  lastName: '',
-  age: '',
-  height: '',
-  weight: '',
-  username: '',
-  password: '',
+  firstName: "",
+  lastName: "",
+  age: "",
+  height: "",
+  weight: "",
+  userName: "",
+  password: "",
+  email: "",
+  promoConsent: false,
+  agreeToTerms: false,
 };
 
-const initialErrors ={
-  firstName: null,
-  lastName: null,
-  age: null,
-  height: null,
-  weight: null,
-  userName: null,
-  password: null,
+const validators = {
+  firstName: [
+    (value) => (!value ? "First name is required" : ""),
+    (value) =>
+      value?.length < 2 ? "First name must be at least 2 characters" : "",
+  ],
+  lastName: [(value) => (!value ? "Last name is required" : "")],
+  age: [
+    (value) => (!value ? "Age is required" : ""),
+    (value) => (isNaN(Number(value)) ? "Age must be a number" : ""),
+  ],
+  height: [(value) => (!value ? "Height is required" : "")],
+  weight: [(value) => (!value ? "Weight is required" : "")],
+  userName: [
+    (value) => (!value ? "Username is required" : ""),
+    (value) =>
+      value?.length < 3 ? "Username must be at least 3 characters" : "",
+  ],
+  password: [
+    (value) => (!value ? "Password is required" : ""),
+    (value) =>
+      value?.length < 6 ? "Password must be at least 6 characters" : "",
+  ],
+  email: [
+    (value) => (!value ? "Email is required" : ""),
+    (value) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      return !emailRegex.test(value) ? "Enter a valid email address" : "";
+    },
+  ],
+  agreeToTerms: [
+    (value) =>
+      value === false ? "Agreement to Terms of Service is required" : "",
+  ],
 };
 
 export const useRegisterFormStore = create((set, get) => ({
-    formData: initialFormData,
-    formErrors: initialErrors,
-    setFormField: (field, value) => set((state) => ({ 
-        formData: {
-            ...state.formData,
-            [field]: value,
-        },
+  formData: initialFormData,
+  formErrors: null,
+  isValid: false,
+  setFormField: (field, value) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        [field]: value,
+      },
     })),
-    validateForm: () => {
-        const { formData } = get();
-        const formErrors = {};
-        Object.entries(formData).forEach(([key,value]) => {
-            switch(key){
-                case "firstName":
-                    if (!value) formErrors[key] = "First name is required";
-                    else if (value.length < 2) formErrors[key] = "Must be at least 2 characters";
-                    break;
-                case "lastName":
-                    if (!value) formErrors[key] = "Last name is required";
-                    break;
-                case "age":
-                    if(!value) formErrors[key] = "Age is required"
-                    break;
-                case "height":
-                    if(!value) formErrors[key] = "Height is required"
-                    break;
-                case "weight":
-                    if(!value) formErrors[key] = "Height is required"
-                    break;
-                case "userName":
-                    if(!value) formErrors[key] = "Height is required"
-                    break;
-                case "password":
-                    if(!value) formErrors[key] = "Password is required"
-                    break;
-            }
-        })
-        set({ formErrors })
-    },
-    resetForm: () => set({
-        formData: initialFormData,
-        errors: initialErrors,
+  resetForm: () =>
+    set({
+      formData: initialFormData,
+      formErrors: null,
+      isValid: false,
     }),
+  validateForm: () => {
+    const { formData } = get();
+    const formErrors = {};
+
+    for (const [field, rules] of Object.entries(validators)) {
+      for (const validate of rules) {
+        const error = validate(formData[field]);
+        if (error) {
+          formErrors[field] = [...(formErrors[field] || []), error];
+        }
+      }
+    }
+
+    const isValid = Object.keys(formErrors)?.length === 0;
+
+    set({ formErrors, isValid });
+
+    return { isValid };
+  },
 }));
