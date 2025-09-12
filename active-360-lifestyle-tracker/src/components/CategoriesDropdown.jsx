@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useCategoryStore } from '../store/CategoryStore'
 
-export default function CategoryDropdown({ onChange, style}) {
+export default function CategoryDropdown({ onChange, isLoading, style}) {
     
     const { categories, fetchCategories, error } = useCategoryStore();
     
@@ -17,6 +17,7 @@ export default function CategoryDropdown({ onChange, style}) {
     return (
         <div className={style}>
             <select
+            disabled={isLoading}
             onChange={(e) => setAndFetch(e.target.value)}
             type='text'
             name='search'
