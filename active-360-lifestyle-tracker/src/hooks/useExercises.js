@@ -3,7 +3,7 @@ import fetchExercises from "../services/fetchExercises";
 
 const BASE_URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
 
-export function useExercise(initialUrl = BASE_URL) {
+export function useExercises(initialUrl = BASE_URL) {
   const [response, setResponse] = useState([]);
   const [prev, setPrev] = useState(null);
   const [next, setNext] = useState(null);

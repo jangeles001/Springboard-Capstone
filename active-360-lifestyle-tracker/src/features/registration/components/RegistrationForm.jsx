@@ -1,31 +1,18 @@
-import { useState } from 'react';
 import { useRouter, Link } from '@tanstack/react-router';
-import { useRegisterFormStore } from '../store/RegistrationStore'
+import { useRegistrationForm } from '../../../hooks/useRegistrationForm'
 import ErrorMessages from '../../../components/ErrorMessages';
 
 export default function RegistrationForm() {
-    
-    const { formData, formErrors, setFormField, resetForm, validateForm } = useRegisterFormStore();
-    const [ hasErrors, setHasErrors ] = useState(false);
     const router = useRouter();
-    
-    const handleChange = (e) => {
-        const { name, type, value, checked } = e.target;
-        setFormField(name, type === 'checkbox' ? checked : value);
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setHasErrors(false);
-        const { isValid } = validateForm();
-        if(!isValid){
-            setHasErrors(true);
-        }else{
-            //TODO: Submit information to database
-            resetForm();
-            router.navigate({ to: '/dashboard/'})
-        }
-    }
+    const {
+        formData,
+        formErrors,
+        hasErrors,
+        handleChange,
+        handleSubmit,
+    } = useRegistrationForm({ 
+            onSuccess: () => router.navigate({ to: "/dashboard/" })
+        });
     
     return (
         <div className='flex justify-center-safe mt-5 mb-auto  md:h-full min-w-[600px]'>

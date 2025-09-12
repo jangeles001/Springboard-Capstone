@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Loading from '../../components/Loading';
 import CategoryDropdown from '../../components/CategoriesDropdown';
-import { useExercise } from '../../hooks/useExercise';
+import { useExercises } from '../../hooks/useExercises';
 
 export const Route = createFileRoute('/dashboard/exercises')({
   component: RouteComponent,
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/dashboard/exercises')({
 
 function RouteComponent() {
 
-  const { response, next, prev, isLoading, error, loadData } = useExercise();
+  const { response, next, prev, isLoading, error, loadData } = useExercises();
 
   if(isLoading) return (
     <>
