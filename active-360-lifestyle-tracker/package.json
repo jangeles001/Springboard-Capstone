@@ -17,6 +17,8 @@
     "@tanstack/react-router": "^1.131.27",
     "@tanstack/react-router-devtools": "^1.131.27",
     "chart.js": "^4.5.0",
+    "i": "^0.3.7",
+    "js-cookie": "^3.0.5",
     "react": "^19.1.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.1.0",

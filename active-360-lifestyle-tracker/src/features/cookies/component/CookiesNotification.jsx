@@ -13,7 +13,7 @@ export default function CookiesNotification() {
         setConsent(choice);
     }
 
-    if(consent) return null;
+    if(!navigator.cookieEnabled || consent) return null;
 
     return (
         <div className='fixed invisible bottom-0 w-full z-999 bg-black text-white text-md p-4 shadow-lg opacity-75 animate-slideUp hover:opacity-100 transition-opacity duration-500'>

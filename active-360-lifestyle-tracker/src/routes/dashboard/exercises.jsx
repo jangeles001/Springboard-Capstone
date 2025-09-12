@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import Loading from '../../components/Loading';
+import CategoryDropdown from '../../components/CategoriesDropdown';
 
 export const Route = createFileRoute('/dashboard/exercises')({
   component: RouteComponent,
@@ -10,17 +11,13 @@ function RouteComponent() {
 
   const URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
 
-  // const URL = "https://wger.de/api/v2/exerciseinfo/?category=10&language=2" URL reference to implement dropwdown menu
-
   const [ response, setResponse ] = useState([]);
   const [ prev, setPrev ] = useState(null);
   const [ next, setNext ] = useState(null);
   const [ isLoading, setIsLoading ] = useState(true);
 
   useEffect(() => {
-    
     fetchData(URL);
-    
   },[])
 
   const fetchData = async (URL) => {
@@ -54,22 +51,26 @@ function RouteComponent() {
       if(prev) fetchData(prev);
     }
 
+  if(isLoading) return (
+    <>
+      <div className='flex flex-col'>
+        <div className='flex flex-row'>
+          <h1 className='font-inter text-5xl p-3 font-header ml-10'>Exercises</h1>
+          <CategoryDropdown onChange={(url) => fetchData(url)} style='ml-auto mr-14'/>
+        </div>
+        <Loading type='full-page' />
+      </div>
+    </>
+  )
+
   return (
     <div className='flex flex-col'>
       <div className='flex flex-row'>
-        <h1 className='font-inter text-5xl p-3 font-header'>Exercises</h1>
-        <select
-        type='text'
-        name='search'
-        className='ml-auto mr-25 m-5 border-1 rounded w-30'
-        >
-          <option>Categories</option>
-          {/* CategoryStore category names */}
-        </select>
+        <h1 className='font-inter text-5xl p-3 font-header ml-10'>Exercises</h1>
+        <CategoryDropdown onChange={(url) => fetchData(url)} style='ml-auto mr-14'/>
       </div>
         <div className='flex flex-col items-center gap-10 pt-4'> {/* On click go to exercise details page */}
-          { isLoading && <Loading type='full-page' /> }
-          { !isLoading && response?.map((exercise) => {
+          {response?.map((exercise) => {
             return (
               <div key={exercise.id} className='flex flex-col items-center border-1 w-[900px] h-auto rounded-xl shadow p-2 gap-1'>
                 <h1 className='font-bold'>{exercise.translations[0].name.toUpperCase()}</h1>
@@ -80,10 +81,10 @@ function RouteComponent() {
             )})
           }
 
-        {!isLoading && <div className='flex flex-row pb-10 gap-4'>
+        <div className='flex flex-row pb-10 gap-4'>
           {prev ? <button onClick={handlePrev} className='hover:underline'>Prev</button> : ""}
           {next ? <button onClick={handleNext} className='hover:underline'>Next</button> : ""}
-        </div>} 
+        </div> 
       </div> 
     </div>  
   ) 

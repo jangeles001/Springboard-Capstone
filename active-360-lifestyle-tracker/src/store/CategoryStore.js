@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export const CategoryStore = create((set, get) => ({
+export const useCategoryStore = create((set, get) => ({
   categories: [],
   loading: false,
   error: null,
@@ -15,6 +15,7 @@ export const CategoryStore = create((set, get) => ({
         if (!res.ok) throw new Error("Failed to fetch categories");
 
         const data = await res.json();
+
         set({ categories: data.results, loading: false });
       } catch (error) {
         set({ error: error.message, loading: false });
