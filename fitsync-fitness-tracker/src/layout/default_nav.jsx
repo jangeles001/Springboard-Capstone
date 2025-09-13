@@ -4,7 +4,7 @@ import CookiesNotification from '../features/cookies/component/CookiesNotificati
 //import logo from '../assets/360_hand.png'
 //import logo from '../assets/360_modern.png'
 // import logo from '../assets/Redesign-1.svg'
-import logo from '../assets/Redesign-2.svg'
+import logo from '../assets/Rebrand-2.svg'
 
 
 export default function Default_Nav({ links }) {
@@ -13,7 +13,7 @@ export default function Default_Nav({ links }) {
         <div className="flex flex-row">
             <header className="flex-row items-center gap-4 p-2">
               <div className="flex w-auto h-auto">
-                <img src={logo} alt="Logo" className="h-30" />
+                <img src={logo} alt="Logo" className="h-40" />
               </div>
                 
             </header>

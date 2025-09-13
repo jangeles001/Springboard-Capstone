@@ -2,7 +2,7 @@
 
 **Effective date:** 8/12/2025
 
-Welcome to **Active360** (the “App”), provided by **Active360**.  
+Welcome to **Fitsync** (the “App”), provided by **Fitsync**.  
 This Privacy Policy explains how we collect, use, disclose, and protect your information when you use our exercise and fitness services.
 
 ---
@@ -69,7 +69,7 @@ We do not knowingly collect information from children.
 ## Your Rights
 
 You may request access, correction, or deletion of your data.  
-Contact us at **complaints@active.360**.
+Contact us at **complaints@fit.sync**.
 
 ---
 
@@ -81,10 +81,10 @@ We may update this Privacy Policy and will notify you of significant changes.
 
 ## Contact Us
 
-**Active360**  
+**Fitsync**  
 1111222 imaginary, somewhere  
-📧 questions@active.360
+📧 questions@Fit.sync
 
 ---
 
-© 2025 Active360. All rights reserved.
+© 2025 Fitsync. All rights reserved.

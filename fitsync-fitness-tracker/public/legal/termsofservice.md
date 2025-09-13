@@ -2,7 +2,7 @@
 
 **Effective Date:** 8/12/25
 
-Welcome to **Active360** (the “App”), provided by **Active360**.  
+Welcome to **Fitsync** (the “App”), provided by **Fitsync**.  
 By using our services, you agree to these Terms of Service.  
 Please read them carefully.
 
@@ -54,7 +54,7 @@ All fees are non-refundable unless required by law.
 
 ## Intellectual Property
 
-All content, logos, and trademarks are the property of **Active360** or its licensors.  
+All content, logos, and trademarks are the property of **Fitsync** or its licensors.  
 You may not copy, distribute, or modify our content without permission.
 
 ---
@@ -85,7 +85,7 @@ Always consult a physician before beginning any new exercise program.
 
 ## Limitation of Liability
 
-To the fullest extent permitted by law, **Active360** is not liable for damages arising from your use of the App.
+To the fullest extent permitted by law, **Fitsync** is not liable for damages arising from your use of the App.
 
 ---
 
@@ -104,10 +104,10 @@ These Terms are governed by the laws of **California**, without regard to confli
 
 ## Contact Us
 
-**Active360**  
+**Fitsync**  
 1111222 imaginary, somewhere  
-📧 questions@active.360
+📧 questions@Fit.sync
 
 ---
 
-© 2025 Active360. All rights reserved.
+© 2025 Fitsync. All rights reserved.
