@@ -60,7 +60,17 @@ export const useRegisterFormStore = create((set, get) => ({
         [field]: value,
       },
     })),
-  resetForm: () =>
+  resetFormData: (formErrors) => {
+    set((state) => {
+      const newFormData = { ...state.formData };
+      for (const field of Object.keys(formErrors)) {
+        newFormData[field] =
+          typeof state.formData[field] === "boolean" ? false : "";
+      }
+      return { formData: newFormData };
+    });
+  },
+  resetOnValidation: () =>
     set({
       formData: initialFormData,
       formErrors: null,
@@ -83,6 +93,6 @@ export const useRegisterFormStore = create((set, get) => ({
 
     set({ formErrors, isValid });
 
-    return { isValid };
+    return { isValid, formErrors };
   },
 }));

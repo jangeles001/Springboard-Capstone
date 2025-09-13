@@ -1,30 +1,19 @@
-import { useState } from 'react';
+import { useLoginForm } from '../../../hooks/useLoginForm';
 import { useRouter } from '@tanstack/react-router';
-import { useLoginFormStore } from '../store/LoginStore'
 import ErrorMessages from '../../../components/ErrorMessages';
 
 export default function LoginForm() {
     
-    const { formData, formErrors, setFormField, resetForm, validateForm } = useLoginFormStore();
-    const [ hasErrors, setHasErrors ] = useState(false);
     const router = useRouter();
-    
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormField(name, value);
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-       const { isValid } = validateForm();
-        if(!isValid){
-            setHasErrors(true);
-        }else{
-            //TODO: Submit information to database
-            resetForm();
-            router.navigate({ to: '/dashboard/'})
-        }
-    }
+    const { 
+        formData,
+        formErrors,
+        hasErrors,
+        handleChange,
+        handleSubmit
+    } = useLoginForm({
+        onSuccess: () => router.navigate({ to: '/dashboard/'})
+    });
     
     return (
         <div className='flex justify-center-safe mx-auto mt-5 mb-auto min-w-full'>
