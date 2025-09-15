@@ -8,9 +8,9 @@ export default async function fetchExercises(url) {
     const englishTranslation = (exercise.translations =
       exercise.translations.filter((description) => {
         return description.language === 2;
-      }));
+      }))
 
-    return { ...exercise, translations: englishTranslation };
+    return { ...exercise, translations: englishTranslation};
   });
 
   return {
