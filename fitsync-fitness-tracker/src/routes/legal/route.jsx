@@ -8,11 +8,10 @@ export const Route = createFileRoute('/legal')({
 function RouteComponent() {
 
     const navLinks = [
-    { label: "Home", path: "/" },
+    { label: "Home", path: "/landing" },
     { label: "Privacy Policy", path: "/legal/privacy" },
     { label: "Terms", path: "/legal/terms" },
   ];
-
 
     return (
         <>

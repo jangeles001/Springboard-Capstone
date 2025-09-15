@@ -9,7 +9,7 @@ export const Route = createFileRoute('/dashboard/exercises')({
 
 function RouteComponent() {
 
-  const { response, next, prev, isLoading, error, loadData } = useExercises();
+  const { response, nextLink, prevLink, isLoading, error, loadData, loadByCategory } = useExercises();
 
   if(error) return <p>error</p>;
 
@@ -19,11 +19,11 @@ function RouteComponent() {
         <div className='flex flex-col rounded-2xl border border-gray-200 shadow-md bg-gray-100 w-[1100px] pt-5 mt-20 mb-20'>
           <div className='flex flex-row'>
             <h1 className='font-inter text-5xl p-3 font-header ml-5'>Exercises</h1>
-            <CategoryDropdown onChange={(url) => loadData(url)} isLoading={isLoading} style='ml-auto'/>
+            <CategoryDropdown onChange={loadByCategory} isLoading={isLoading} style='ml-auto'/>
           </div>
 
           <div className='flex flex-col items-center gap-10 pt-4'>
-            { isLoading ? <Loading type='content-only' /> : response?.map((exercise) => {
+            {isLoading ? <Loading type='content-only' /> : response?.map((exercise) => {
               return (
                 <div key={exercise.id} className='flex flex-col items-center w-[900px] rounded-2xl border border-gray-500 p-5 shadow-md gap-1'>
                   <h1 className='font-bold'>{exercise.translations[0].name.toUpperCase()}</h1>
@@ -35,8 +35,8 @@ function RouteComponent() {
             }
 
             <div className='flex flex-row pb-10 gap-4'>
-              {prev && <button onClick={() => loadData(prev)} className='hover:underline'>Prev</button>}
-              {next && <button onClick={() => loadData(next)} className='hover:underline'>Next</button>}
+              {prevLink && <button onClick={() => loadData(prevLink)} className='hover:underline'>Prev</button>}
+              {nextLink && <button onClick={() => loadData(nextLink)} className='hover:underline'>Next</button>}
             </div>
           </div>
         </div> 

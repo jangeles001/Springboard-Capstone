@@ -10,8 +10,7 @@ export default function CategoryDropdown({ onChange, isLoading, style}) {
     },[fetchCategories])
 
     const setAndFetch = (id) => {
-       const url =  id ? `https://wger.de/api/v2/exerciseinfo/?category=${id}&language=2` : "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
-       onChange(url);
+       onChange(id);
     }
 
     return (
