@@ -43,7 +43,7 @@ function RouteComponent() {
             </p>
           }
           <button 
-          className=" border-1 rounded p-1 shadow-sm mt-auto mb-5 hover:bg-blue-100"
+          className="mt-auto mb-4 px-4 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm rounded-lg shadow hover:opacity-90 transition"
           onClick={handleSubmit}>Create Workout</button>
         </div>
 

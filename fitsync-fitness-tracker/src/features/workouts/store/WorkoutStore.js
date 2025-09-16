@@ -29,7 +29,7 @@ export const useWorkoutStore = create((set, get) => ({
             return { createdWorkout: filtered.length > 0 ? filtered : null };
         }),
     resetCreatedWorkout: () => set({ createdWorkout: null }),
-    createWorkout: () => {
+    createWorkout: (name) => { //create random name geneartor to call if name of workout is blank.
         const state = get();
         if (!state.createdWorkout) return;
         set((prevState) => ({ 

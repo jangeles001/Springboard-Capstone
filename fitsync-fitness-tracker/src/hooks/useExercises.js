@@ -42,17 +42,14 @@ export function useExercises(initialUrl = BASE_URL) {
 
   const handleClick = (exercise) => {
     addToCreatedWorkout(exercise);
-    //TODO remove from response
   }
 
   const handleRemove = (id) => {
     removeFromCreatedWorkout(id);
-     //TODO add to response
   }
   
   const handleSubmit = () => {
     if(createdWorkout) createWorkout();
-    //TODO add workouts back to response if needed
   }
 
   useEffect(() => {
