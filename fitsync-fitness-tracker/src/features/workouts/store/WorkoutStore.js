@@ -10,12 +10,14 @@ const useWorkoutStore = create((set, get) => ({
       const response = [""]; // call fetch from fetching service
       set({ workoutsList: [] });
     },
-    removeFromWorkoutsList: (id) =>
+    removeFromWorkoutsList: (name) => {
+      console.log(name);
       set((state) => ({
-        workoutsList: state?.workoutsList.filter((workout) => {
-          return workout.id != id;
+        workoutsList: state?.workoutsList?.filter((workout) => {
+          return workout.name != name;
         }),
-      })),
+      }));
+    },
     addToWorkoutsList: (workout) =>
       set((state) => ({
         workoutsList: [...state.workoutsList, workout],
@@ -49,7 +51,6 @@ const useWorkoutStore = create((set, get) => ({
           : [newWorkout],
         createdWorkout: null,
       }));
-      console.log(get().workoutsList);
     },
   },
 }));
