@@ -11,12 +11,10 @@ const validators = {
 };
 
 const useLoginFormStore = create((set, get) => ({
-  // States
   formData: initialFormData,
   formErrors: null,
   isValid: false,
 
-  // Actions
   actions: {
     // Updates a single form field
     setFormField: (field, value) =>

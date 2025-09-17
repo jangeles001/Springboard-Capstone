@@ -7,7 +7,7 @@ import {
 
 // Custom hook to manage login form state and behavior
 export function useLoginForm({ onSuccess }) {
-  // Store subscriptions
+  // Store state slices
   const formData = useFormData();
   const formErrors = useFormErrors();
   const { setFormField, resetForm, validateForm } = useLoginActions();

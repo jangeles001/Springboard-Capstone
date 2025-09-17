@@ -13,6 +13,7 @@ const initialFormData = {
   agreeToTerms: false,
 };
 
+// Validation cases
 const validators = {
   firstName: [
     (value) => (!value ? "First name is required" : ""),
@@ -49,50 +50,67 @@ const validators = {
   ],
 };
 
-export const useRegisterFormStore = create((set, get) => ({
+const useRegisterFormStore = create((set, get) => ({
   formData: initialFormData,
   formErrors: null,
   isValid: false,
-  setFormField: (field, value) =>
-    set((state) => ({
-      formData: {
-        ...state.formData,
-        [field]: value,
-      },
-    })),
-  resetFormData: (formErrors) => {
-    set((state) => {
-      const newFormData = { ...state.formData };
-      for (const field of Object.keys(formErrors)) {
-        newFormData[field] =
-          typeof state.formData[field] === "boolean" ? false : "";
-      }
-      return { formData: newFormData };
-    });
-  },
-  resetOnValidation: () =>
-    set({
-      formData: initialFormData,
-      formErrors: null,
-      isValid: false,
-    }),
-  validateForm: () => {
-    const { formData } = get();
-    const formErrors = {};
+  actions: {
+    // Updates a single form field
+    setFormField: (field, value) =>
+      set((state) => ({
+        formData: {
+          ...state.formData,
+          [field]: value,
+        },
+      })),
+    // Resets fields in the form that contains errors
+    resetFormData: (formErrors) => {
+      set((state) => {
+        const newFormData = { ...state.formData };
+        for (const field of Object.keys(formErrors)) {
+          newFormData[field] =
+            typeof state.formData[field] === "boolean" ? false : "";
+        }
+        return { formData: newFormData };
+      });
+    },
+    // Resets form data, valid state, and errors
+    resetOnValidation: () =>
+      set({
+        formData: initialFormData,
+        formErrors: null,
+        isValid: false,
+      }),
+    // Runs initial validations on the form data
+    validateForm: () => {
+      const { formData } = get();
+      const formErrors = {};
 
-    for (const [field, rules] of Object.entries(validators)) {
-      for (const validate of rules) {
-        const error = validate(formData[field]);
-        if (error) {
-          formErrors[field] = [...(formErrors[field] || []), error];
+      for (const [field, rules] of Object.entries(validators)) {
+        for (const validate of rules) {
+          const error = validate(formData[field]);
+          if (error) {
+            formErrors[field] = [...(formErrors[field] || []), error];
+          }
         }
       }
-    }
 
-    const isValid = Object.keys(formErrors)?.length === 0;
+      const isValid = Object.keys(formErrors)?.length === 0;
 
-    set({ formErrors, isValid });
+      set({ formErrors, isValid });
 
-    return { isValid, formErrors };
+      return { isValid, formErrors };
+    },
   },
 }));
+
+// State selectors
+export const useFormData = () =>
+  useRegisterFormStore((state) => state.formData);
+export const useFormErrors = () =>
+  useRegisterFormStore((state) => state.formErrors);
+export const useIsValid = () => useRegisterFormStore((state) => state.isValid);
+
+// Actions selector
+export const useRegisterFormActions = () =>
+  useRegisterFormStore((state) => state.actions);

@@ -1,23 +1,27 @@
 import { useState } from "react";
-import { useRegisterFormStore } from "../features/registration/store/RegistrationStore";
+import {
+  useFormData,
+  useFormErrors,
+  useRegisterFormActions,
+} from "../features/registration/store/RegistrationStore";
 
 export function useRegistrationForm({ onSuccess }) {
-  const {
-    formData,
-    formErrors,
-    setFormField,
-    resetFormData,
-    resetOnValidation,
-    validateForm,
-  } = useRegisterFormStore();
+  // Store state slices
+  const formData = useFormData();
+  const formErrors = useFormErrors();
+  const { setFormField, resetFormData, resetOnValidation, validateForm } =
+    useRegisterFormActions();
 
+  // Flag for form submission errors
   const [hasErrors, setHasErrors] = useState(false);
 
+  // Updates a specific field in the form store when an input changes
   const handleChange = (e) => {
     const { name, type, value, checked } = e.target;
     setFormField(name, type === "checkbox" ? checked : value);
   };
 
+  // Validates and submit the form then resets the form and errors
   const handleSubmit = async (e) => {
     e.preventDefault();
     setHasErrors(false);
