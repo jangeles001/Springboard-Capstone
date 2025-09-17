@@ -11,7 +11,8 @@ function RouteComponent() {
 
   const { 
     response,
-    createdWorkout, 
+    createdWorkout,
+    workoutName,
     nextLink, 
     prevLink, 
     isLoading, 
@@ -20,7 +21,9 @@ function RouteComponent() {
     loadByCategory,
     handleClick,
     handleRemove,
-    handleSubmit, } = useExercises();
+    handleSubmit,
+    handleChange,
+    } = useExercises();
 
   if(error) return <div className="p-4 text-red-600">Error: {error.message}</div>;;
 
@@ -29,6 +32,15 @@ function RouteComponent() {
       <div className='flex flex-col md:flex-row md:items-start bg-gradient-to-r from-blue-500 to-indigo-600 gap-10 min-w-sm'>
         <div className='flex flex-col items-center self-auto rounded-2xl border border-gray-200 shadow-md bg-gray-100 min-h-[300px] min-w-[400px] pt-5 m-10 md:mt-20 md:mb-20 gap-5'>
           <h2 className="mb-2">Build Workout</h2>
+          <label>Workout Name:</label>
+          <input
+          className='border-1 rounded-xl'
+          name='workoutName'
+          id='workoutName'
+          maxLength='25'
+          value={workoutName}
+          onChange={handleChange}
+          ></input>
           {createdWorkout?.map((exercise) => {
             return( 
               <div key={exercise.id}

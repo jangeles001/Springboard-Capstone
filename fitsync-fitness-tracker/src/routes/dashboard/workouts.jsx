@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Workouts from '../../features/workouts/components/workouts'
-import { useWorkoutStore } from "../../features/workouts/store/WorkoutStore"
+import { useWorkoutsList, useWorkoutActions } from "../../features/workouts/store/WorkoutStore"
 
 
 export const Route = createFileRoute('/dashboard/workouts')({
@@ -9,8 +9,8 @@ export const Route = createFileRoute('/dashboard/workouts')({
 
 function RouteComponent() {
 
-  const workoutsList = useWorkoutStore((state) => state.workoutsList)   
-  const removeFromWorkoutsList  = useWorkoutStore((state) => state.removeFromWorkoutsList);
+  const workoutsList = useWorkoutsList();  
+  const { removeFromWorkoutsList }  = useWorkoutActions();
 
   return (
   <div>
