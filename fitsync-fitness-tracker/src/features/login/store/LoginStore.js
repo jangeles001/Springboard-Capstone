@@ -10,41 +10,59 @@ const validators = {
   password: [(value) => (!value ? "password is required" : "")],
 };
 
-export const useLoginFormStore = create((set, get) => ({
+const useLoginFormStore = create((set, get) => ({
+  // States
   formData: initialFormData,
   formErrors: null,
   isValid: false,
-  setFormField: (field, value) =>
-    set((state) => ({
-      formData: {
-        ...state.formData,
-        [field]: value,
-      },
-    })),
-  resetForm: () => {
-    set({
-      formData: initialFormData,
-      formErrors: null,
-      isValid: false,
-    });
-  },
-  validateForm: () => {
-    const { formData } = get();
-    const formErrors = {};
 
-    for (const [field, rules] of Object.entries(validators)) {
-      for (const validate of rules) {
-        const error = validate(formData[field]);
-        if (error) {
-          formErrors[field] = [...(formErrors[field] || []), error];
+  // Actions
+  actions: {
+    // Updates a single form field
+    setFormField: (field, value) =>
+      set((state) => ({
+        formData: {
+          ...state.formData,
+          [field]: value,
+        },
+      })),
+    // Resets form data and errors
+    resetForm: () => {
+      set({
+        formData: initialFormData,
+        formErrors: null,
+        isValid: false,
+      });
+    },
+    // Validates fields and update error messages
+    validateForm: () => {
+      const { formData } = get();
+      const formErrors = {};
+
+      for (const [field, rules] of Object.entries(validators)) {
+        for (const validate of rules) {
+          const error = validate(formData[field]);
+          if (error) {
+            formErrors[field] = [...(formErrors[field] || []), error];
+          }
         }
       }
-    }
 
-    const isValid = Object.keys(formErrors)?.length === 0;
+      const isValid = Object.keys(formErrors)?.length === 0;
 
-    set({ formErrors, isValid });
+      set({ formErrors, isValid });
 
-    return { isValid };
+      return { isValid };
+    },
   },
 }));
+
+//state selectors
+export const useFormData = () => useLoginFormStore((state) => state.formData);
+export const useFormErrors = () =>
+  useLoginFormStore((state) => state.formErrors);
+export const useIsValid = () => useLoginFormStore((state) => state.isValid);
+
+//actions selector
+export const useLoginActions = () =>
+  useLoginFormStore((state) => state.actions);
