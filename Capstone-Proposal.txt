@@ -22,7 +22,7 @@ wger Workout Manager: https://wger.de/api/v2/
 
 I will use this data with personalization engine to generate tailored plans for users.
 
-Tech Stack: [Arrange Dependacies, Types -> Service -> State Management -> Interface]
+Tech Stack: [Arrange Dependacies, Types -> Service -> State Management -> Interface] {unit test{logic}, component {}, integration{smoke test/general functionanlity of page}}
 1.) Authentication:  Crypto + JWT    Difficulty: Medium
 Crypto + Json WebToken will provide the tools I will need to authenticate users.
 

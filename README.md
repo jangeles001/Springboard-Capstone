@@ -1,10 +1,28 @@
 # Springboard-Capstone
+
 🧠 Capstone Project Repository
-This repository will host my final capstone project for Sprinboard’s Software Engineering Career Track program. The project will be a full-stack web application built with modern technologies such as React, Node.js, and a RESTful or GraphQL API.
+This repository will host my final capstone project for Sprinboard’s Software Engineering Career Track program. The project will be a full-stack web application built with modern technologies such as React, Node.js, and a RESTful API.
 
-The final topic is still under exploration, but it will focus on solving a real-world problem with an emphasis on usability, design, and code quality.
+The final topic is a health and fitness web app with the specifications listed in my Capstone-Proposal.md
 
-🔨 Technologies (tentative): React · JavaScript · Node.js · MongoDB/PostgreSQL · CSS/Bootstrap · Docker
+🔨 Technologies [Full list can be found here: Capstone-Proposal.md]: React · JavaScript · Node.js · MongoDB · Tailwindcss
 
-📅 Status: Planning Phase
-📌 Updates will be posted as development progresses.
+📅 Status: Building Frontend
+
+📌Page Status
+
+- Landing Page: Need to convert image carousel into testimonial carousel.
+- About Page: COMPLETED
+- Privacy Policy Page: COMPLETED
+- Terms of Service Page: COMPLETED
+- Registration Page: Need to connect to back end and database for authentication and user creation.
+- Sign Up: Need to connect to back end and database for authentication and user fetching.
+- Dashboard: Need to connect to database to fetch user workout history, posts, and friends list.
+- Exercises: Need to add scroll to top after fetching next set of exercises and add component click functionality.
+- Meals: TBD
+- Wokrouts: TBD
+- Posts TBD
+- AI Component: TBD
+
+- Working on Frontend components...
+  Updates will be posted as development progresses...
