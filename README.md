@@ -5,7 +5,7 @@ This repository will host my final capstone project for Sprinboard’s Software 
 
 The final topic is a health and fitness web app with the specifications listed in my Capstone-Proposal.md
 
-🔨 Technologies [Full list can be found here: Capstone-Proposal.md]: React · JavaScript · Node.js · MongoDB · Tailwindcss
+🔨 Technologies [Full list can be found in Capstone-Proposal.md]: React · JavaScript · Node.js · MongoDB · Tailwindcss
 
 📅 Status: Building Frontend
 
@@ -16,11 +16,11 @@ The final topic is a health and fitness web app with the specifications listed i
 - Privacy Policy Page: COMPLETED
 - Terms of Service Page: COMPLETED
 - Registration Page: Need to connect to back end and database for authentication and user creation.
-- Sign Up: Need to connect to back end and database for authentication and user fetching.
+- Sign Up: Need to connect to back end and and for authentication and user fetching.
 - Dashboard: Need to connect to database to fetch user workout history, posts, and friends list.
-- Exercises: Need to add scroll to top after fetching next set of exercises and add component click functionality.
+- Exercises: Need to connect to backend to fetch workouts stored in database for each users.
 - Meals: TBD
-- Wokrouts: TBD
+- Wokrouts: Need to hook up to database.
 - Posts TBD
 - AI Component: TBD
 
