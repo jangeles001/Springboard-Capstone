@@ -18,9 +18,9 @@ The final topic is a health and fitness web app with the specifications listed i
 - Registration Page: Need to connect to back end and database for authentication and user creation.
 - Sign Up: Need to connect to back end and and for authentication and user fetching.
 - Dashboard: Need to connect to database to fetch user workout history, posts, and friends list.
-- Exercises: Need to connect to backend to fetch workouts stored in database for each users.
+- Exercises: Need to handle name collisions.
 - Meals: TBD
-- Wokrouts: Need to hook up to database.
+- Workouts: Need to hook up to database and handle name collisions.
 - Posts TBD
 - AI Component: TBD
 
