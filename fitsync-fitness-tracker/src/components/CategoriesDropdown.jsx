@@ -1,13 +1,17 @@
 import { useEffect } from 'react'
-import { useCategoryStore } from '../store/CategoryStore'
+import { useCatergories, useError, useCategoryActions } from '../store/CategoryStore'
 
 export default function CategoryDropdown({ onChange, isLoading, style}) {
-    
-    const { categories, fetchCategories, error } = useCategoryStore();
+    // Store state slices
+    const categories = useCatergories();
+    const error = useError();
+
+    // Store actions slice
+    const { fetchCategories, } = useCategoryActions();
     
     useEffect(() => {
         fetchCategories();
-    },[fetchCategories])
+    })
 
     const setAndFetch = (id) => {
        onChange(id);

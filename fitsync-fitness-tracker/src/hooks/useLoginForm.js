@@ -10,6 +10,8 @@ export function useLoginForm({ onSuccess }) {
   // Store state slices
   const formData = useFormData();
   const formErrors = useFormErrors();
+
+  // Store actions slice
   const { setFormField, resetForm, validateForm } = useLoginActions();
 
   // Flag for form submission errors
