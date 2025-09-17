@@ -50,7 +50,7 @@ Middleware: [CORS, Multer + Cloudinary [file uploads]]
 4.) AI Component: Recommendation Engine     Difficulty: Hard 
 Option 1: Simple Rule-based AI
 Use formulas and conditional logic to suggest plans based on age, BMI, activity level.
-Option 2: (AGI + MCP) [Stretch Goal]
+Option 2: (MCP) [Stretch Goal]
 Use GPT for generating personalized diet and exercise plans based on user input data.
 
 5.) Database: MongoDB       Difficulty: Easy/Medium
@@ -110,7 +110,7 @@ Exercise Wiki – Access and contribute to the built-in exercises.(stretch goal 
 User Flow: 
 1. User signs up or logs in via JWT Authentication. (Crypto + JWT)
 2. Enters personal health data through an onboarding form. (Privacy Banner: What is being collected and why?)
-3. Gets AI-generated workout/diet plan. (Stretch goal: something like AGI)
+3. Gets AI-generated workout/diet plan. (Stretch goal)
 4. Tracks workouts and logs food/calories.  (Link to privacy page)
 5. Reviews progress through charts and photo uploads + Weekly overview. [Offer advice based on progress] [ex. Airbuds]
 
