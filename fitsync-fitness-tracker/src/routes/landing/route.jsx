@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import Default_Nav from '../../layout/default_nav';
+import DefaultNav from '../../layout/DefaultNav';
 
 export const Route = createFileRoute('/landing')({
   component: RouteComponent,
@@ -14,7 +14,7 @@ function RouteComponent() {
 
   return (
     <>
-      <Default_Nav links={navLinks} />
+      <DefaultNav links={navLinks} />
     </>
   )
 }

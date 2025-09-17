@@ -7,7 +7,7 @@ import CookiesNotification from '../features/cookies/component/CookiesNotificati
 import logo from '../assets/Rebrand-2.svg'
 
 
-export default function Default_Nav({ links }) {
+export default function DefaultNav({ links }) {
   return (
     <>
         <div className="flex flex-row">

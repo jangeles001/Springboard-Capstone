@@ -1,5 +1,5 @@
 import { createFileRoute} from '@tanstack/react-router'
-import Default_Nav from '../../layout/default_nav'
+import DefaultNav from '../../layout/Default_Nav'
 
 export const Route = createFileRoute('/legal')({
     component: RouteComponent
@@ -15,7 +15,7 @@ function RouteComponent() {
 
     return (
         <>
-            <Default_Nav links={navLinks} />
+            <DefaultNav links={navLinks} />
         </>
     )
 }

@@ -1,5 +1,5 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-import Default_Nav from '../../layout/default_nav';
+import { createFileRoute } from '@tanstack/react-router'
+import DefaultNav from '../../layout/DefaultNav';
 
 export const Route = createFileRoute('/dashboard')({
   component: dashboard,
@@ -16,7 +16,7 @@ function dashboard() {
 
   return (
     <>
-      <Default_Nav  links={navLinks}/>
+      <DefaultNav  links={navLinks}/>
     </>
   )
 }

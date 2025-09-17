@@ -14,7 +14,7 @@ export function useExercises(initialUrl = BASE_URL) {
 
   const [response, setResponse] = useState([]);
   const [workoutName, setWorkoutName] = useState("");
-  // const [ createdWorkout, setCreateWorkout ] = useState("");
+  // const [ createdWorkout, setCreateWorkout ] = useState(""); // may change state handling to hook vs in workouts store.
   const [prevLink, setPrevLink] = useState(null);
   const [nextLink, setNextLink] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
