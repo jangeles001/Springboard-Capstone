@@ -1,6 +1,8 @@
 import { useState } from "react";
 import {
   useFormData,
+  useFormDataPassword,
+  useFormDataUserName,
   useFormErrors,
   useLoginActions,
 } from "../features/login/store/LoginStore";
@@ -8,7 +10,8 @@ import {
 // Custom hook to manage login form state and behavior
 export function useLoginForm({ onSuccess }) {
   // Store state slices
-  const formData = useFormData();
+  const formDataUserName = useFormDataUserName();
+  const formDataPassword = useFormDataPassword();
   const formErrors = useFormErrors();
 
   // Store actions slice
@@ -44,7 +47,8 @@ export function useLoginForm({ onSuccess }) {
   };
 
   return {
-    formData,
+    formDataUserName,
+    formDataPassword,
     formErrors,
     hasErrors,
     handleChange,

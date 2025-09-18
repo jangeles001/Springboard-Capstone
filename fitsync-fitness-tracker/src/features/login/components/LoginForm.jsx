@@ -6,7 +6,8 @@ export default function LoginForm() {
     
     const router = useRouter();
     const { 
-        formData,
+        formDataUserName,
+        formDataPassword,
         formErrors,
         hasErrors,
         handleChange,
@@ -20,23 +21,23 @@ export default function LoginForm() {
             <div className='flex bg-white justify-center rounded-2xl shadow-xl p-8 w-full max-w-2xl'>
                 <form className='grid grid-cols-1 md:grid-cols-1 gap-5' onSubmit={handleSubmit}>
                     <div className="flex flex-col col-span-1 md:col-span-1">
-                        <label htmlFor="userName" className={`form-label ${formErrors?.userName && !formData.userName && 'form-label-error'}`}>Username:</label>
+                        <label htmlFor="userName" className={`form-label ${formErrors?.userName && !formDataUserName && 'form-label-error'}`}>Username:</label>
                         <input
-                        className={`form-input ${formErrors?.userName && !formData.userName && 'form-input-error'}`}
+                        className={`form-input ${formErrors?.userName && !formDataUserName && 'form-input-error'}`}
                         type='text'
                         name='userName'
-                        value={formData.userName}
+                        value={formDataUserName}
                         onChange={handleChange}
                         placeholder='Username'
                         />
                     </div>
                     <div className='flex flex-col col-span-1 md:col-span-1'>   
-                        <label htmlFor="password" className={`form-label ${formErrors?.password && !formData.password && 'form-label-error'}`}>Password:</label>
+                        <label htmlFor="password" className={`form-label ${formErrors?.password && !formDataPassword && 'form-label-error'}`}>Password:</label>
                         <input
-                        className={`form-input ${formErrors?.password && !formData.password && 'form-input-error'}`}
+                        className={`form-input ${formErrors?.password && !formDataPassword && 'form-input-error'}`}
                         type='text'
                         name='password'
-                        value={formData.password}
+                        value={formDataPassword}
                         onChange={handleChange}
                         placeholder='Password'
                         />

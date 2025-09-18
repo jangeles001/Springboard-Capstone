@@ -56,6 +56,10 @@ const useLoginFormStore = create((set, get) => ({
 }));
 
 //state selectors
+export const useFormDataUserName = () =>
+  useLoginFormStore((state) => state.formData.userName);
+export const useFormDataPassword = () =>
+  useLoginFormStore((state) => state.formData.password);
 export const useFormData = () => useLoginFormStore((state) => state.formData);
 export const useFormErrors = () =>
   useLoginFormStore((state) => state.formErrors);
