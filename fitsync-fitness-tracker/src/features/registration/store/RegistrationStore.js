@@ -52,7 +52,7 @@ const validators = {
 
 const useRegisterFormStore = create((set, get) => ({
   formData: initialFormData,
-  formErrors: null,
+  formErrors: {},
   isValid: false,
   actions: {
     // Updates a single form field
@@ -107,6 +107,8 @@ const useRegisterFormStore = create((set, get) => ({
 // State selectors
 export const useFormData = () =>
   useRegisterFormStore((state) => state.formData);
+export const useFormDataField = (field) =>
+  useRegisterFormStore((state) => state.formData[field]);
 export const useFormErrors = () =>
   useRegisterFormStore((state) => state.formErrors);
 export const useIsValid = () => useRegisterFormStore((state) => state.isValid);

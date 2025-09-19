@@ -55,7 +55,7 @@ const useLoginFormStore = create((set, get) => ({
   },
 }));
 
-//state selectors
+// State selectors
 export const useFormDataUserName = () =>
   useLoginFormStore((state) => state.formData.userName);
 export const useFormDataPassword = () =>
@@ -65,6 +65,6 @@ export const useFormErrors = () =>
   useLoginFormStore((state) => state.formErrors);
 export const useIsValid = () => useLoginFormStore((state) => state.isValid);
 
-//actions selector
+//Actions selector
 export const useLoginActions = () =>
   useLoginFormStore((state) => state.actions);
