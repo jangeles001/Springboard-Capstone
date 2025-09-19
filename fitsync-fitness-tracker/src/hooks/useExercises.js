@@ -8,34 +8,40 @@ import {
 const BASE_URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
 
 export function useExercises(initialUrl = BASE_URL) {
+  // Store state selector
   const createdWorkout = useCreatedWorkout();
-  const { addToCreatedWorkout, removeFromCreatedWorkout, createWorkout } =
+
+  // Store actions selector
+  const { addToCreatedWorkout, removeFromCreatedWorkout, createWorkout, resetCreatedWorkout } =
     useWorkoutActions();
 
+  // Hook states
   const [response, setResponse] = useState([]);
   const [workoutName, setWorkoutName] = useState("");
   // const [ createdWorkout, setCreateWorkout ] = useState(""); // may change state handling to hook vs in workouts store.
   const [prevLink, setPrevLink] = useState(null);
   const [nextLink, setNextLink] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
   const [error, setError] = useState(null);
 
+  // Sets hook state based on response from API
   const loadData = useCallback(async (url) => {
-    setIsLoading(true);
+    setStatus("loading");
     setError(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
     try {
       const { results, prev, next } = await fetchExercises(url);
       setResponse(results);
       setPrevLink(prev);
       setNextLink(next);
+      setStatus("success");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       setError(error);
-    } finally {
-      setIsLoading(false);
+      setStatus("error");
     }
-  }, []);
+  },[]);
 
+  // Fetches exercise data from wger api using the url passed in
   const loadByCategory = useCallback(
     async (categoryId) => {
       const url = categoryId
@@ -46,24 +52,29 @@ export function useExercises(initialUrl = BASE_URL) {
     [loadData]
   );
 
+  // Filters out selected workouts from the current retreived workouts list being displayed
   const filteredResults = useMemo(() => {
     if (!createdWorkout) return response;
     const selectedIds = new Set(createdWorkout.map((e) => e.id));
     return response.filter((ex) => !selectedIds.has(ex.id));
   }, [response, createdWorkout]);
 
+  // Adds exercise to create workout window
   const handleClick = (exercise) => {
     addToCreatedWorkout(exercise);
   };
 
+  // Removes exercise from create workout window
   const handleRemove = (id) => {
     removeFromCreatedWorkout(id);
   };
 
+  // Changes the workout name
   const handleChange = (e) => {
     setWorkoutName(e.target.value);
   };
 
+  // Adds created workout to stored list of created workouts
   const handleSubmit = () => {
     if (createdWorkout) {
       createWorkout(workoutName);
@@ -71,9 +82,11 @@ export function useExercises(initialUrl = BASE_URL) {
     }
   };
 
+  // Loads exercise on hook mount and removes any previous createdWorkout data
   useEffect(() => {
     loadData(initialUrl);
-  }, [initialUrl, loadData]);
+    resetCreatedWorkout();
+  }, [initialUrl, loadData, resetCreatedWorkout]);
 
   return {
     response: filteredResults,
@@ -81,7 +94,7 @@ export function useExercises(initialUrl = BASE_URL) {
     workoutName,
     nextLink,
     prevLink,
-    isLoading,
+    status,
     error,
     loadData,
     loadByCategory,

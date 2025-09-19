@@ -15,7 +15,7 @@ function RouteComponent() {
     workoutName,
     nextLink, 
     prevLink, 
-    isLoading, 
+    status, 
     error, 
     loadData, 
     loadByCategory,
@@ -62,11 +62,11 @@ function RouteComponent() {
         <div className='flex flex-col md:flex-[2] rounded-2xl border border-gray-200 shadow-md bg-gray-100 pt-5 m-10 md:mt-20 md:mb-20 md:mr-20'>
           <div className='flex flex-col md:flex-row'>
             <h1 className='font-inter text-5xl p-3 font-header ml-5'>Exercises</h1>
-            <CategoryDropdown onChange={loadByCategory} isLoading={isLoading} style='ml-auto'/>
+            <CategoryDropdown onChange={loadByCategory} isLoading={status} style='ml-auto'/>
           </div>
 
           <div className='flex flex-col items-center min-w-full gap-10 pt-4 px-30'>
-            {isLoading ? <Loading type='content-only' /> : response?.map((exercise) => {
+            {status !== "success" ? <Loading type='content-only' /> : response?.map((exercise) => {
               return (
                 <div key={exercise.id}
                 onClick={() => handleClick(exercise)}
