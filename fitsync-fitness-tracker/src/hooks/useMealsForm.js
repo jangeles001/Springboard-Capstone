@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { 
     useMealFormDataName, 
     useMealFormDataIngredients,
@@ -6,6 +6,7 @@ import {
     useMealFormData,
     useMealsActions, 
     } from '../features/meals/store/MealsFormStore'
+import fetchIngredients from '../services/fetchIngredients'
 
 export function useMealsForm() {
 
@@ -14,6 +15,19 @@ export function useMealsForm() {
     const calories = useMealFormDataCalories(); 
      const mealFormData = useMealFormData();
     const { setField } = useMealsActions();
+
+    // Sets hook state based on response from API
+      const loadData = useCallback(async (url) => {
+        // setStatus("loading");
+        // setError(null);
+        try {
+          const { results, prev, next } = await fetchIngredients(url);
+          console.log(results);
+        //   setStatus("success");
+        } catch (error) {
+          console.log(error)
+        }
+      },[]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,6 +39,9 @@ export function useMealsForm() {
 
     }
 
+    useEffect(() => {
+        loadData("https://wger.de/api/v2/ingredient/");
+    })
     return {
         mealName,
         ingredients,
