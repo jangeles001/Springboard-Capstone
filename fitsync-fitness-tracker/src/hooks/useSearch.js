@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import fetchIngredients from "../services/fetchIngredients";
 
-export default function useSearch(initialQuery = "", delay = "700") {
+export default function useSearch(initialQuery = "", delay = 700) {
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
   const [error, setError] = useState(null);
 
   const debounceRef = useRef(null);
@@ -11,7 +12,7 @@ export default function useSearch(initialQuery = "", delay = "700") {
   useEffect(() => {
     if (!query) {
       setResults([]);
-      setLoading(false);
+      setStatus("idle");
       return;
     }
 
@@ -20,31 +21,26 @@ export default function useSearch(initialQuery = "", delay = "700") {
     }
 
     debounceRef.current = setTimeout(async () => {
-      setLoading(true);
+      setStatus("loading");
       setError(null);
       try {
-        const res = await fetch(
-          `https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0&search=${query}`
-        );
-        const json = await res.json();
-
-        const filtered = json.results.map((exercise) => {
-          const englishTranslation = exercise.translations.filter(
-            (translation) => translation.language === 2
-          );
-          return { ...exercise, translations: englishTranslation };
-        });
-
-        setResults(filtered);
+        const data = await fetchIngredients(query);
+        setResults(data);
+        setStatus("success");
       } catch (error) {
         setError(error);
-      } finally {
-        setLoading(false);
+        setStatus("error");
       }
-
-      return clearTimeout(debounceRef.current);
     }, delay);
+
+    return clearTimeout(debounceRef.current);
+
   }, [query, delay]);
 
-  return { query, setQuery, results, loading, error };
+  const handleIngredientChange = (e) => {
+    const currentQuery = e.target.value;
+    setQuery(currentQuery);
+  }
+
+  return { query, handleIngredientChange, results, status, error };
 }

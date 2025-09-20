@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMealsForm } from "../../../hooks/useMealsForm"
+import useSearch from "../../../hooks/useSearch";
 
 export default function MealsForm() {
     const { 
@@ -9,9 +10,15 @@ export default function MealsForm() {
         handleChange,
         handleSubmit  
     } = useMealsForm();
+
     const [ isOpen, setIsOpen ] = useState(false); // State for future dropdown
     
+      const { query,
+        handleIngredientChange, 
+        results, 
+        status } = useSearch("", 700); // Ingredients search bar debouncer
 
+        console.log(results);
     return (
         <div className="flex flex-col">
             <form>
@@ -27,10 +34,11 @@ export default function MealsForm() {
                 <label htmlFor="ingredients">Enter ingredients:</label>
                 <input
                 type='text'
-                className="border rounded"
+                className="border rounded min-w-md"
                 name='ingredients'
                 id="ingredients"
-                onChange={ handleChange /** TODO: add debounce search function */}
+                value={query}
+                onChange={ handleIngredientChange }
                 placeholder='Type to seach for ingredients...'
                 >
                 </input>
