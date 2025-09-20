@@ -31,7 +31,7 @@ function RouteComponent() {
     <>
       <div className='flex flex-col md:flex-row md:items-start bg-gradient-to-r from-blue-500 to-indigo-600 gap-10 min-w-sm'>
         <div className='flex flex-col items-center self-auto rounded-2xl border border-gray-200 shadow-md bg-gray-100 min-h-[300px] min-w-[400px] pt-5 m-10 md:mt-20 md:mb-20 gap-5'>
-          <h2 className="mb-2">Build Workout</h2>
+          <h2 className="mb-2 font-bold">Build Workout</h2>
           <label>Workout Name:</label>
           <input
           className='border-1 rounded-xl'
@@ -50,7 +50,7 @@ function RouteComponent() {
                 <h2>Category: {exercise?.category?.name}</h2>
               </div>
           )}) 
-          || <p className='flex flex-col text-gray-500 items-center w-[250px] p-10'>
+          || <p className='flex flex-col text-center text-gray-500 items-center w-[250px] p-10'>
               Click on a exercise to add it to this window
             </p>
           }
