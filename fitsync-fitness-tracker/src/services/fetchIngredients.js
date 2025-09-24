@@ -1,21 +1,31 @@
 const API_KEY = import.meta.env.VITE_USDA_API_KEY;
+const BASE_URL = "https://api.nal.usda.gov/fdc/v1";
 
-export default async function fetchIngredients(query) {
-  const params = new URLSearchParams({
-    api_key: API_KEY,
-    query: query
-  });
-  let res = null;
-  if(query) {
-    res = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?${params}`)
-  }else{
-    res = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/api_key=${API_KEY}`)
-  } 
-  if (!res.ok) throw new Error("Failed to fetch exercises");
+function buildParams({ query, page = 1, pageSize = 50 }) {
+  // Constructs initial search params
+  const params = new URLSearchParams({ api_key: API_KEY });
+
+  // Always includes both data types
+  params.append("dataType", "Foundation");
+  params.append("dataType", "SurveyFNDDS");
+
+  // Adds query to params if passed in
+  if (query) params.append("query", query);
+  params.append("pageNumber", page);
+  params.append("pageSize", pageSize);
+
+  return params.toString();
+}
+
+export default async function fetchIngredients({ query, page }) {
+  // Selects endpoint based on if a query is provided
+  const endpoint = query ? "foods/search" : "foods/list";
+  const url = `${BASE_URL}/${endpoint}?${buildParams({ query, page })}`;
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch ingredients");
 
   const json = await res.json();
 
-  return {
-    results: json,
-  };
+  return query ? (json.foods ?? []) : json; // Normalizes result data shape and returns it
 }

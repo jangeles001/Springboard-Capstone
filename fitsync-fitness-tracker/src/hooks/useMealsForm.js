@@ -1,52 +1,49 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   useMealFormDataName,
   useMealFormDataIngredients,
   useMealFormDataCalories,
-  useMealFormData,
   useMealsActions,
 } from "../features/meals/store/MealsFormStore";
-import fetchIngredients from "../services/fetchIngredients";
+import getCalories from "../utils/nutrition";
 
 export function useMealsForm() {
+  // Store State and action Selectors
   const mealName = useMealFormDataName();
   const ingredients = useMealFormDataIngredients();
   const calories = useMealFormDataCalories();
-  const mealFormData = useMealFormData();
   const { setField } = useMealsActions();
 
-  // Sets hook state based on response from API
-  const loadData = useCallback(async (url) => {
-    // setStatus("loading");
-    // setError(null);
-    try {
-      const { results } = await fetchIngredients(url);
-      console.log(results);
-      //   setStatus("success");
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  // Local hook state
+  const [ingredientsSelection, setIngredientsSelection] = useState([]);
+  const [calculatedCal, setCalculatedCal] = useState(0);
 
+  // Handles updating store form fields state
   const handleChange = (e) => {
     const { name, value } = e.target;
     setField(name, value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Handles adding selected ingredients from dropdown to selected list state
+  const handleClick = (item) => {
+    const cal = getCalories(item) ?? 0;
+    setIngredientsSelection((prevState) => [...prevState, item]);
+    setCalculatedCal((prevState) => Math.round(prevState + cal));
   };
 
-  useEffect(() => {
-    loadData(
-      "https://api.nal.usda.gov/fdc/v1/foods/list?dataType=Branded,Foundation,Survey&pageSize=50"
-    );
-  });
+  // Handles form submition
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setField(ingredients, ingredientsSelection);
+    setField(calories, calculatedCal);
+  };
+
   return {
     mealName,
-    ingredients,
-    calories,
+    ingredientsSelection,
+    calculatedCal,
     handleChange,
+    handleClick,
     handleSubmit,
   };
 }

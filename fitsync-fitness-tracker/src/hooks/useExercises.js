@@ -8,7 +8,7 @@ import {
 const BASE_URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
 
 export function useExercises(initialUrl = BASE_URL) {
-  // Store state selector
+  // Store state slice selector
   const createdWorkout = useCreatedWorkout();
 
   // Store actions selector

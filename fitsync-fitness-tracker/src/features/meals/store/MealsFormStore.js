@@ -3,10 +3,10 @@ import { create } from "zustand";
 const initialState = {
   mealName: "",
   ingredients: [],
-  calories: "",
+  calories: 0,
 };
 
-const useMealsStore = create((set, get) => ({
+const useMealsStore = create((set) => ({
   mealsList: [],
   mealFormData: initialState,
   hasErrors: null,
@@ -18,6 +18,20 @@ const useMealsStore = create((set, get) => ({
           ...state.mealFormData,
           [field]: value,
         },
+      }));
+    },
+    addToMealsList: (mealData) => {
+      set((state) => ({
+        mealsList: [...state.mealsList, mealData],
+      }));
+    },
+    removeFromMealsList: (name) => {
+      set((state) => ({
+        mealsList: [
+          state.mealsList.filter((meal) => {
+            return meal.mealName != name;
+          }),
+        ],
       }));
     },
   },

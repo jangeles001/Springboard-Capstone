@@ -6,16 +6,9 @@ export default function useSearch(initialQuery = "", delay = 700) {
   const [results, setResults] = useState([]);
   const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
   const [error, setError] = useState(null);
-
   const debounceRef = useRef(null);
 
   useEffect(() => {
-    if (!query) {
-      setResults([]);
-      setStatus("idle");
-      return;
-    }
-
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
@@ -33,14 +26,13 @@ export default function useSearch(initialQuery = "", delay = 700) {
       }
     }, delay);
 
-    return clearTimeout(debounceRef.current);
-
+    return () => clearTimeout(debounceRef.current);
   }, [query, delay]);
 
-  const handleIngredientChange = (e) => {
+  const handleIngredientSearchChange = (e) => {
     const currentQuery = e.target.value;
     setQuery(currentQuery);
-  }
+  };
 
-  return { query, handleIngredientChange, results, status, error };
+  return { query, handleIngredientSearchChange, results, status, error };
 }

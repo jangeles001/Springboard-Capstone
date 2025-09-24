@@ -14,7 +14,6 @@ function RouteComponent() {
 
   return (
   <div>
-    {console.log(workoutsList)}
     <Workouts workouts={workoutsList} onRemoveWorkout={removeFromWorkoutsList} />
   </div>
   )

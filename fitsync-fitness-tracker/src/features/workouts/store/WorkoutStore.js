@@ -11,7 +11,6 @@ const useWorkoutStore = create((set, get) => ({
       set({ workoutsList: [] });
     },
     removeFromWorkoutsList: (name) => {
-      console.log(name);
       set((state) => ({
         workoutsList: state?.workoutsList?.filter((workout) => {
           return workout.name != name;
