@@ -14,10 +14,12 @@ export default function MealsForm() {
 
     const [ isOpen, setIsOpen ] = useState(false); // State for dropdown
     
-      const { query,
-        handleIngredientSearchChange, 
+    const { 
+        query,
+        handleIngredientSearchChange,
+        handleScroll, 
         results, 
-        } = useSearch("" ,700); // Ingredients search bar debouncer
+    } = useSearch("" ,700); // Ingredients search bar debouncer
 
     return (
         <div className="flex flex-col items-center bg-gradient-to-r from-blue-500 to-indigo-600 h-screen">
@@ -42,10 +44,11 @@ export default function MealsForm() {
                     onChange={handleIngredientSearchChange}
                     placeholder='Type to seach for ingredients...'
                     onFocus={() => setIsOpen(true)}
-                    // onScroll={() => func()} // onScroll
                     />
                     {isOpen && results.length > 0 && (
-                        <ul className="absolute left-0 right-0 mt-1 border rounded bg-white shadow-md z-10 max-h-60 overflow-y-auto">
+                        <ul 
+                        className="absolute left-0 right-0 mt-1 border rounded bg-white shadow-md z-10 max-h-60 overflow-y-auto"
+                        onScroll={handleScroll}>
                             {results?.map((item) => (
                                 <li
                                 key={item?.fdcId}

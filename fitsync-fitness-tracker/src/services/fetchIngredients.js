@@ -18,14 +18,16 @@ function buildParams({ query, page = 1, pageSize = 50 }) {
 }
 
 export default async function fetchIngredients({ query, page }) {
-  // Selects endpoint based on if a query is provided
-  const endpoint = query ? "foods/search" : "foods/list";
-  const url = `${BASE_URL}/${endpoint}?${buildParams({ query, page })}`;
+  const url = `${BASE_URL}/foods/search?${buildParams({ query, page })}`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch ingredients");
 
   const json = await res.json();
 
-  return query ? (json.foods ?? []) : json; // Normalizes result data shape and returns it
+  return {
+    data: json.foods ?? [],
+    newPage: json.currentPage,
+    totalPages: json.totalPages,
+  };
 }

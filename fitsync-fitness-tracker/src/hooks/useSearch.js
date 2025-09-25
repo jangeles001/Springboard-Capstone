@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import fetchIngredients from "../services/fetchIngredients";
+import { shouldLoadMore } from "../utils/shouldLoadMore";
 
 export default function useSearch(initialQuery = "", delay = 700) {
   const [query, setQuery] = useState(initialQuery);
+  const [currentPage, setCurrentPage] = useState(1);
   const [results, setResults] = useState([]);
   const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
   const [error, setError] = useState(null);
@@ -17,8 +19,9 @@ export default function useSearch(initialQuery = "", delay = 700) {
       setStatus("loading");
       setError(null);
       try {
-        const data = await fetchIngredients(query);
+        const { data, newPage } = await fetchIngredients({ query });
         setResults(data);
+        setCurrentPage(newPage);
         setStatus("success");
       } catch (error) {
         setError(error);
@@ -34,5 +37,24 @@ export default function useSearch(initialQuery = "", delay = 700) {
     setQuery(currentQuery);
   };
 
-  return { query, handleIngredientSearchChange, results, status, error };
+  // Handles scroll load
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    console.log(currentPage);
+    if (shouldLoadMore(scrollTop, scrollHeight, clientHeight)) {
+      setCurrentPage((prevState) => prevState + 1);
+      const { data, newPage } = fetchIngredients({ query, currentPage });
+      setResults(data);
+      setCurrentPage(newPage);
+    }
+  };
+
+  return {
+    query,
+    handleIngredientSearchChange,
+    handleScroll,
+    results,
+    status,
+    error,
+  };
 }
