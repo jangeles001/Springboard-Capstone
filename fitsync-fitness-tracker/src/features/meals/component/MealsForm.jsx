@@ -4,11 +4,13 @@ import useSearch from "../../../hooks/useSearch";
 
 export default function MealsForm() {
     const { 
-        mealName, 
-        ingredientsSelection,
+        mealName,
+        ingredients,
+        getIngredientQuantity,
         calculatedCal,
         handleChange,
         handleClick,
+        handleIngredientQuantityChange,
         handleSubmit  
     } = useMealsForm();
 
@@ -56,7 +58,7 @@ export default function MealsForm() {
                                 onMouseDown={() => handleClick(item)}
                                 onMouseUp={() => setIsOpen(false)}
                                 >
-                                    {item?.description}
+                                    {item?.description} 
                                 </li>
                             ))}
                         </ul>
@@ -64,8 +66,19 @@ export default function MealsForm() {
                 </div>
                 <div>
                     <span>Selected Ingredients:</span>
-                    {ingredientsSelection?.map((item) => {
-                        return <p key={item.fdcId}>{item.description}</p>
+                    {ingredients?.map((item) => {
+                        return (
+                            <div key={item.id} className="flex items-center space-x-2 my-1">
+                                <p>{item.name}</p> 
+                                <label>Quantity:</label>
+                                <input
+                                type="number"
+                                value={getIngredientQuantity(item.id) ?? 0}
+                                min={0}
+                                onChange={(e) => handleIngredientQuantityChange(item.id, e.target.value)}
+                                />
+                            </div> 
+                            )
                     })}
                 </div>
                 <label>Calories:</label>

@@ -1,14 +1,14 @@
 import { create } from "zustand";
 
-const initialState = {
+const initialFormData = {
   mealName: "",
-  ingredients: [],
+  ingredients: [], // obnject ex. {id: USDA Id, name: ingredientName, quantity: ingredientQuantity}
   calories: 0,
 };
 
-const useMealsStore = create((set) => ({
+const useMealsStore = create((set, get) => ({
   mealsList: [],
-  mealFormData: initialState,
+  mealFormData: initialFormData,
   hasErrors: null,
 
   actions: {
@@ -25,15 +25,49 @@ const useMealsStore = create((set) => ({
         mealsList: [...state.mealsList, mealData],
       }));
     },
-    removeFromMealsList: (name) => {
+    removeFromMealsList: (mealName) => {
       set((state) => ({
         mealsList: [
           state.mealsList.filter((meal) => {
-            return meal.mealName != name;
+            return meal.mealName != mealName;
           }),
         ],
       }));
     },
+    addIngredient: (ingredient) => {
+      set((state) => ({
+        mealFormData: {
+          ...state.mealFormData,
+          ingredients: [...state.mealFormData.ingredients, {...ingredient, quantity: 100}],
+        } 
+      }))
+    },
+    getIngredientQuantity: (ingredientId) => {
+      const ingredient = get().mealFormData.ingredients.find((ingredient) => 
+        ingredient.id === ingredientId
+      );
+      return ingredient ? ingredient.quantity : undefined;
+    },
+    changeIngredientQuantity: (ingredientId, newQuantity) => {
+      set((state) => ({
+        mealFormData: {
+          ...state.mealFormData,
+          ingredients: state.mealFormData.ingredients.map((ingredient) =>
+            ingredient.id === ingredientId ? {...ingredient, quantity: newQuantity }
+            : ingredient
+          ),
+        },
+      }));
+    },
+    removeIngredient: (id) =>
+      set((state) => ({
+        mealFormData: {
+          ...state.mealFormData,
+          ingredients: state.mealFormData.ingredients.filter(
+            (ingredient) => ingredient.id !== id
+          ),
+        },
+    })),
   },
 }));
 

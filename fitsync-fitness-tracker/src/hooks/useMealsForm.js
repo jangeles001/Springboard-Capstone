@@ -12,10 +12,9 @@ export function useMealsForm() {
   const mealName = useMealFormDataName();
   const ingredients = useMealFormDataIngredients();
   const calories = useMealFormDataCalories();
-  const { setField } = useMealsActions();
+  const { setField, addIngredient, getIngredientQuantity, changeIngredientQuantity } = useMealsActions();
 
   // Local hook state
-  const [ingredientsSelection, setIngredientsSelection] = useState([]);
   const [calculatedCal, setCalculatedCal] = useState(0);
 
   // Handles updating store form fields state
@@ -27,23 +26,28 @@ export function useMealsForm() {
   // Handles adding selected ingredients from dropdown to selected list state
   const handleClick = (item) => {
     const cal = getCalories(item) ?? 0;
-    setIngredientsSelection((prevState) => [...prevState, item]);
+    addIngredient({id: item.fdcId, name: item.description });
     setCalculatedCal((prevState) => Math.round(prevState + cal));
   };
+
+  const handleIngredientQuantityChange = (id, value) => {
+    changeIngredientQuantity(id, Number(value));
+  }
 
   // Handles form submition
   const handleSubmit = (e) => {
     e.preventDefault();
-    setField(ingredients, ingredientsSelection);
     setField(calories, calculatedCal);
   };
 
   return {
     mealName,
-    ingredientsSelection,
+    ingredients,
     calculatedCal,
+    getIngredientQuantity,
     handleChange,
     handleClick,
+    handleIngredientQuantityChange,
     handleSubmit,
   };
 }
