@@ -32,6 +32,7 @@ export function useMealsForm() {
 
   const handleIngredientQuantityChange = (id, value) => {
     changeIngredientQuantity(id, Number(value));
+    
   }
 
   // Handles form submition
