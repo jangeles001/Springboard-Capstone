@@ -27,7 +27,7 @@ export default async function fetchIngredients({ query, page }) {
 
   return {
     data: json.foods ?? [],
-    newPage: json.currentPage,
+    pageNumber: json.currentPage,
     totalPages: json.totalPages,
   };
 }

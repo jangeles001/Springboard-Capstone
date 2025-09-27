@@ -4,16 +4,47 @@ export default function getCalories(foodItem) {
 
   // Looks for Atwater General Factors first
   const nutrient = foodItem.foodNutrients.find(
-    (n) => n.number === "957" && n.unitName === "KCAL"
+    (item) => item.number === "957" && item.unitName === "KCAL"
   );
 
   if (nutrient) return nutrient.amount;
 
-  // Looks for any nutrient with Energy in name and unit KCAL
+  // Looks for any nutrient with "energy" in name and unit KCAL
   const fallback = foodItem.foodNutrients.find(
-    (n) => n.name.toLowerCase().includes("energy") && n.unitName === "KCAL"
+    (item) =>
+      item.nutrientName.toLowerCase().includes("energy") &&
+      item.unitName === "KCAL"
   );
 
   // Returns fallback or null if null
-  return fallback ? fallback.amount : null;
+  return fallback ? fallback.value : null;
+}
+
+// Extracts macros information
+export function getMacros(foodItem) {
+  if (!foodItem || !Array.isArray(foodItem.foodNutrients)) return null;
+
+  const nutrientMap = foodItem.foodNutrients.reduce((map, n) => {
+    map[n.number] = n.amount ?? n.value;
+    return map;
+  }, {});
+
+  const protein = nutrientMap["203"] ?? 0; // Protein
+  const fat = nutrientMap["204"] ?? 0; // Total fat
+  const carbs = nutrientMap["205"] ?? 0; // Carbs by difference
+  const fiber = nutrientMap["291"] ?? 0; // Fiber
+  const netCarbs = Math.max(0, carbs - fiber);
+
+  // Fallback calories if USDA didn’t provide
+  const calories =
+    getCalories(foodItem) || protein * 4 + fat * 9 + netCarbs * 4;
+
+  return {
+    protein,
+    fat,
+    carbs,
+    fiber,
+    netCarbs,
+    calories,
+  };
 }
