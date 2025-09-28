@@ -64,6 +64,7 @@ export default function useSearch(initialQuery = "", delay = 700) {
 
   return {
     query,
+    setQuery,
     handleIngredientSearchChange,
     handleScroll,
     results,

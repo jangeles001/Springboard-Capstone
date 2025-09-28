@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const initialFormData = {
   mealName: "",
-  ingredients: [], // obnject ex. {id: USDA Id, name: ingredientName, quantity: ingredientQuantity}
+  ingredients: [], // obnject ex. {id: USDA Id, name: ingredientName, quantity: ingredientQuantity, calories: Kcal, caloriesPer100G: Kcalper100g}
   calories: 0,
 };
 
@@ -12,6 +12,11 @@ const useMealsStore = create((set, get) => ({
   hasErrors: null,
 
   actions: {
+    setMealsList: () => {
+      set((state) => ({
+        mealsList: [...state.mealsList, state.mealFormData],
+      }));
+    },
     setField: (field, value) => {
       set((state) => ({
         mealFormData: {
@@ -20,6 +25,18 @@ const useMealsStore = create((set, get) => ({
         },
       }));
     },
+    getIngredientField: (itemId, field) => {
+      const ingredients = get().mealFormData.ingredients;
+      const ingredient = ingredients.find((item) => item.id === itemId);
+      return ingredient ? ingredient[field] : undefined;
+    },
+    getTotalCalories: () => {
+      const ingredients = get().mealFormData.ingredients;
+      return ingredients.reduce(
+        (sum, ingredient) => sum + ingredient.calories,
+        0
+      );
+    },
     addToMealsList: (mealData) => {
       set((state) => ({
         mealsList: [...state.mealsList, mealData],
@@ -27,34 +44,25 @@ const useMealsStore = create((set, get) => ({
     },
     removeFromMealsList: (mealName) => {
       set((state) => ({
-        mealsList: [
-          state.mealsList.filter((meal) => {
-            return meal.mealName != mealName;
-          }),
-        ],
+        mealsList: state.mealsList.filter((meal) => meal.mealName != mealName),
       }));
     },
     addIngredient: (ingredient) => {
       set((state) => ({
         mealFormData: {
           ...state.mealFormData,
-          ingredients: [...state.mealFormData.ingredients, {...ingredient, quantity: 100}],
-        } 
-      }))
+          ingredients: [...state.mealFormData.ingredients, { ...ingredient }],
+        },
+      }));
     },
-    getIngredientQuantity: (ingredientId) => {
-      const ingredient = get().mealFormData.ingredients.find((ingredient) => 
-        ingredient.id === ingredientId
-      );
-      return ingredient ? ingredient.quantity : undefined;
-    },
-    changeIngredientQuantity: (ingredientId, newQuantity) => {
+    changeIngredientField: (ingredientId, field, value) => {
       set((state) => ({
         mealFormData: {
           ...state.mealFormData,
           ingredients: state.mealFormData.ingredients.map((ingredient) =>
-            ingredient.id === ingredientId ? {...ingredient, quantity: newQuantity }
-            : ingredient
+            ingredient.id === ingredientId
+              ? { ...ingredient, [field]: value }
+              : ingredient
           ),
         },
       }));
@@ -67,7 +75,13 @@ const useMealsStore = create((set, get) => ({
             (ingredient) => ingredient.id !== id
           ),
         },
-    })),
+      })),
+    resetForm: () => {
+      set(() => ({
+        mealFormData: initialFormData,
+        hasErrors: null,
+      }));
+    },
   },
 }));
 
@@ -80,7 +94,12 @@ export const useMealFormDataName = () =>
 export const useMealFormDataIngredients = () =>
   useMealsStore((state) => state.mealFormData.ingredients);
 export const useMealFormDataCalories = () =>
-  useMealsStore((state) => state.mealFormData.calories);
+  useMealsStore((state) =>
+    state.mealFormData.ingredients.reduce(
+      (sum, ingredient) => sum + (ingredient.calories || 0),
+      0
+    )
+  );
 export const useHasErrors = () => useMealsStore((state) => state.hasErrors);
 
 // Actions selector
