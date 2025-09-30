@@ -1,8 +1,20 @@
 import { create } from "zustand";
 
+/*
+object ex. {
+id: USDA Id, 
+name: ingredientName, 
+quantity: ingredientQuantity, 
+macros: macros object
+calories: Kcal, 
+caloriesPer100G: Kcalper100g
+}
+*/
+
 const initialFormData = {
   mealName: "",
-  ingredients: [], // obnject ex. {id: USDA Id, name: ingredientName, quantity: ingredientQuantity, calories: Kcal, caloriesPer100G: Kcalper100g}
+  ingredients: [],
+  macros: { Protein: 0, Fat: 0, Carbs: 0, Fiber: 0, NetCarbs: 0 },
   calories: 0,
 };
 
@@ -29,13 +41,6 @@ const useMealsStore = create((set, get) => ({
       const ingredients = get().mealFormData.ingredients;
       const ingredient = ingredients.find((item) => item.id === itemId);
       return ingredient ? ingredient[field] : undefined;
-    },
-    getTotalCalories: () => {
-      const ingredients = get().mealFormData.ingredients;
-      return ingredients.reduce(
-        (sum, ingredient) => sum + ingredient.calories,
-        0
-      );
     },
     addToMealsList: (mealData) => {
       set((state) => ({
@@ -100,6 +105,8 @@ export const useMealFormDataCalories = () =>
       0
     )
   );
+export const useMealFormDataMacros = () =>
+  useMealsStore((state) => state.mealFormData.macros);
 export const useHasErrors = () => useMealsStore((state) => state.hasErrors);
 
 // Actions selector

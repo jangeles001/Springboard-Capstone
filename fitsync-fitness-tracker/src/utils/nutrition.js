@@ -24,8 +24,8 @@ export default function getCalories(foodItem) {
 export function getMacros(foodItem) {
   if (!foodItem || !Array.isArray(foodItem.foodNutrients)) return null;
 
-  const nutrientMap = foodItem.foodNutrients.reduce((map, n) => {
-    map[n.number] = n.amount ?? n.value;
+  const nutrientMap = foodItem.foodNutrients.reduce((map, nutrient) => {
+    map[nutrient.nutrientNumber] = nutrient.value;
     return map;
   }, {});
 

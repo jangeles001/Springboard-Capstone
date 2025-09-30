@@ -1,18 +1,25 @@
 import {
   useMealFormDataName,
   useMealFormDataIngredients,
+  useMealFormDataMacros,
   useMealFormDataCalories,
   useMealsActions,
 } from "../features/meals/store/MealsFormStore";
-import getCalories from "../utils/nutrition";
+import getCalories, { getMacros } from "../utils/nutrition";
 
 export function useMealsForm() {
   // Store State and action Selectors
   const mealName = useMealFormDataName();
   const ingredients = useMealFormDataIngredients();
+  const macros = useMealFormDataMacros();
   const totalCalories = useMealFormDataCalories();
-  const { setField, addIngredient, getIngredientField, changeIngredientField } =
-    useMealsActions();
+  const {
+    setField,
+    addIngredient,
+    getIngredientField,
+    changeIngredientField,
+    removeIngredient,
+  } = useMealsActions();
 
   // Handles updating store form fields state
   const handleChange = (e) => {
@@ -22,14 +29,21 @@ export function useMealsForm() {
 
   // Handles adding selected ingredients from dropdown to selected list state
   const handleClick = (item) => {
+    console.log(item);
     const cal = getCalories(item) ?? 0;
+    const macros = getMacros(item) ?? 0;
     addIngredient({
       id: item.fdcId,
       name: item.description,
       quantity: 0,
+      macros,
       calories: 0,
       caloriesPer100G: cal,
     });
+  };
+
+  const handleRemoveClick = (itemId) => {
+    removeIngredient(itemId);
   };
 
   const handleIngredientQuantityChange = (id, value) => {
@@ -59,10 +73,12 @@ export function useMealsForm() {
   return {
     mealName,
     ingredients,
+    macros,
     totalCalories,
     getIngredientField,
     handleChange,
     handleClick,
+    handleRemoveClick,
     handleIngredientQuantityChange,
     handleSubmit,
   };

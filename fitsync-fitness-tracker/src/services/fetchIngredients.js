@@ -1,7 +1,7 @@
 const API_KEY = import.meta.env.VITE_USDA_API_KEY;
 const BASE_URL = "https://api.nal.usda.gov/fdc/v1";
 
-function buildParams({ query, page = 1, pageSize = 50 }) {
+function buildParams({ query, page = 1, pageSize = 15 }) {
   // Constructs initial search params
   const params = new URLSearchParams({ api_key: API_KEY });
 
@@ -17,7 +17,7 @@ function buildParams({ query, page = 1, pageSize = 50 }) {
   return params.toString();
 }
 
-export default async function fetchIngredients({ query, page }) {
+export default async function fetchIngredients(query, page) {
   const url = `${BASE_URL}/foods/search?${buildParams({ query, page })}`;
 
   const res = await fetch(url);

@@ -6,9 +6,8 @@ export const Route = createFileRoute('/dashboard/meals')({
 })
 
 function RouteComponent() {
-  return <div>
-    <h1>Enter Meal Information</h1>
+  return <div className="bg-gradient-to-r from-blue-500 to-indigo-600">
+    <h1 className='flex text-white justify-center text-4xl pt-10 pb-10'>Enter Meal Information</h1>
     <MealsForm />
-
   </div>
 }

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import Workouts from '../../features/workouts/components/workouts'
+import Workouts from '../../features/workouts/components/Workouts'
 import { useWorkoutsList, useWorkoutActions } from "../../features/workouts/store/WorkoutStore"
 
 

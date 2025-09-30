@@ -14,6 +14,7 @@ export default function useSearch(initialQuery = "", delay = 700) {
   useEffect(() => {
     if (!query) {
       setResults([]);
+      setCurrentPage(0);
       return;
     }
 
@@ -25,12 +26,11 @@ export default function useSearch(initialQuery = "", delay = 700) {
       setStatus("loading");
       setError(null);
       try {
-        const { data, pageNumber, totalPages } = await fetchIngredients({
-          query,
-        });
+        const { data, pageNumber, totalPages } = await fetchIngredients(query);
+        //TODO: remove any items already in meal from response data.
+        setResults(data);
         setCurrentPage(pageNumber);
         setTotalPages(totalPages);
-        setResults(data);
         setStatus("success");
       } catch (error) {
         setError(error);
@@ -47,18 +47,22 @@ export default function useSearch(initialQuery = "", delay = 700) {
   };
 
   // Handles scroll load
-  const handleScroll = (e) => {
+  const handleScroll = async (e) => {
+    if (status === "loading") {
+      return;
+    }
+
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     if (
       shouldLoadMore(scrollTop, scrollHeight, clientHeight) &&
       totalPages !== currentPage
     ) {
-      setCurrentPage((prevState) => prevState + 1);
-      const { data } = fetchIngredients({
-        query,
-        currentPage,
-      });
-      setResults(data);
+      setStatus("loading");
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      const { data } = await fetchIngredients(query, nextPage);
+      setResults((prevState) => [...prevState, ...data]);
+      setStatus("success");
     }
   };
 

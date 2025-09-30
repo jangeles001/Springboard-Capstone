@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import DefaultNav from '../../layout/DefaultNav';
+import LoggedInNav from '../../layout/LoggedInNav';
 
 export const Route = createFileRoute('/dashboard')({
   component: dashboard,
@@ -17,7 +17,7 @@ function dashboard() {
 
   return (
     <>
-      <DefaultNav  links={navLinks}/>
+      <LoggedInNav  links={navLinks}/>
     </>
   )
 }
