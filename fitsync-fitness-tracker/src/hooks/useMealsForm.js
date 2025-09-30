@@ -1,18 +1,31 @@
 import {
+  useMealsStore,
   useMealFormDataName,
-  useMealFormDataIngredients,
-  useMealFormDataMacros,
-  useMealFormDataCalories,
   useMealsActions,
 } from "../features/meals/store/MealsFormStore";
-import getCalories, { getMacros } from "../utils/nutrition";
-
+import { shallow } from 'zustand/shallow'
+import { getCalories, getMacros } from "../utils/nutrition";
 export function useMealsForm() {
   // Store State and action Selectors
   const mealName = useMealFormDataName();
-  const ingredients = useMealFormDataIngredients();
-  const macros = useMealFormDataMacros();
-  const totalCalories = useMealFormDataCalories();
+  const { macros, totalCalories } = useMealsStore(
+    state => {
+      const ingredients = state.mealFormData.ingredients;
+      const totalCalories = ingredients.reduce((sum, i) => sum + (i.calories || 0), 0);
+      const macros = ingredients.reduce((acc, ingredient) => {
+        const ingredientMacro = ingredient.macros || {};
+        acc.Protein += ingredientMacro.Protein || 0;
+        acc.Fat += ingredientMacro.Fat || 0;
+        acc.Carbs += ingredientMacro.Carbs || 0;
+        acc.Fiber += ingredientMacro.Fiber || 0;
+        acc.NetCarbs += ingredientMacro.NetCarbs || 0;
+        return acc;
+    }, { Protein: 0, Fat: 0, Carbs: 0, Fiber: 0, NetCarbs: 0 });
+    return { macros, totalCalories };
+   },
+    shallow
+  );
+
   const {
     setField,
     addIngredient,
@@ -70,9 +83,10 @@ export function useMealsForm() {
     e.preventDefault();
   };
 
+  
   return {
     mealName,
-    ingredients,
+    ingredients: mealFormData.ingredients,
     macros,
     totalCalories,
     getIngredientField,

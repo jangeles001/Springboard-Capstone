@@ -1,7 +1,6 @@
-import { create } from "zustand";
-
+import { create} from "zustand";
 /*
-object ex. {
+ingredient object ex. {
 id: USDA Id, 
 name: ingredientName, 
 quantity: ingredientQuantity, 
@@ -106,7 +105,20 @@ export const useMealFormDataCalories = () =>
     )
   );
 export const useMealFormDataMacros = () =>
-  useMealsStore((state) => state.mealFormData.macros);
+  useMealsStore((state) => {
+    const fields = { Protein: 0, Fat: 0, Carbs: 0, Fiber: 0, NetCarbs: 0 };
+    return state.mealFormData.ingredients.reduce(
+      (acc, ingredient) => {
+        const macros = ingredient.macros || fields;
+        acc.Protein += macros.Protein || 0;
+        acc.Fat += macros.Fat || 0;
+        acc.Carbs += macros.Carbs || 0;
+        acc.Fiber += macros.Fiber || 0;
+        acc.NetCarbs += macros.NetCarbs || 0;
+        return acc;
+      },{ ...fields }
+    )
+  });
 export const useHasErrors = () => useMealsStore((state) => state.hasErrors);
 
 // Actions selector

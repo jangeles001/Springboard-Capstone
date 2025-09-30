@@ -110,7 +110,7 @@ export default function MealsForm() {
                 <div className="flex flex-col">
                     <label htmlFor="macros" className="font-bold">Macros:</label>
                     <span className="flex flex-row gap-4">
-                        {Object.entries(macros)?.map(([key, value]) => (
+                        {Object?.entries(macros)?.map(([key, value]) => (
                             <div 
                             className="flex flex-row" 
                             key={key}>
