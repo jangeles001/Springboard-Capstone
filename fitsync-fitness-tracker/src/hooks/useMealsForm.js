@@ -1,35 +1,21 @@
 import {
-  useMealsStore,
+  useMealFormDataIngredients,
+  useMealFormDataMacros,
   useMealFormDataName,
   useMealsActions,
 } from "../features/meals/store/MealsFormStore";
-import { shallow } from 'zustand/shallow'
-import { getCalories, getMacros } from "../utils/nutrition";
+import { getMacros } from "../utils/nutrition";
 export function useMealsForm() {
   // Store State and action Selectors
   const mealName = useMealFormDataName();
-  const { macros, totalCalories } = useMealsStore(
-    state => {
-      const ingredients = state.mealFormData.ingredients;
-      const totalCalories = ingredients.reduce((sum, i) => sum + (i.calories || 0), 0);
-      const macros = ingredients.reduce((acc, ingredient) => {
-        const ingredientMacro = ingredient.macros || {};
-        acc.Protein += ingredientMacro.Protein || 0;
-        acc.Fat += ingredientMacro.Fat || 0;
-        acc.Carbs += ingredientMacro.Carbs || 0;
-        acc.Fiber += ingredientMacro.Fiber || 0;
-        acc.NetCarbs += ingredientMacro.NetCarbs || 0;
-        return acc;
-    }, { Protein: 0, Fat: 0, Carbs: 0, Fiber: 0, NetCarbs: 0 });
-    return { macros, totalCalories };
-   },
-    shallow
-  );
+  const ingredients = useMealFormDataIngredients();
+  const macros = useMealFormDataMacros();
 
   const {
     setField,
     addIngredient,
     getIngredientField,
+    updateMacros,
     changeIngredientField,
     removeIngredient,
   } = useMealsActions();
@@ -42,40 +28,44 @@ export function useMealsForm() {
 
   // Handles adding selected ingredients from dropdown to selected list state
   const handleClick = (item) => {
-    console.log(item);
-    const cal = getCalories(item) ?? 0;
-    const macros = getMacros(item) ?? 0;
+    const macros = getMacros(item) ?? {};
     addIngredient({
       id: item.fdcId,
       name: item.description,
       quantity: 0,
-      macros,
       calories: 0,
-      caloriesPer100G: cal,
+      macros,
+      caloriesPer100G: macros.calories,
+      macrosPer100G: macros,
     });
   };
 
   const handleRemoveClick = (itemId) => {
     removeIngredient(itemId);
+    updateMacros();
   };
 
   const handleIngredientQuantityChange = (id, value) => {
     // Allow empty input after clearing
     if (value === "") {
-      changeIngredientField(id, "quantity", ""); // keep as empty string
-      changeIngredientField(id, "calories", 0);
+      changeIngredientField(id, "Quantity", ""); // keep as empty string
+      changeIngredientField(id, "Calories", 0);
       return;
     }
 
     const quantity = Number(value);
-    if (isNaN(quantity) || quantity < 0) return;
+    if (isNaN(quantity) || quantity <= 0) return;
 
-    const per100 = getIngredientField(id, "caloriesPer100G") ?? 0;
     // calculate calories for this ingredient
-    const newCalories = Math.round((per100 * value) / 100);
+    const per100G = getIngredientField(id, "macrosPer100G") ?? {};
+    const scaledMacros = Object.keys(per100G).reduce((acc, key) => {
+      acc[key] = Math.round((per100G[key] * quantity) / 100);
+      return acc;
+    }, {});
 
     changeIngredientField(id, "quantity", Number(value));
-    changeIngredientField(id, "calories", newCalories);
+    changeIngredientField(id, "macros", scaledMacros);
+    updateMacros();
   };
 
   // Handles form submition
@@ -83,12 +73,10 @@ export function useMealsForm() {
     e.preventDefault();
   };
 
-  
   return {
     mealName,
-    ingredients: mealFormData.ingredients,
+    ingredients,
     macros,
-    totalCalories,
     getIngredientField,
     handleChange,
     handleClick,

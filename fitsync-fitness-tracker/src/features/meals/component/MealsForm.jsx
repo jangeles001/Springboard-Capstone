@@ -8,7 +8,6 @@ export default function MealsForm() {
         ingredients,
         macros,
         getIngredientField,
-        totalCalories,
         handleChange,
         handleClick,
         handleRemoveClick,
@@ -91,13 +90,12 @@ export default function MealsForm() {
                                 <div className="flex flex-row ml-auto">
                                     <label htmlFor="quantity" className="font-bold">Quantity:</label>
                                     <input
-                                    className="w-8 
+                                    className="w-10 
                                     [&::-webkit-inner-spin-button]:appearance-none 
                                     [&::-webkit-outer-spin-button]:m-0 [appearance:textfield]
                                     bg-gray-200 border-1 rounded-md"
                                     type="number"
                                     name="quantity"
-                                    min={0}
                                     value={getIngredientField(item.id, "quantity") ?? ""}
                                     onChange={(e) => handleIngredientQuantityChange(item.id, e.target.value)}
                                     />
@@ -110,18 +108,14 @@ export default function MealsForm() {
                 <div className="flex flex-col">
                     <label htmlFor="macros" className="font-bold">Macros:</label>
                     <span className="flex flex-row gap-4">
-                        {Object?.entries(macros)?.map(([key, value]) => (
+                        {Object?.entries(macros || {})?.map(([key, value]) => (
                             <div 
                             className="flex flex-row" 
                             key={key}>
-                                <p>{key}: {value}</p>
+                                <p>{key.toUpperCase()}: {value}</p>
                             </div>
                         ))}
                     </span>
-                </div>
-                <div className="flex flex-col">
-                    <label htmlFor="total-calories" className="font-bold">Calories:</label>
-                    <span><p name="total-calories">{totalCalories}</p></span>
                 </div>
                 <button type='submit' className='border rounded'>Create Meal</button>
             </form>

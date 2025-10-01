@@ -1,4 +1,5 @@
-import { create} from "zustand";
+import { create } from "zustand";
+
 /*
 ingredient object ex. {
 id: USDA Id, 
@@ -13,8 +14,7 @@ caloriesPer100G: Kcalper100g
 const initialFormData = {
   mealName: "",
   ingredients: [],
-  macros: { Protein: 0, Fat: 0, Carbs: 0, Fiber: 0, NetCarbs: 0 },
-  calories: 0,
+  macros: { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
 };
 
 const useMealsStore = create((set, get) => ({
@@ -33,6 +33,26 @@ const useMealsStore = create((set, get) => ({
         mealFormData: {
           ...state.mealFormData,
           [field]: value,
+        },
+      }));
+    },
+    updateMacros: () => {
+      const ingredients = get().mealFormData.ingredients;
+      const macros = ingredients.reduce(
+        (acc, ingredient) => {
+          const ingredientMacro = ingredient.macros || {};
+          Object.keys(ingredientMacro).forEach((key) => {
+            acc[key] += ingredientMacro[key] || 0;
+          });
+          return acc;
+        },
+        { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 }
+      );
+
+      set((state) => ({
+        mealFormData: {
+          ...state.mealFormData,
+          macros,
         },
       }));
     },
@@ -100,25 +120,12 @@ export const useMealFormDataIngredients = () =>
 export const useMealFormDataCalories = () =>
   useMealsStore((state) =>
     state.mealFormData.ingredients.reduce(
-      (sum, ingredient) => sum + (ingredient.calories || 0),
+      (sum, ingredient) => sum + (ingredient.macros.calories || 0),
       0
     )
   );
 export const useMealFormDataMacros = () =>
-  useMealsStore((state) => {
-    const fields = { Protein: 0, Fat: 0, Carbs: 0, Fiber: 0, NetCarbs: 0 };
-    return state.mealFormData.ingredients.reduce(
-      (acc, ingredient) => {
-        const macros = ingredient.macros || fields;
-        acc.Protein += macros.Protein || 0;
-        acc.Fat += macros.Fat || 0;
-        acc.Carbs += macros.Carbs || 0;
-        acc.Fiber += macros.Fiber || 0;
-        acc.NetCarbs += macros.NetCarbs || 0;
-        return acc;
-      },{ ...fields }
-    )
-  });
+  useMealsStore((state) => state.mealFormData.macros);
 export const useHasErrors = () => useMealsStore((state) => state.hasErrors);
 
 // Actions selector
