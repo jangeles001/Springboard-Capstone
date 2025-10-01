@@ -28,13 +28,13 @@ export function useMealsForm() {
 
   // Handles adding selected ingredients from dropdown to selected list state
   const handleClick = (item) => {
-    const macros = getMacros(item) ?? {};
+    const macros = getMacros(item) ?? {}; // Gets macros or returns empty object
     addIngredient({
       id: item.fdcId,
       name: item.description,
-      quantity: 0,
+      quantity: "",
+      macros: { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
       calories: 0,
-      macros,
       caloriesPer100G: macros.calories,
       macrosPer100G: macros,
     });
@@ -48,15 +48,15 @@ export function useMealsForm() {
   const handleIngredientQuantityChange = (id, value) => {
     // Allow empty input after clearing
     if (value === "") {
-      changeIngredientField(id, "Quantity", ""); // keep as empty string
-      changeIngredientField(id, "Calories", 0);
+      changeIngredientField(id, "quantity", ""); // keep as empty string
+      changeIngredientField(id, "calories", 0);
       return;
     }
 
     const quantity = Number(value);
     if (isNaN(quantity) || quantity <= 0) return;
 
-    // calculate calories for this ingredient
+    // Calculates macros for this ingredient
     const per100G = getIngredientField(id, "macrosPer100G") ?? {};
     const scaledMacros = Object.keys(per100G).reduce((acc, key) => {
       acc[key] = Math.round((per100G[key] * quantity) / 100);

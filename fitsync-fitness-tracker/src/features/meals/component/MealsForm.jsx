@@ -96,8 +96,25 @@ export default function MealsForm() {
                                     bg-gray-200 border-1 rounded-md"
                                     type="number"
                                     name="quantity"
+                                    min={0}
+                                    max={999}
+                                    maxLength={5}
                                     value={getIngredientField(item.id, "quantity") ?? ""}
-                                    onChange={(e) => handleIngredientQuantityChange(item.id, e.target.value)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                            // allow empty input
+                                            if (value === "") {
+                                                handleIngredientQuantityChange(item.id, "");
+                                                return;
+                                            }
+
+                                            // enforce numeric, range, and max 5 digits
+                                            const num = Number(value);
+                                            if (!Number.isNaN(num) && num >= 0 && num <= 999 && value.length <= 5) {
+                                                handleIngredientQuantityChange(item.id, num);
+                                            }
+                                        }
+                                    }
                                     />
                                     <label htmlFor="quantity">g</label>
                                 </div> 

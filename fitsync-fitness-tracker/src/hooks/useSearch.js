@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import fetchIngredients from "../services/fetchIngredients";
 import { shouldLoadMore } from "../utils/shouldLoadMore";
+import { useMealFormDataIngredients } from "../features/meals/store/MealsFormStore";
 
 export default function useSearch(initialQuery = "", delay = 700) {
   const [query, setQuery] = useState(initialQuery);
@@ -10,7 +11,11 @@ export default function useSearch(initialQuery = "", delay = 700) {
   const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
   const [error, setError] = useState(null);
   const debounceRef = useRef(null);
-
+  const ingredients = useMealFormDataIngredients();
+  const ingredientIds = useMemo(
+  () => ingredients.map(item => item.id),
+  [ingredients]
+);
   useEffect(() => {
     if (!query) {
       setResults([]);
@@ -27,8 +32,10 @@ export default function useSearch(initialQuery = "", delay = 700) {
       setError(null);
       try {
         const { data, pageNumber, totalPages } = await fetchIngredients(query);
-        //TODO: remove any items already in meal from response data.
-        setResults(data);
+        const filteredData = data.filter((item) => {
+          return !ingredientIds.includes(item.fdcId)
+        });
+        setResults(filteredData);
         setCurrentPage(pageNumber);
         setTotalPages(totalPages);
         setStatus("success");
@@ -39,7 +46,7 @@ export default function useSearch(initialQuery = "", delay = 700) {
     }, delay);
 
     return () => clearTimeout(debounceRef.current);
-  }, [query, delay]);
+  }, [query, delay, ingredientIds]);
 
   const handleIngredientSearchChange = (e) => {
     const currentQuery = e.target.value;
