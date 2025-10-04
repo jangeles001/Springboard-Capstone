@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import MealsForm from '../../features/meals/component/MealsForm'
+import MealsForm from '../../features/meals/components/MealsForm'
 
 export const Route = createFileRoute('/dashboard/meals')({
   component: RouteComponent,

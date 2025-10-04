@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useMealsForm } from "../../../hooks/useMealsForm"
 import useSearch from "../../../hooks/useSearch";
+import IngredientItem from "./IngredientItem";
+import ResultItem from "./ResultItem";
 
 export default function MealsForm() {
     const { 
@@ -57,17 +59,14 @@ export default function MealsForm() {
                             className="absolute left-0 right-0 mt-1 border rounded bg-white shadow-md z-10 max-h-60 overflow-y-auto"
                             onScroll={handleScroll}>
                                 {results?.map((item) => (
-                                    <li
-                                    key={item?.fdcId}
-                                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                                    onMouseDown={() => {
+                                    <ResultItem 
+                                    item={item} 
+                                    onClick={ () => {
                                         handleClick(item)
                                         setQuery("");
-                                    }}
-                                    onMouseUp={() => setIsOpen(false)}
-                                    >
-                                        {item?.description} 
-                                    </li>
+                                        setIsOpen(false);
+                                    }} 
+                                    />
                                 ))}
                             </ul>
                         )}
@@ -80,46 +79,12 @@ export default function MealsForm() {
                     </span>
                     {ingredients?.map((item) => {
                         return (
-                            <div 
-                            key={item.id} 
-                            className="flex items-center space-x-2 my-1 p-2 hover:border-1 rounded-md">
-                                <p className="max-w-md hover:cursor-pointer select-none"
-                                onDoubleClick={() => handleRemoveClick(item.id)}>
-                                    {item.name}
-                                </p>
-                                <div className="flex flex-row ml-auto">
-                                    <label htmlFor="quantity" className="font-bold">Quantity:</label>
-                                    <input
-                                    className="w-10 
-                                    [&::-webkit-inner-spin-button]:appearance-none 
-                                    [&::-webkit-outer-spin-button]:m-0 [appearance:textfield]
-                                    bg-gray-200 border-1 rounded-md"
-                                    type="number"
-                                    name="quantity"
-                                    min={0}
-                                    max={999}
-                                    maxLength={5}
-                                    value={getIngredientField(item.id, "quantity") ?? ""}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                            // allow empty input
-                                            if (value === "") {
-                                                handleIngredientQuantityChange(item.id, "");
-                                                return;
-                                            }
-
-                                            // enforce numeric, range, and max 5 digits
-                                            const num = Number(value);
-                                            if (!Number.isNaN(num) && num >= 0 && num <= 999 && value.length <= 5) {
-                                                handleIngredientQuantityChange(item.id, num);
-                                            }
-                                        }
-                                    }
-                                    />
-                                    <label htmlFor="quantity">g</label>
-                                </div> 
-                            </div> 
-                            )
+                        <IngredientItem 
+                        item={item} 
+                        getIngredientField={getIngredientField} 
+                        handleRemoveClick={handleRemoveClick} 
+                        handleIngredientQuantityChange={handleIngredientQuantityChange} 
+                        />)
                     })}
                 </div>
                 <div className="flex flex-col">
@@ -134,7 +99,12 @@ export default function MealsForm() {
                         ))}
                     </span>
                 </div>
-                <button type='submit' className='border rounded'>Create Meal</button>
+                <button 
+                type='submit' 
+                className='text-white border rounded bg-gradient-to-r from-blue-500 to-indigo-600 '
+                >
+                    Create Meal
+                </button>
             </form>
         </div>
     )

@@ -19,10 +19,16 @@ export default function DefaultNav({ links }) {
             </header>
             <nav className="flex mt-auto ml-[4%] gap-4 mb-2">
                 {links.map((link) => {
-                    return <Link key={link.path} to={link.path} activeOptions={{ exact: true }} activeProps={{ className: " font-bold border-3 rounded-md text-blue-500"}} className="hover:underline">
+                    return (
+                      <Link 
+                      key={link.path} 
+                      to={link.path} 
+                      activeOptions={{ exact: true }} 
+                      activeProps={{ className: " font-bold rounded-md text-blue-500"}} 
+                      className="hover:underline">
                         {link.label}
-                    </Link>
-                    })}
+                      </Link>
+                    )})}
             </nav>
         </div>
       <hr />
