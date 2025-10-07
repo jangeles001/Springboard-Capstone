@@ -13,4 +13,13 @@ export default defineConfig({
     }),
     react()
   ],
+  server:{
+    proxy:{
+      "/api": {
+        target: "http://localhost:5000", // Change if localhost port changes
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  }
 })
