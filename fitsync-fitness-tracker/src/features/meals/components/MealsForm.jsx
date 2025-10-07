@@ -16,8 +16,6 @@ export default function MealsForm() {
         handleIngredientQuantityChange,
         handleSubmit  
     } = useMealsForm();
-
-    const [ isOpen, setIsOpen ] = useState(false); // State for dropdown
     
     const { 
         query,
@@ -27,9 +25,11 @@ export default function MealsForm() {
         results, 
     } = useSearch("" ,700); // Ingredients search bar debouncer
 
+    const [ isOpen, setIsOpen ] = useState(false); // State for dropdown
+
     return (
-        <div className="flex flex-col items-center bg-gray-100 h-screen">
-            <form className='flex flex-col bg-white m-20 border-2 rounded-xl p-10 gap-3' onSubmit={handleSubmit}>
+        <div className="flex flex-col items-center justify-center bg-gray-100 h-screen">
+            <form className='flex flex-col bg-white m-20 border-2 rounded-xl p-10 gap-3 min-h-[400px]' onSubmit={handleSubmit}>
                 <div className="flex flex-col">
                     <label htmlFor="mealName" className="font-bold">Enter meal name:</label>
                     <input
@@ -77,15 +77,17 @@ export default function MealsForm() {
                         <p>Selected Ingredients:</p>
                         <p className="text-gray-400">(Double-click on the ingredient name to remove)</p>
                     </span>
-                    {ingredients?.map((item) => {
-                        return (
-                        <IngredientItem 
-                        item={item} 
-                        getIngredientField={getIngredientField} 
-                        handleRemoveClick={handleRemoveClick} 
-                        handleIngredientQuantityChange={handleIngredientQuantityChange} 
-                        />)
-                    })}
+                    <div className="min-h-[100px]">
+                        {ingredients?.map((item) => {
+                            return (
+                            <IngredientItem 
+                            item={item} 
+                            getIngredientField={getIngredientField} 
+                            handleRemoveClick={handleRemoveClick} 
+                            handleIngredientQuantityChange={handleIngredientQuantityChange} 
+                            />)
+                        })}
+                    </div>
                 </div>
                 <div className="flex flex-col">
                     <label htmlFor="macros" className="font-bold">Macros:</label>
