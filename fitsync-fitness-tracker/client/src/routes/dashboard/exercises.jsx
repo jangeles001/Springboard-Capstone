@@ -28,7 +28,6 @@ function RouteComponent() {
   if(error) return <div className="p-4 text-red-600">Error: {error.message}</div>;;
 
   return (
-    <>
       <div className='flex flex-col md:flex-row md:items-start bg-gradient-to-r from-blue-500 to-indigo-600 gap-10 min-w-sm'>
         <div className='flex flex-col items-center self-auto rounded-2xl border border-gray-200 shadow-md bg-gray-100 min-h-[300px] min-w-[400px] pt-5 m-10 md:mt-20 md:mb-20 gap-5'>
           <h2 className="mb-2 font-bold">Build Workout</h2>
@@ -85,6 +84,5 @@ function RouteComponent() {
           </div>
         </div> 
       </div>
-    </> 
   ) 
 }
