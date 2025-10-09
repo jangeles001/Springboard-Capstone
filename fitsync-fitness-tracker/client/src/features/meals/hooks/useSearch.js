@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import fetchIngredients from "../services/fetchIngredients";
-import { shouldLoadMore } from "../utils/shouldLoadMore";
-import { useMealFormDataIngredients } from "../features/meals/store/MealsFormStore";
+import fetchIngredients from "../../../services/fetchIngredients";
+import { shouldLoadMore } from "../../../utils/shouldLoadMore";
+import { useMealFormDataIngredients } from "../store/MealsFormStore";
 
 export default function useSearch(initialQuery = "", delay = 700) {
   const [query, setQuery] = useState(initialQuery);
@@ -13,9 +13,9 @@ export default function useSearch(initialQuery = "", delay = 700) {
   const debounceRef = useRef(null);
   const ingredients = useMealFormDataIngredients();
   const ingredientIds = useMemo(
-  () => ingredients.map(item => item.id),
-  [ingredients]
-);
+    () => ingredients.map((item) => item.id),
+    [ingredients]
+  );
   useEffect(() => {
     if (!query) {
       setResults([]);
@@ -33,7 +33,7 @@ export default function useSearch(initialQuery = "", delay = 700) {
       try {
         const { data, pageNumber, totalPages } = await fetchIngredients(query);
         const filteredData = data.filter((item) => {
-          return !ingredientIds.includes(item.fdcId)
+          return !ingredientIds.includes(item.fdcId);
         });
         setResults(filteredData);
         setCurrentPage(pageNumber);

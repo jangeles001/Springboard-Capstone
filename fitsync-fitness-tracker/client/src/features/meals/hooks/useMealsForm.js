@@ -3,7 +3,7 @@ import {
   useMealFormDataMacros,
   useMealFormDataName,
   useMealsActions,
-} from "../features/meals/store/MealsFormStore";
+} from "../store/MealsFormStore";
 import { getMacros } from "../utils/nutrition";
 
 export function useMealsForm() {
