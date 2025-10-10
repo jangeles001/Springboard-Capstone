@@ -4,7 +4,7 @@ import { WorkoutsCreatorSelectedExercises } from './WorkoutsCreatorSelectedExerc
 import { WorkoutsCreatorSubmitButton } from './WorkoutsCreatorSubmitButton';
 
 // Attaching subcomponents to the main form component
-WorkoutsCreator.header = WorkoutsCreatorHeader;
+WorkoutsCreator.Header = WorkoutsCreatorHeader;
 WorkoutsCreator.Selected = WorkoutsCreatorSelectedExercises;
 WorkoutsCreator.SubmitButton = WorkoutsCreatorSubmitButton;
 

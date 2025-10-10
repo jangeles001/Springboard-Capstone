@@ -1,6 +1,6 @@
 import { useWorkoutsCreatorContext } from "../../hooks/useWorkoutsCreator"
 
-export function WorkoutCreatorHeader() {
+export function WorkoutsCreatorHeader() {
     const { workoutName, handleChange } = useWorkoutsCreatorContext();
 
     return (
