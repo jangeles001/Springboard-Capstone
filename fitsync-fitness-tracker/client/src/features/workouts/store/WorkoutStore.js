@@ -4,7 +4,7 @@ const useWorkoutStore = create((set, get) => ({
   workoutsList: [],
   recentWorkouts: [],
   generatedWorkout: [],
-  createdWorkout: null,
+  createdWorkout: null, // { workoutName: , workouts: }
   actions: {
     setWorkoutsList: () => {
       const response = [""]; // call fetch from fetching service
@@ -41,7 +41,7 @@ const useWorkoutStore = create((set, get) => ({
       const state = get();
       if (!state.createdWorkout) return;
       const newWorkout = {
-        name: name || "TBA",
+        workoutName: name || "TBA",
         workouts: [...state.createdWorkout],
       };
       set((prevState) => ({
