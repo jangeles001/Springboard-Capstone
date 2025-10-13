@@ -3,7 +3,7 @@ import ResultItem from '../ResultItem';
 import  useSearch from '../../hooks/useSearch'
 
 export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
-    const { handleClick,  } = useMealsFormContext();
+    const { handleClick } = useMealsFormContext();
     const { 
             query,
             setQuery,

@@ -1,4 +1,4 @@
-export default function Workout({ exercise }){
+export default function Exercise({ exercise }){
     return (
         <div
         className="flex flex-col bg-gray-100 rounded-xl p-3 border border-gray-300"

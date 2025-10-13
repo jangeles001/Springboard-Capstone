@@ -9,7 +9,7 @@ function dashboard() {
 
   const navLinks = [
     { label: "Dashboard", path: "/dashboard/dash" },
-    { label: "Exercises", path: "/dashboard/exercises" },
+    { label: "Workout Creator", path: "/dashboard/workoutCreator" },
     { label: "Workouts", path: "/dashboard/workouts"},
     { label: "Record a Meal", path: "/dashboard/meals"},
     { label: "Logout", path: "/" },

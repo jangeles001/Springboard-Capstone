@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Graph from '../../components/Graph';
-import ContentBox from '../../components/ContentBox';
+import { WorkoutsListDisplay } from "../../features/workouts/components//WorkoutsListDisplay";
 
 export const Route = createFileRoute('/dashboard/dash') ({
     component: dash,
@@ -18,7 +18,7 @@ function dash() {
     //   ],
     // };
     
-    const prevWorkouts = [
+    // const prevWorkouts = [
       // {
       //   name: "Workout1",
       //   information:  "This is the workout information!"
@@ -27,7 +27,7 @@ function dash() {
       //   name: "Workout2",
       //   information:  "This is the workout information!"
       // },
-    ];
+    //];
     
     return (
         <div className='flex flex-col bg-gradient-to-r from-blue-500 to-indigo-600 h-full'>
@@ -43,15 +43,8 @@ function dash() {
           
 
           <div className="flex flex-col justify-center items-center rounded-2xl h-[700px] min-w-full px-10 gap-5 md:flex-row">
-            <div className='flex flex-col items-center bg-white border rounded-2xl border-gray-700 shadow-sm h-full min-w-1/2 py-10'>
-              <section>Previous Workouts</section>
-              {prevWorkouts.map((workout) => {
-                return (
-                  <div key={workout.name} className='flex'>
-                    <ContentBox title={workout.name} content={workout.information} />
-                  </div>
-                )
-              })}
+            <div className='flex items-center bg-white border rounded-2xl border-gray-700 shadow-sm h-full min-w-1/2 py-10'>
+              <WorkoutsListDisplay />
             </div>
             <div className='flex flex-col items-center bg-white border border-gray-700 rounded-2xl p-5 shadow-sm h-full min-w-1/2 md:w-auto'>
               <div className='h-1/2'>Friends</div>
