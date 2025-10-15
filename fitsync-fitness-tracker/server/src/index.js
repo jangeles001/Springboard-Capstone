@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === "production") {
 
   // Catch-all: send index.html for any unknown route
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(clientPath, "index.html"));
+    res.sendFile(path.resolve(clientPath, ""));
   });
 }
 
