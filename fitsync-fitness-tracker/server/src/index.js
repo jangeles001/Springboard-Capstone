@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import workoutsRouter from "./routes/workouts.js";
+import connectDB from "./connect.js";
+
 // Setup
 dotenv.config();
 const app = express();
@@ -27,8 +29,18 @@ if (process.env.NODE_ENV === "production") {
 
   // Catch-all: send index.html for any unknown route
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(clientPath, ""));
+    res.sendFile(path.resolve(clientPath, "")); // TODO: Connect vite frontend with server resposne?
   });
 }
 
-app.listen(PORT, () => console.log(`Server is running on ${PORT}`));
+async function startServer() {
+  try {
+    await connectDB();
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  } catch (err) {
+    console.error("Database connection failed:", err);
+    process.exit(1);
+  }
+}
+
+startServer();
