@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import workoutsRouter from "./routes/workouts.js";
+import authRouter from "./routes/auth.js"
 import connectDB from "./connect.js";
 
 // Setup
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/workouts", workoutsRouter);
+app.use("/auth", authRouter);
 
 // Resolve __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -35,7 +37,7 @@ if (process.env.NODE_ENV === "production") {
 
 async function startServer() {
   try {
-    await connectDB();
+    await connectDB().catch((err) => console.log(err.message));
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (err) {
     console.error("Database connection failed:", err);
@@ -43,4 +45,4 @@ async function startServer() {
   }
 }
 
-startServer();
+startServer(); //connect to database and begin listening

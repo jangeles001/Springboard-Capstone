@@ -1,5 +1,8 @@
 import express from "express";
-import { getAllWorkouts } from "../controllers/workoutsController.js";
+import {
+  getAllWorkouts,
+  createWorkout,
+} from "../controllers/workoutsController.js";
 
 const router = express.Router();
 
