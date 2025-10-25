@@ -3,6 +3,8 @@ import validate from "../validators/authValidators.js";
 import { newUserZodSchema } from "../schemas/newUserZodSchema.js";
 import { createUser, login } from "../controllers/authController.js";
 
+// Swagger and stellar for api documentation
+
 const router = express.Router();
 
 router.post("/register", validate(newUserZodSchema), createUser);

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import workoutsRouter from "./routes/workouts.js";
-import authRouter from "./routes/auth.js"
+import authRouter from "./routes/auth.js";
 import connectDB from "./connect.js";
 
 // Setup
@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({ origin: process.env.CLIENT_ORIGIN }));
 app.use(express.json());
+// TODO: File uploads. Look into Morgan
 
 // Routes
 app.use("/api/workouts", workoutsRouter);
@@ -44,5 +45,5 @@ async function startServer() {
     process.exit(1);
   }
 }
-
-startServer(); //connect to database and begin listening
+// Graceful exiting
+startServer(); // Connects to database and begins listening

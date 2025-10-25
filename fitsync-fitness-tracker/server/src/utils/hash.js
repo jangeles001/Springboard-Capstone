@@ -1,4 +1,5 @@
 import crypto from "crypto";
+// Look into bcrypt;
 
 const SCRYPT_KEYLEN = 64; // Size of hash
 

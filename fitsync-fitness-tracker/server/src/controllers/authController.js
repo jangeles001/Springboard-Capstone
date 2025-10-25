@@ -65,7 +65,7 @@ export async function login(req, res) {
     if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
     // Creates JWT payload and token signed with server JWT_SECRET. Tokens will expire after an hour.
-    const payload = { sub: user._id.toString(), username: user.username };
+    const payload = { sub: user._id.toString(), email: user.email };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
 
     return res.json({ message: "Authenticated", token });
@@ -77,4 +77,4 @@ export async function login(req, res) {
   }
 }
 
-//TODO: Create autoRefresh so that user isnt logged out after an hour. Might just redirect to login for simplicity.
+//TODO: Create token autoRefresh so that user isnt logged out after an hour. Might just redirect to login for simplicity. Refresh Tokens
