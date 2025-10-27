@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
+import session from "express-session";
 import { fileURLToPath } from "url";
 import workoutsRouter from "./routes/workouts.js";
 import authRouter from "./routes/auth.js";
@@ -15,6 +16,13 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({ origin: process.env.CLIENT_ORIGIN }));
 app.use(express.json());
+app.use(
+  session({
+    secret: process.env.JWT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 // TODO: File uploads. Look into Morgan
 
 // Routes

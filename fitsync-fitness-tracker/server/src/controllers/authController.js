@@ -23,8 +23,8 @@ export const createUser = async (req, res) => {
     if (exists) return res.status(409).json({ error: "Email already in use" });
 
     // Password Encryption
-    const salt = generateSalt();
-    const passwordHash = hashPassword(password, salt);
+    const salt = await generateSalt();
+    const passwordHash = await hashPassword(password, salt);
 
     // Creates newUser object with passwordHash and salt
     const newUser = new User({
@@ -32,7 +32,6 @@ export const createUser = async (req, res) => {
       lastName,
       username,
       passwordHash,
-      salt,
       height,
       age,
       weight,
@@ -61,11 +60,11 @@ export async function login(req, res) {
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
     // Verifies password is correct
-    const valid = verifyPassword(password, user.passwordHash, user.salt);
+    const valid = verifyPassword(password, user.passwordHash);
     if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
     // Creates JWT payload and token signed with server JWT_SECRET. Tokens will expire after an hour.
-    const payload = { sub: user._id.toString(), email: user.email };
+    const payload = { sub: user.uuid.toString(), username: username };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
 
     return res.json({ message: "Authenticated", token });
