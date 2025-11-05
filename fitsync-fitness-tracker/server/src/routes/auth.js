@@ -1,5 +1,5 @@
 import express from "express";
-import validate from "../validators/authValidators.js";
+import validate from "../validators/authValidator.js";
 import { newUserZodSchema } from "../schemas/newUserZodSchema.js";
 import { createUser, login } from "../controllers/authController.js";
 
