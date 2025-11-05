@@ -10,14 +10,14 @@ import { getEnv } from "./validators/validateConfig.js";
 
 // Setup
 const app = express();
-const PORT = getEnv(PORT) || 5000;
+const configPort = getEnv("PORT") || 5000;
 
 // Middleware
-app.use(cors({ origin: getEnv(CLIENT_ORIGIN) }));
+app.use(cors({ origin: getEnv("CLIENT_ORIGIN") }));
 app.use(express.json());
 app.use(
   session({
-    secret: getEnv(JWT_SECRET),
+    secret: getEnv("JWT_SECRET"),
     resave: false,
     saveUninitialized: false,
   })
@@ -32,7 +32,7 @@ app.use("/auth", authRouter);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-if (process.env.NODE_ENV === "production") {
+if (getEnv("NODE_ENV") === "production") {
   // Serves the built frontend (client/dist)
   const clientPath = path.join(__dirname, "../client/dist");
   app.use(express.static(clientPath));
@@ -46,7 +46,9 @@ if (process.env.NODE_ENV === "production") {
 async function startServer() {
   try {
     await connectDB().catch((err) => console.log(err.message));
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(configPort, () =>
+      console.log(`Server running on port ${configPort}`)
+    );
   } catch (err) {
     console.error("Database connection failed:", err);
     process.exit(1);
