@@ -1,53 +1,31 @@
 import { User } from "../models/userModel.js";
-import { generateSalt, hashPassword, verifyPassword } from "../utils/hash.js";
+import * as userService from "../services/userService.js"
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
 export const createUser = async (req, res) => {
   try {
-    // Desructures request formData to pull out password for encryption
-    const {
-      firstName,
-      lastName,
-      username,
-      password,
-      height,
-      age,
-      weight,
-      email,
-    } = req.validatedbody;
 
-    // Checks if email exists
-    const exists = await User.findOne({ email });
-    if (exists) return res.status(409).json({ error: "Email already in use" });
+    const results = await userService.registerNewUser({ ...req.validatedBody });
 
-    // Password Encryption
-    const salt = await generateSalt();
-    const passwordHash = await hashPassword(password, salt);
-
-    // Creates newUser object with passwordHash and salt
-    const newUser = new User({
-      firstName,
-      lastName,
-      username,
-      passwordHash,
-      height,
-      age,
-      weight,
-      email,
+    // Sets the cookie
+    res.cookie("token", token, {
+      httpOnly: true, // prevents access via JavaScript
+      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      sameSite: "strict", // CSRF protection
+      maxAge: 24 * 60 * 60 * 1000, // 24 hour lifetime
     });
-
-    await newUser.save(); // Saves to db
-
+    
     return res.status(201).json({
-      message: "User created successfully!",
-      newUser,
+      message: "Registration successful!",
+      userData: results.User,
     });
-  } catch (err) {
+  } catch (error) {
+    if(error.message === "EMAIL_ALREADY_REGISTERED") return res.status(409).json({ error: error.message });
     return res
       .status(500)
-      .json({ error: "Database error", details: err.message });
+      .json({ error: "Database error", details: error.message });
   }
 };
 
