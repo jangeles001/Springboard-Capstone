@@ -9,23 +9,23 @@ export const createUser = async (req, res) => {
     const results = await userService.registerNewUser({ ...req.validatedBody });
 
     // Sets the cookie
-    res.cookie("token", token, {
+    res.cookie("token", results.token, {
       httpOnly: true, // prevents access via JavaScript
       secure: process.env.NODE_ENV === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
-      maxAge: 24 * 60 * 60 * 1000, // 24 hour lifetime
+      maxAge: 24 * 60 * 60 * 1000, // 24 hour lifetime  <-- change to match 1hr validity window
     });
 
     return res.status(201).json({
       message: "Registration successful!",
-      userData: results.newUser,
+      newUserInfo: `Username: ${results.username} (UUID: ${results.uuid})`
     });
   } catch (error) {
     if (error.message === "EMAIL_ALREADY_REGISTERED")
       return res.status(409).json({ error: error.message });
     return res
       .status(500)
-      .json({ error: "Database error", details: error.message });
+      .json({ error: "Database error", error: error.message });
   }
 };
 
@@ -33,24 +33,22 @@ export async function login(req, res) {
   try {
     const { email, password } = req.validatedBody; // Pulls out email and password from validatedBody
 
-    // Checks if email exists
-    const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+    const validatedUser = await userService.validateCredentials(email, password);
 
-    // Verifies password is correct
-    const valid = verifyPassword(password, user.passwordHash);
-    if (!valid) return res.status(401).json({ error: "Invalid credentials" });
+    res.cookie("token", validatedUser.token, {
+      httpOnly: true, // prevents access via JavaScript
+      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      sameSite: "strict", // CSRF protection
+      maxAge: 24 * 60 * 60 * 1000, // 24 hour lifetime
+    });
 
-    // Creates JWT payload and token signed with server JWT_SECRET. Tokens will expire after an hour.
-    const payload = { sub: user.uuid.toString(), username: username };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
-
-    return res.json({ message: "Authenticated", token });
-  } catch (err) {
-    console.error(err);
+    return res.status(200).json({ 
+      message: `${validatedUser.username} (UUID: ${validatedUser.uuid}) logged in!` });
+  } catch (error) {
+    if (error.message === "INVALID_CREDENTIALS") return res.status(401).json({ error: error.message });
     return res
       .status(500)
-      .json({ error: "Server error", details: err.message });
+      .json({ error: "Server error", error: error.message });
   }
 }
 
