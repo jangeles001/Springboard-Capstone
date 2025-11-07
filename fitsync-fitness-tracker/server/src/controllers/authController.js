@@ -1,12 +1,11 @@
 import { User } from "../models/userModel.js";
-import * as userService from "../services/userService.js"
+import * as userService from "../services/userService.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
 export const createUser = async (req, res) => {
   try {
-
     const results = await userService.registerNewUser({ ...req.validatedBody });
 
     // Sets the cookie
@@ -16,13 +15,14 @@ export const createUser = async (req, res) => {
       sameSite: "strict", // CSRF protection
       maxAge: 24 * 60 * 60 * 1000, // 24 hour lifetime
     });
-    
+
     return res.status(201).json({
       message: "Registration successful!",
-      userData: results.User,
+      userData: results.newUser,
     });
   } catch (error) {
-    if(error.message === "EMAIL_ALREADY_REGISTERED") return res.status(409).json({ error: error.message });
+    if (error.message === "EMAIL_ALREADY_REGISTERED")
+      return res.status(409).json({ error: error.message });
     return res
       .status(500)
       .json({ error: "Database error", details: error.message });
