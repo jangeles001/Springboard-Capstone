@@ -7,11 +7,13 @@ import { createUser, login } from "../controllers/authController.js";
 
 const router = express.Router();
 
-router.post("/register", validate(newUserZodSchema), createUser);
-router.post(
+router.post("/register", validate(newUserZodSchema), createUser)
+.post(
   "/login",
   validate(newUserZodSchema.pick({ email: true, password: true })),
   login
-);
+)
+.post("/logout", /*validateToken(),*/ logout())
+.post("/refresh", /*validateToken(),*/ refresh());
 
 export default router;

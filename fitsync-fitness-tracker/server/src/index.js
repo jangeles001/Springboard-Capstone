@@ -8,8 +8,8 @@ import authRouter from "./routes/auth.js";
 // import usersRouter from "./routes/user.js"
 // import mealsRouter from "./routes/meal.js"
 // import postsRouter from "./routes/post.js"
-import connectDB from "./connect.js";
-import { getEnv } from "./validators/validateConfig.js";
+import connectDB from "./config/connect.js";
+import { getEnv } from "./config/envConfig.js";
 
 // Setup
 const app = express();

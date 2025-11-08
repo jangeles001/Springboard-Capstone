@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { getEnv } from "./validators/validateConfig.js";
+import { getEnv } from "./envConfig.js";
 
 async function connectDB() {
   await mongoose.connect(getEnv("MONGO_URI"));

@@ -1,7 +1,9 @@
 import * as userRepo  from "../repositories/userRepo.js"
 import jwt from "jsonwebtoken"
+import { v4 as uuidv4 } from "uuid";
+import redisClient from "../config/redisClient.js"
 import { generateSalt, hashPassword, verifyPassword } from "../utils/hash.js"
-import { getEnv } from "../validators/validateConfig.js"
+import { getEnv } from "../config/envConfig.js"
 
 export async function registerNewUser(userData){
     // Checks if a user has already registered with the provided email
@@ -18,12 +20,17 @@ export async function registerNewUser(userData){
     // Creates newUser object with passwordHash and salt
     const newUser = await userRepo.createNewUser(userData);
 
-    // Creates JWT payload and token signed with server JWT_SECRET. Tokens will expire after an hour.
-    const payload = { sub: newUser.uuid.toString(), username: newUser.username };
-    const token = jwt.sign(payload, getEnv("JWT_SECRET"), { expiresIn: "1h" });
+    // Creates JWT payload and both access token signed with server JWT_SECRET and refresh token. 
+    // Access token will expire in 15 min.
+    const accessPayload = { sub: newUser.uuid.toString(), username: newUser.username };
+    const accessToken = jwt.sign(accessPayload, getEnv("JWT_SECRET"), { expiresIn: "15min" });
+    const refreshToken = uuidv4();
+
+    // Sets the newUser.uuid as a key in the cache that holds their refresh token;
+    await redisClient.setEx(`refreshToken:${newUser.uuid}`, 604800, refreshToken);
 
 
-    return { username: newUser.username, uuid: newUser.uuid, token };
+    return { username: newUser.username, uuid: newUser.uuid, accessToken, refreshToken };
 }
 
 export async function validateCredentials(email, password){
@@ -40,4 +47,11 @@ export async function validateCredentials(email, password){
     const token = jwt.sign(payload, getEnv("JWT_SECRET"), { expiresIn: "1h" });
 
     return { username: user.username, uuid: user.uuid, token }
+}
+
+export async function refreshTokens(token){
+    
+
+    
+    return { newToken };
 }
