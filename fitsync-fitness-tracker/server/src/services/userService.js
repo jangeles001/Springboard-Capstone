@@ -33,10 +33,10 @@ export async function registerNewUser(userData) {
 
   // Sets redis key with newly generated refreshToken, user.uuid, and issued date
   await redisClient.setEx(
-    `refreshToken:${newUser.uuid}`,
+    `refreshToken:${refreshToken}`,
     604800,
     JSON.stringify({
-      token: refreshToken,
+      userUUID: refreshToken,
       iat: Date.now(),
     })
   );
@@ -71,10 +71,10 @@ export async function validateCredentials(email, password) {
 
   // Sets redis key with newly generated refreshToken, user.uuid, and issued date
   await redisClient.setEx(
-    `refreshToken:${user.uuid}`,
+    `refreshToken:${refreshToken}`,
     604800,
     JSON.stringify({
-      token: refreshToken,
+      userUUID: user.uuid,
       iat: date.now(),
     })
   );
@@ -93,15 +93,14 @@ export async function refreshTokens(user, refreshToken) {
   if (revoked) throw new Error("INVALID_REFRESH_TOKEN");
 
   // Chekcs if refresh token is valid
-  const stored = await redisClient.getEx(`refreshToken:${user.uuid}`);
+  const stored = await redisClient.getEx(`refreshToken:${refreshToken}`);
   if (!stored) throw new Error("INVALID_REFRESH_TOKEN");
 
-  // Checks if the token doesn't match the opaque string stored in cache or has expired
-  const { token, iat } = JSON.parse(stored);
+  // Checks if the refreshToken has expired
+  const { iat } = JSON.parse(stored);
   const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
-  if (token !== refreshToken || now - iat > sevenDaysInMs)
-    throw new Error("INVALID_REFRESH_TOKEN");
+  if (now - iat > sevenDaysInMs) throw new Error("INVALID_REFRESH_TOKEN");
 
   // Creates new JWT payload and both the new accessToken signed with server JWT_SECRET and refresh token.
   // Access token will expire in 15 min.
@@ -116,10 +115,10 @@ export async function refreshTokens(user, refreshToken) {
 
   // Updates redis key with newly generated refreshToken, user.uuid, and issued date
   await redisClient.setEx(
-    `refreshToken:${newUser.uuid}`,
+    `refreshToken:${newRefreshToken}`,
     604800,
     JSON.stringify({
-      token: newRefreshToken,
+      token: user.uuid,
       iat: date.now(),
     })
   );
@@ -128,12 +127,13 @@ export async function refreshTokens(user, refreshToken) {
 }
 
 export async function revokeRefreshToken(userUUID, refreshToken) {
-  const stored = await redisClient.getEx(`refreshToken:${userUUID}`);
+  const stored = await redisClient.getEx(`refreshToken:${refreshToken}`);
   if (!stored) return; // returns if redis client has already expired token entry
 
+  const { iat } = JSON.parse(stored);
   const now = date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
-  const timeElapsed = now - refreshToken.iat;
+  const timeElapsed = now - iat;
   const timeRemaining = sevenDaysInMs - timeElapsed;
 
   // Sets new `revoked:${refreshToken}` key with remaining lifetime in cache
@@ -144,7 +144,7 @@ export async function revokeRefreshToken(userUUID, refreshToken) {
       "revoked"
     );
 
-    await redisClient.del(`refreshToken:${userUUID}`); // Deletes entry if token has already expired
+    await redisClient.del(`refreshToken:${userUUID}`); // Deletes entry after token has been revoked
 
     return;
   }
