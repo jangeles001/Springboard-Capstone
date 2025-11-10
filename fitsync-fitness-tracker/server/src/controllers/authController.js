@@ -70,20 +70,73 @@ export async function login(req, res) {
   }
 }
 
-export async function logout(req, res) {
-  const refreshToken = req.cookies?.refreshToken;
+export async function refreshSessionTokens(req, res){
+  try{
+    const { refreshToken } = req.cookies;
+    const results = await userService.refreshTokens(req.user, refreshToken);
 
-  await userService.revokeRefreshToken(accessToken.username, refreshToken);
+    res.cookie("accessToken", results.accessToken, {
+      httpOnly: true, // prevents access via JavaScript
+      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      sameSite: "strict", // CSRF protection
+      maxAge: 15 * 60 * 1000, // 15 min lifetime
+    });
 
-  req.session.destroy(function (err) {
-    if (err) {
-      return next(err);
+    res.cookie("refreshToken", results.refreshToken, {
+      httpOnly: true, // prevents access via JavaScript
+      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      sameSite: "strict", // CSRF protection
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
+    });
+
+    return res.status(200).json("TOKENS_REFRESHED");
+  }catch(error){
+    // Checks if refresh token was invalid and deletes session and cookies
+    if (error.message === "INVALID_REFRESH_TOKEN"){
+      // Creates new promise so that the the function can wait for the session destruction
+      await new Promise((resolve) => {
+        req.session.destroy((destroyError) => {
+        if (destroyError) {
+          console.error("Session destroy failed:", destroyError);
+        }
+        resolve();
+      })})
+
+      // Clears cookies
+      res.clearCookie("connect.sid", { path: "/" });
+      res.clearCookie("refreshToken", { path: "/" });
+      res.clearCookie("accessToken", { path: "/" });
+
+      return res.status(401).json({ error: "SESSION_INVALIDATED" });
     }
-  });
+    return res.status(500).json({ error: error.message });
+  }
+}
 
-  res.clearCookie("connect.sid", { path: "/" });
+export async function logout(req, res) {
+  try
+  {
+    const { refreshToken, userUUID }  = req.cookies;
+    await userService.revokeRefreshToken(userUUID, refreshToken);
 
-  return res
+    // Creates new promise so that the the function can wait for the session destruction
+    await new Promise((resolve) => {
+      req.session.destroy((destroyError) => {
+        if (destroyError) {
+          console.error("Session destroy failed:", destroyError);
+        }
+        resolve();
+    })});
+
+    // Clears cookies
+    res.clearCookie("connect.sid", { path: "/" });
+    res.clearCookie("refreshToken", { path: "/" });
+    res.clearCookie("accessToken", { path: "/" });
+
+    return res
     .status(200)
-    .json({ message: `${accessToken.username} logged out.` });
+    .json({ message: `LOG_OUT_SUCCESSFUL!` });
+  }catch(error){
+    return res.status(401).json({ error: error.message })
+  }
 }

@@ -14,15 +14,15 @@ export default function requireAuth(req, res, next) {
     token = req.headers.authorization.split(" ")[1]; // Retrieves token from request header
   }
 
-  // Rejects request if no authHeader is present or if the token is not of type Bearer
+  // Rejects request if no authorization token is present
   if (!token) {
     return res.status(401).json({ error: "Missing Authorization Token" });
   }
 
   // Verifies token against JWT_SECRET
-  jwt.verify(token, getEnv("JWT_SECRET"), (err, decoded) => {
-    if (err) return res.status(403).json({ error: "Invalid or expired token" });
-    req.user = decoded;
+  jwt.verify(token, getEnv("JWT_SECRET"), (error, decoded) => {
+    if (error) return res.status(403).json({ error: "Invalid or expired token" });
+    req.user = decoded; // Sets req.user to the decoded token information
     next();
   });
 }

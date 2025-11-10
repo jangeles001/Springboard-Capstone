@@ -17,17 +17,17 @@ export async function registerNewUser(userData) {
   delete userData.password; // Removes the unhashed password from the userData object
   userData = { ...userData, passwordHash }; // Adds the hashed password to the userData object
 
-  // Creates newUser document with the userData object
+  // Creates new User document with the userData object
   const newUser = await userRepo.createNewUser(userData);
 
   // Creates JWT payload and both the access token signed with server JWT_SECRET and refresh token.
   // Access token will expire in 15 min.
-  const accessPayload = {
+  const accessTokenPayload = {
     sub: newUser.uuid.toString(),
     username: newUser.username,
   };
-  const accessToken = jwt.sign(accessPayload, getEnv("JWT_SECRET"), {
-    expiresIn: "15min",
+  const accessToken = jwt.sign(accessTokenPayload, getEnv("JWT_SECRET"), {
+    expiresIn: "15m",
   });
   const refreshToken = uuidv4(); // Opaque string
 
@@ -36,7 +36,8 @@ export async function registerNewUser(userData) {
     `refreshToken:${refreshToken}`,
     604800,
     JSON.stringify({
-      userUUID: refreshToken,
+      userUUID: newUser.uuid,
+			username: newUser.username,
       iat: Date.now(),
     })
   );
@@ -65,7 +66,7 @@ export async function validateCredentials(email, password) {
     username: user.username,
   };
   const accessToken = jwt.sign(accessTokenPayload, getEnv("JWT_SECRET"), {
-    expiresIn: "15min",
+    expiresIn: "15m",
   });
   const refreshToken = uuidv4(); // Opaque string
 
@@ -75,7 +76,7 @@ export async function validateCredentials(email, password) {
     604800,
     JSON.stringify({
       userUUID: user.uuid,
-      iat: date.now(),
+      iat: Date.now(),
     })
   );
 
@@ -87,29 +88,46 @@ export async function validateCredentials(email, password) {
   };
 }
 
-export async function refreshTokens(user, refreshToken) {
+export async function refreshTokens(providedUserUUID, refreshToken) {
   // Checks if refresh token is blacklisted
   const revoked = await redisClient.exists(`revoked:${refreshToken}`);
   if (revoked) throw new Error("INVALID_REFRESH_TOKEN");
 
-  // Chekcs if refresh token is valid
-  const stored = await redisClient.getEx(`refreshToken:${refreshToken}`);
+  // Checks if refresh token is valid
+  const stored = await redisClient.get(`refreshToken:${refreshToken}`);
   if (!stored) throw new Error("INVALID_REFRESH_TOKEN");
 
+  // Verifies if the token belongs to the user requesting a token refresh
+  const { userUUID, iat } = JSON.parse(stored);
+  if(!providedUserUUID || providedUserUUID !== userUUID) throw new Error("INVALID_REFRESH_TOKEN");
+
   // Checks if the refreshToken has expired
-  const { iat } = JSON.parse(stored);
   const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
-  if (now - iat > sevenDaysInMs) throw new Error("INVALID_REFRESH_TOKEN");
+  const timeElapsed = now - iat;
+  const timeRemaining = sevenDaysInMs - timeElapsed;
+  if (timeElapsed > sevenDaysInMs) throw new Error("INVALID_REFRESH_TOKEN");
+
+  // Adds old refreshToken to the revoked list with remaining lifespan
+  await redisClient.setEx(
+    `revoked:${refreshToken}`,
+    Math.floor(timeRemaining / 1000),
+    "revoked"
+  );
+
+  await redisClient.del(`refreshToken:${refreshToken}`); // Deletes entry after token has been revoked
+	
+	// Gets user information from database **[Think about adding username to redis cache to avoid havin got query db]**
+  const user = await userRepo.findOneUserByUUID(userUUID);
 
   // Creates new JWT payload and both the new accessToken signed with server JWT_SECRET and refresh token.
   // Access token will expire in 15 min.
   const accessTokenPayload = {
-    sub: user.uuid,
+    sub: user.uuid.toString(),
     username: user.username,
   };
   const newAccessToken = jwt.sign(accessTokenPayload, getEnv("JWT_SECRET"), {
-    expiresIn: "15min",
+    expiresIn: "15m",
   });
   const newRefreshToken = uuidv4(); // Opaque string
 
@@ -118,20 +136,20 @@ export async function refreshTokens(user, refreshToken) {
     `refreshToken:${newRefreshToken}`,
     604800,
     JSON.stringify({
-      token: user.uuid,
-      iat: date.now(),
+      userUUID: user.uuid,
+      iat: Date.now(),
     })
   );
 
   return { newAccessToken, newRefreshToken };
 }
 
-export async function revokeRefreshToken(userUUID, refreshToken) {
+export async function revokeRefreshToken(refreshToken) {
   const stored = await redisClient.getEx(`refreshToken:${refreshToken}`);
-  if (!stored) return; // returns if redis client has already expired token entry
+  if (!stored) return; // returns if redis client has already expired the token entry
 
   const { iat } = JSON.parse(stored);
-  const now = date.now();
+  const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
   const timeElapsed = now - iat;
   const timeRemaining = sevenDaysInMs - timeElapsed;
@@ -140,11 +158,11 @@ export async function revokeRefreshToken(userUUID, refreshToken) {
   if (timeRemaining > 0) {
     await redisClient.setEx(
       `revoked:${refreshToken}`,
-      timeRemaining,
+      Math.floor(timeRemaining / 1000),
       "revoked"
     );
 
-    await redisClient.del(`refreshToken:${userUUID}`); // Deletes entry after token has been revoked
+    await redisClient.del(`refreshToken:${refreshToken}`); // Deletes entry after token has been revoked
 
     return;
   }
