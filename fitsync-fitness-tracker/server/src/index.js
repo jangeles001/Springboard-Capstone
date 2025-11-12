@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "path";
 import session from "express-session";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
 import workoutsRouter from "./routes/workouts.js";
 import authRouter from "./routes/auth.js";
 // import usersRouter from "./routes/user.js"
@@ -25,6 +26,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(cookieParser());
 // TODO: File uploads. Look into Morgan
 
 // Routes

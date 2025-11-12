@@ -37,7 +37,6 @@ export async function registerNewUser(userData) {
     604800,
     JSON.stringify({
       userUUID: newUser.uuid,
-			username: newUser.username,
       iat: Date.now(),
     })
   );
@@ -99,7 +98,8 @@ export async function refreshTokens(providedUserUUID, refreshToken) {
 
   // Verifies if the token belongs to the user requesting a token refresh
   const { userUUID, iat } = JSON.parse(stored);
-  if(!providedUserUUID || providedUserUUID !== userUUID) throw new Error("INVALID_REFRESH_TOKEN");
+  if (!providedUserUUID || providedUserUUID !== userUUID)
+    throw new Error("INVALID_REFRESH_TOKEN");
 
   // Checks if the refreshToken has expired
   const now = Date.now();
@@ -115,9 +115,9 @@ export async function refreshTokens(providedUserUUID, refreshToken) {
     "revoked"
   );
 
-  await redisClient.del(`refreshToken:${refreshToken}`); // Deletes entry after token has been revoked
-	
-	// Gets user information from database **[Think about adding username to redis cache to avoid havin got query db]**
+  await redisClient.del(`refreshToken:${refreshToken}`); // Deletes `refreshToken:${refreshToken}` key after token has been revoked
+
+  // Gets user information from database **[Think about adding username to redis cache to avoid havin got query db]**
   const user = await userRepo.findOneUserByUUID(userUUID);
 
   // Creates new JWT payload and both the new accessToken signed with server JWT_SECRET and refresh token.

@@ -1,4 +1,3 @@
-import redisClient from "../config/redisClient.js";
 import * as userService from "../services/userService.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -8,7 +7,7 @@ export const createUser = async (req, res) => {
     const results = await userService.registerNewUser({ ...req.validatedBody });
 
     // Sets the cookie
-    res.cookie("accessToken", results.token, {
+    res.cookie("accessToken", results.accessToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: process.env.NODE_ENV === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
@@ -70,19 +69,19 @@ export async function login(req, res) {
   }
 }
 
-export async function refreshSessionTokens(req, res){
-  try{
+export async function refreshSessionTokens(req, res) {
+  try {
     const { refreshToken } = req.cookies;
     const results = await userService.refreshTokens(req.user, refreshToken);
 
-    res.cookie("accessToken", results.accessToken, {
+    res.cookie("accessToken", results.newAccessToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: process.env.NODE_ENV === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
       maxAge: 15 * 60 * 1000, // 15 min lifetime
     });
 
-    res.cookie("refreshToken", results.refreshToken, {
+    res.cookie("refreshToken", results.newRefreshToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: process.env.NODE_ENV === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
@@ -90,17 +89,18 @@ export async function refreshSessionTokens(req, res){
     });
 
     return res.status(200).json("TOKENS_REFRESHED");
-  }catch(error){
+  } catch (error) {
     // Checks if refresh token was invalid and deletes session and cookies
-    if (error.message === "INVALID_REFRESH_TOKEN"){
-      // Creates new promise so that the the function can wait for the session destruction
+    if (error.message === "INVALID_REFRESH_TOKEN") {
+      // Creates new promise so that the the function can await for the session destruction
       await new Promise((resolve) => {
         req.session.destroy((destroyError) => {
-        if (destroyError) {
-          console.error("Session destroy failed:", destroyError);
-        }
-        resolve();
-      })})
+          if (destroyError) {
+            console.error("Session destroy failed:", destroyError);
+          }
+          resolve();
+        });
+      });
 
       // Clears cookies
       res.clearCookie("connect.sid", { path: "/" });
@@ -114,9 +114,9 @@ export async function refreshSessionTokens(req, res){
 }
 
 export async function logout(req, res) {
-  try
-  {
-    const { refreshToken, userUUID }  = req.cookies;
+  try {
+    const { refreshToken } = req.cookies;
+    const userUUID = req.body;
     await userService.revokeRefreshToken(userUUID, refreshToken);
 
     // Creates new promise so that the the function can wait for the session destruction
@@ -126,17 +126,16 @@ export async function logout(req, res) {
           console.error("Session destroy failed:", destroyError);
         }
         resolve();
-    })});
+      });
+    });
 
     // Clears cookies
-    res.clearCookie("connect.sid", { path: "/" });
+    res.clearCookie("connect.sid", { path: "/" }); // generic cookie name
     res.clearCookie("refreshToken", { path: "/" });
     res.clearCookie("accessToken", { path: "/" });
 
-    return res
-    .status(200)
-    .json({ message: `LOG_OUT_SUCCESSFUL!` });
-  }catch(error){
-    return res.status(401).json({ error: error.message })
+    return res.status(200).json({ message: `LOG_OUT_SUCCESSFUL!` });
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
   }
 }
