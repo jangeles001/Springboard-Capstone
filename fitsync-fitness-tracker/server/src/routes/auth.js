@@ -7,6 +7,7 @@ import {
   logout,
   refreshSessionTokens,
 } from "../controllers/authController.js";
+import requireAuth from "../middleware/authMiddleware.js";
 
 // Swagger and stellar for api documentation
 
@@ -19,7 +20,7 @@ router
     validate(newUserZodSchema.pick({ email: true, password: true })),
     login
   )
-  .post("/logout", /*validateToken(),*/ logout)
-  .post("/refresh", /*validateToken(),*/ refreshSessionTokens);
+  .post("/logout", logout)
+  .post("/refresh", refreshSessionTokens);
 
 export default router;

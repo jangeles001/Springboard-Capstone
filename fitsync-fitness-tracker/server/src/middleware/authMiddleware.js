@@ -1,13 +1,14 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { getEnv } from "../config/envConfig.js";
 dotenv.config();
 
 export default function requireAuth(req, res, next) {
   let token = null;
 
   // Checks if cookie exists and if a token is present
-  if(req.cookies?.token){ 
-    token = req.cookies.token;
+  if(req.cookies?.accessToken){ 
+    token = req.cookies.accessToken;
   }
   // Checks if authorization header with bearer token is present
   else if(req.headers.authorization?.startsWith("Bearer ")){

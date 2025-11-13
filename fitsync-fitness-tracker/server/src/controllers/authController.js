@@ -91,12 +91,12 @@ export async function refreshSessionTokens(req, res) {
     return res.status(200).json("TOKENS_REFRESHED");
   } catch (error) {
     // Checks if refresh token was invalid and deletes session and cookies
-    if (error.message === "INVALID_REFRESH_TOKEN") {
+    if (error.message === "UNAUTHORIZED") {
       // Creates new promise so that the the function can await for the session destruction
       await new Promise((resolve) => {
         req.session.destroy((destroyError) => {
           if (destroyError) {
-            console.error("Session destroy failed:", destroyError);
+            console.error("SESSION_DESTROY_FAILED:", destroyError);
           }
           resolve();
         });
@@ -115,7 +115,8 @@ export async function refreshSessionTokens(req, res) {
 export async function logout(req, res) {
   try {
     const { refreshToken } = req.cookies;
-    await userService.revokeRefreshToken(req.body.userUUID, refreshToken);
+    // Only calls function if refresh token exists and needs to be revoked
+    if(refreshToken) await userService.revokeRefreshToken(req.body.userUUID, refreshToken);
 
     // Creates new promise so that the the function can wait for the session destruction
     await new Promise((resolve) => {

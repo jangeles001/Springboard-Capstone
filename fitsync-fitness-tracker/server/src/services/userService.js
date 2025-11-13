@@ -90,23 +90,23 @@ export async function validateCredentials(email, password) {
 export async function refreshTokens(providedUserUUID, refreshToken) {
   // Checks if refresh token is blacklisted
   const revoked = await redisClient.exists(`revoked:${refreshToken}`);
-  if (revoked) throw new Error("INVALID_REFRESH_TOKEN");
+  if (revoked) throw new Error("UNAUTHORIZED");
 
   // Checks if refresh token is valid
   const stored = await redisClient.get(`refreshToken:${refreshToken}`);
-  if (!stored) throw new Error("INVALID_REFRESH_TOKEN");
+  if (!stored) throw new Error("UNAUTHORIZED");
 
   // Verifies if the token belongs to the user requesting a token refresh
   const { userUUID, iat } = JSON.parse(stored);
   if (!providedUserUUID || providedUserUUID !== userUUID)
-    throw new Error("INVALID_REFRESH_TOKEN");
+    throw new Error("UNAUTHORIZED");
 
   // Checks if the refreshToken has expired
   const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
   const timeElapsed = now - iat;
   const timeRemaining = sevenDaysInMs - timeElapsed;
-  if (timeElapsed > sevenDaysInMs) throw new Error("INVALID_REFRESH_TOKEN");
+  if (timeElapsed > sevenDaysInMs) throw new Error("UNAUTHORIZED");
 
   // Adds old refreshToken to the revoked list with remaining lifespan
   await redisClient.setEx(
