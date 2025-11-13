@@ -72,7 +72,7 @@ export async function login(req, res) {
 export async function refreshSessionTokens(req, res) {
   try {
     const { refreshToken } = req.cookies;
-    const results = await userService.refreshTokens(req.user, refreshToken);
+    const results = await userService.refreshTokens(req.body.userUUID, refreshToken);
 
     res.cookie("accessToken", results.newAccessToken, {
       httpOnly: true, // prevents access via JavaScript
@@ -103,11 +103,10 @@ export async function refreshSessionTokens(req, res) {
       });
 
       // Clears cookies
-      res.clearCookie("connect.sid", { path: "/" });
       res.clearCookie("refreshToken", { path: "/" });
       res.clearCookie("accessToken", { path: "/" });
 
-      return res.status(401).json({ error: "SESSION_INVALIDATED" });
+      return res.status(401).json({ error: error.message });
     }
     return res.status(500).json({ error: error.message });
   }
@@ -116,8 +115,7 @@ export async function refreshSessionTokens(req, res) {
 export async function logout(req, res) {
   try {
     const { refreshToken } = req.cookies;
-    const userUUID = req.body;
-    await userService.revokeRefreshToken(userUUID, refreshToken);
+    await userService.revokeRefreshToken(req.body.userUUID, refreshToken);
 
     // Creates new promise so that the the function can wait for the session destruction
     await new Promise((resolve) => {
@@ -130,7 +128,6 @@ export async function logout(req, res) {
     });
 
     // Clears cookies
-    res.clearCookie("connect.sid", { path: "/" }); // generic cookie name
     res.clearCookie("refreshToken", { path: "/" });
     res.clearCookie("accessToken", { path: "/" });
 

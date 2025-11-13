@@ -145,7 +145,7 @@ export async function refreshTokens(providedUserUUID, refreshToken) {
 }
 
 export async function revokeRefreshToken(refreshToken) {
-  const stored = await redisClient.getEx(`refreshToken:${refreshToken}`);
+  const stored = await redisClient.get(`refreshToken:${refreshToken}`);
   if (!stored) return; // returns if redis client has already expired the token entry
 
   const { iat } = JSON.parse(stored);
