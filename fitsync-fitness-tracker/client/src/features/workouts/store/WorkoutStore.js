@@ -4,7 +4,7 @@ const useWorkoutStore = create((set, get) => ({
   workoutsList: [],
   recentWorkouts: [],
   generatedWorkout: [],
-  createdWorkout: null, // { workoutName: , workouts: }
+  createdWorkout: null, // { workoutName: , exercises: }
   actions: {
     setWorkoutsList: () => {
       const response = [""]; // call fetch from fetching service

@@ -1,0 +1,34 @@
+import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
+
+const workoutExerciseSchema = new mongoose.Schema(
+  {
+    exerciseId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Exercise",
+      required: true,
+    },
+    difficultyAtCreation: { type: Number }, // snapshot of difficulty at workout creation
+    sets: { type: Number },
+    reps: { type: Number },
+    duration: { type: Number }, // for cardio/time-based exercises
+    aiFeatures: { type: Object, default: {} }, // snapshot AI features
+  },
+  { _id: false }
+); // no separate _id for each exercise entry
+
+// Mongoose schema definition
+const workoutSchema = new mongoose.Schema(
+  {
+    uuid: { type: String, default: uuidv4, unique: true, index: true },
+    workoutName: { type: String, minlength: 1, required: true, trim: true },
+    exercises: {
+      type: [workoutExerciseSchema],
+      default: [],
+    },
+  },
+  { timestamps: true }
+);
+
+// Generates Mongoose model
+export const User = mongoose.model("User", workoutSchema);
