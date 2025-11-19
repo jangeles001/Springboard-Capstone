@@ -3,6 +3,7 @@ import { getEnv } from "../config/envConfig.js";
 import exerciseModel from "../models/exerciseModel.js";
 import { fetchAllWgerExercises } from "../utils/fetchAllWgerExercises.js";
 
+// Calculates difficulty level for exercises based on the muscles the exercise uses and type of exercise 
 function computeDifficulty(exercise) {
   let muscleScore = 0;
   const muscleWeights = {
@@ -44,14 +45,14 @@ async function importExercises() {
     await mongoose.connect(getEnv("MONGO_URI"));
     console.log("Connected to MongoDB");
 
-    const exercises = await fetchAllWgerExercises(); // Gets all 
+    const exercises = await fetchAllWgerExercises(); // Gets all exercises from wger api
 
     // Maps document object fields to the corresponding wger exercise objects
     for (const ex of exercises) {
       const formatted = {
         exerciseId: ex.id.toString(),
         name: ex.translations?.[0]?.name
-          ? String(ex.translations?.[0]?.name).trim()
+ 0         ? String(ex.translations?.[0]?.name).trim()
           : `Exercise ${ex.id}`, // normalizes empty names
         description: ex.translations?.[0]?.description
           ? String(ex.translations?.[0]?.description)

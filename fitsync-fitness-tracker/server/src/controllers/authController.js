@@ -116,7 +116,7 @@ export async function logout(req, res) {
   try {
     const { refreshToken } = req.cookies;
     // Only calls function if refresh token exists and needs to be revoked
-    if(refreshToken) await userService.revokeRefreshToken(req.body.userUUID, refreshToken);
+    if(refreshToken) await userService.revokeRefreshToken(refreshToken);
 
     // Creates new promise so that the the function can wait for the session destruction
     await new Promise((resolve) => {
