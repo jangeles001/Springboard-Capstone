@@ -22,4 +22,4 @@ function createClient() {
 const userA = createClient();
 const userB = createClient();
 
-module.exports = { userA, userB }; // Exports both user clients to be used in tests;
+export { userA, userB }; // Exports both user clients to be used in tests;

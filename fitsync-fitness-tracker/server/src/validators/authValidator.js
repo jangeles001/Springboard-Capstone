@@ -5,8 +5,8 @@ function validate(schema) {
       next();
     } catch (err) {
       return res.status(400).json({
-        error: "Validation failed",
-        details: err.errors.map((e) => e.message),
+        error: "Validation failed!",
+        details: err.errors.map((error) => error.message),
       });
     }
   };
