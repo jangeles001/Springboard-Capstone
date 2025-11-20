@@ -95,29 +95,22 @@ export async function refreshTokens(providedUserUUID, refreshToken) {
   // Checks if refresh token is valid
   const stored = await redisClient.get(`refreshToken:${refreshToken}`);
   if (!stored) throw new Error("UNAUTHORIZED");
+  
+  await revokeRefreshToken(refreshToken); // we always revoke the current refresh token regardless of validity
 
   // Verifies if the token belongs to the user requesting a token refresh
   const { userUUID, iat } = JSON.parse(stored);
-  if (!providedUserUUID || providedUserUUID !== userUUID)
+  if (!providedUserUUID || providedUserUUID !== userUUID){
     throw new Error("UNAUTHORIZED");
-
+  }
+  
   // Checks if the refreshToken has expired
   const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
   const timeElapsed = now - iat;
-  const timeRemaining = sevenDaysInMs - timeElapsed;
   if (timeElapsed > sevenDaysInMs) throw new Error("UNAUTHORIZED");
 
-  // Adds old refreshToken to the revoked list with remaining lifespan
-  await redisClient.setEx(
-    `revoked:${refreshToken}`,
-    Math.floor(timeRemaining / 1000),
-    "revoked"
-  );
-
-  await redisClient.del(`refreshToken:${refreshToken}`); // Deletes `refreshToken:${refreshToken}` key after token has been revoked
-
-  // Gets user information from database **[Think about adding username to redis cache to avoid havin got query db]**
+  // Gets user information from database **[Think about adding username to redis cache to avoid having to query db]**
   const user = await userRepo.findOneUserByUUID(userUUID);
 
   // Creates new JWT payload and both the new accessToken signed with server JWT_SECRET and refresh token.
@@ -167,3 +160,7 @@ export async function revokeRefreshToken(refreshToken) {
     return;
   }
 }
+
+export async function addToRevokedCache(){
+
+};

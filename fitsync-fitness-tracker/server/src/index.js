@@ -47,7 +47,7 @@ if (getEnv("NODE_ENV") === "production") {
 
   // Catch-all: sends index.html for any unknown route
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(clientPath, "")); // TODO: Connect vite frontend with server response?
+    res.sendFile(path.resolve(clientPath, "index.html")); // TODO: Connect vite frontend with server response?
   });
 }
 
