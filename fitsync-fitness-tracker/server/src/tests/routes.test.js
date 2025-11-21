@@ -5,7 +5,10 @@ import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
 import { userA, userB } from "./helpers/axiosClients.js";
 import { getEnv } from "../config/envConfig.js";
-import { registerNewUser, revokeRefreshToken } from "../services/userService.js";
+import {
+  registerNewUser,
+  revokeRefreshToken,
+} from "../services/userService.js";
 import redisClient from "../config/redisClient.js";
 
 const BASE_URL = `http://localhost:${getEnv("PORT")}`;
@@ -292,19 +295,20 @@ describe(" Test cases for authoriztion routes", function () {
     const refreshToken = cookies[1].value;
 
     // Revokes refreshToken, but doesn't delete it from the client session
-    await revokeRefreshToken(refreshToken); 
-    
+    await revokeRefreshToken(refreshToken);
+
     const results = await userA.client.post(
-      `${BASE_URL}/api/v1/auth/refresh`, 
-      { userUUID: newUserA.uuid},
+      `${BASE_URL}/api/v1/auth/refresh`,
+      { userUUID: newUserA.uuid },
       {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
         validateStatus: () => true, // Allows for statuses outside of 200 range
-      });
+      }
+    );
 
-      expect(results.status).to.equal(401); // Checks for 401 Unauthorized code
-      expect(results.data.error).to.equal("UNAUTHORIZED");
+    expect(results.status).to.equal(401); // Checks for 401 Unauthorized code
+    expect(results.data.error).to.equal("UNAUTHORIZED");
   });
 
   it("POST api/v1/auth/refresh should return 401 for passing the incorrect userUUID for the provided refreshToken and revoke the token", async () => {
@@ -314,28 +318,77 @@ describe(" Test cases for authoriztion routes", function () {
 
     // Passes userUUID that doesn't match the userUUID assigned to the token
     const results = await userA.client.post(
-      `${BASE_URL}/api/v1/auth/refresh`, 
-      { userUUID: "1"},
+      `${BASE_URL}/api/v1/auth/refresh`,
+      { userUUID: "1" },
       {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
         validateStatus: () => true, // Allows for statuses outside of 200 range
-      });
+      }
+    );
 
-      expect(results.status).to.equal(401); // Checks for 401 Unauthorized code
-      expect(results.data.error).to.equal("UNAUTHORIZED");
+    expect(results.status).to.equal(401); // Checks for 401 Unauthorized code
+    expect(results.data.error).to.equal("UNAUTHORIZED");
 
-      const cookiesAfterRequest = await userA.jar.getCookies(BASE_URL);
-      expect(cookiesAfterRequest.length).to.equal(0);
+    const cookiesAfterRequest = await userA.jar.getCookies(BASE_URL);
+    expect(cookiesAfterRequest.length).to.equal(0);
 
-      // Checks cache for revoked token
-      const cacheCheck = await redisClient.get(`revoked:${refreshToken}`);
-      expect(cacheCheck).to.exist;
-      expect(cacheCheck).to.equal("revoked");
-
-
+    // Checks cache for revoked token
+    const cacheCheck = await redisClient.get(`revoked:${refreshToken}`);
+    expect(cacheCheck).to.exist;
+    expect(cacheCheck).to.equal("revoked");
   });
 
   // TODO: Test logout functionality
+  it(" POST api/v1/auth/logout should return 200 successful logout", async () => {
+    // Gets cookies from userA client jar
+    const cookies = await userA.jar.getCookies(BASE_URL);
+    const refreshToken = cookies[1].value;
+
+    const results = await userA.client.post(
+      `${BASE_URL}/api/v1/auth/logout`,
+      { userUUID: newUserA.uuid },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true, // Allows for statuses outside of 200 range
+      }
+    );
+
+    const cookiesAfterRequest = await userA.jar.getCookies(BASE_URL);
+    expect(cookiesAfterRequest.length).to.equal(0);
+
+    // Checks cache for revoked token
+    const cacheCheck = await redisClient.get(`revoked:${refreshToken}`);
+    expect(cacheCheck).to.exist;
+    expect(cacheCheck).to.equal("revoked");
+
+    expect(results.status).to.equal(200);
+    expect(results.data.message).to.equal("Log Out Successful!");
+  });
+
+  it(" POST api/v1/auth/logout should return 401 error and revoke the refreshToken", async () => {
+    // Gets cookies from userA client jar
+    const cookies = await userA.jar.getCookies(BASE_URL);
+    const refreshToken = cookies[1].value;
+
+    const results = await userA.client.post(
+      `${BASE_URL}/api/v1/auth/logout`,
+      { userUUID: 1 },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true, // Allows for statuses outside of 200 range
+      }
+    );
+
+    // Checks cache for revoked token
+    const cacheCheck = await redisClient.get(`revoked:${refreshToken}`);
+    expect(cacheCheck).to.exist;
+    expect(cacheCheck).to.equal("revoked");
+
+    expect(results.status).to.equal(401);
+    expect(results.data.message).to.equal("");
+  });
   // TODO: Create test for other endpoints
 });

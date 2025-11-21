@@ -118,6 +118,9 @@ export async function refreshSessionTokens(req, res) {
 export async function logout(req, res) {
   try {
     const { refreshToken } = req.cookies;
+
+    await validateUUID(req.body.userUUID);
+
     // Only calls function if refresh token exists and needs to be revoked
     if (refreshToken) await userService.revokeRefreshToken(refreshToken);
 

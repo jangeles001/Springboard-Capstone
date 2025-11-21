@@ -95,15 +95,15 @@ export async function refreshTokens(providedUserUUID, refreshToken) {
   // Checks if refresh token is valid
   const stored = await redisClient.get(`refreshToken:${refreshToken}`);
   if (!stored) throw new Error("UNAUTHORIZED");
-  
+
   await revokeRefreshToken(refreshToken); // we always revoke the current refresh token regardless of validity
 
   // Verifies if the token belongs to the user requesting a token refresh
   const { userUUID, iat } = JSON.parse(stored);
-  if (!providedUserUUID || providedUserUUID !== userUUID){
+  if (!providedUserUUID || providedUserUUID !== userUUID) {
     throw new Error("UNAUTHORIZED");
   }
-  
+
   // Checks if the refreshToken has expired
   const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
@@ -160,7 +160,3 @@ export async function revokeRefreshToken(refreshToken) {
     return;
   }
 }
-
-export async function addToRevokedCache(){
-
-};
