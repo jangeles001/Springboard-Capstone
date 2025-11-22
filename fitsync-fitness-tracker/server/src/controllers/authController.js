@@ -23,7 +23,7 @@ export const createUser = async (req, res) => {
 
     return res.status(201).json({
       message: "Registration Successful!",
-      newUserInfo: { username: results.username, uuid: results.uuid },
+      newUserInfo: { username: results.username, publicId: results.publicId },
     });
   } catch (error) {
     if (error.message === "EMAIL_ALREADY_REGISTERED")
@@ -58,7 +58,7 @@ export async function login(req, res) {
     });
 
     return res.status(200).json({
-      message: `${validatedUser.username} (UUID: ${validatedUser.uuid}) Logged In!`,
+      message: `${validatedUser.username} (ID: ${validatedUser.publicId}) Logged In!`,
     });
   } catch (error) {
     if (error.message === "INVALID_CREDENTIALS")
@@ -72,10 +72,7 @@ export async function login(req, res) {
 export async function refreshSessionTokens(req, res) {
   try {
     const { refreshToken } = req.cookies;
-    const results = await userService.refreshTokens(
-      req.body.userUUID,
-      refreshToken
-    );
+    const results = await userService.refreshTokens( refreshToken );
 
     res.cookie("accessToken", results.newAccessToken, {
       httpOnly: true, // prevents access via JavaScript
@@ -118,11 +115,10 @@ export async function refreshSessionTokens(req, res) {
 export async function logout(req, res) {
   try {
     const { refreshToken } = req.cookies;
+  
+    if(!refreshToken) return res.status(200).json({ message:`Log Out Successful!` })
 
-    await validateUUID(req.body.userUUID);
-
-    // Only calls function if refresh token exists and needs to be revoked
-    if (refreshToken) await userService.revokeRefreshToken(refreshToken);
+    await userService.revokeRefreshToken(refreshToken);
 
     // Creates new promise so that the the function can wait for the session destruction
     await new Promise((resolve) => {
@@ -138,8 +134,8 @@ export async function logout(req, res) {
     res.clearCookie("refreshToken", { path: "/" });
     res.clearCookie("accessToken", { path: "/" });
 
-    return res.status(200).json({ message: `Log Out Successful!` });
+    return res.status(200).json({ message:`Log Out Successful!` });
   } catch (error) {
-    return res.status(401).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 }

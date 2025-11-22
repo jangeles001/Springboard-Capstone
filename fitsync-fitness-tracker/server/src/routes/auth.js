@@ -20,7 +20,7 @@ router
     validate(newUserZodSchema.pick({ email: true, password: true })),
     login
   )
-  .post("/logout", logout)
-  .post("/refresh", refreshSessionTokens);
+  .get("/logout", logout)
+  .get("/refresh", refreshSessionTokens);
 
 export default router;

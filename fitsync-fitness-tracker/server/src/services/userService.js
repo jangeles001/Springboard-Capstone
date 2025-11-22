@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import redisClient from "../config/redisClient.js";
 import { generateSalt, hashPassword, verifyPassword } from "../utils/hash.js";
+import { makePublicId } from "../utils/publicIds.js";
 import { getEnv } from "../config/envConfig.js";
 
 export async function registerNewUser(userData) {
@@ -13,37 +14,20 @@ export async function registerNewUser(userData) {
   // Password Encryption
   const salt = await generateSalt();
   const passwordHash = await hashPassword(userData.password, salt);
+  const newUserUUID = uuidv4(); // creates newUsers uuid
+  const publicId = makePublicId(newUserUUID); // calls util function to create short public uuid for the newUser
 
   delete userData.password; // Removes the unhashed password from the userData object
-  userData = { ...userData, passwordHash }; // Adds the hashed password to the userData object
+  userData = { ...userData, uuid: newUserUUID, publicId, passwordHash }; // Combines all the required userData for the newUser document
 
   // Creates new User document with the userData object
   const newUser = await userRepo.createNewUser(userData);
 
-  // Creates JWT payload and both the access token signed with server JWT_SECRET and refresh token.
-  // Access token will expire in 15 min.
-  const accessTokenPayload = {
-    sub: newUser.uuid.toString(),
-    username: newUser.username,
-  };
-  const accessToken = jwt.sign(accessTokenPayload, getEnv("JWT_SECRET"), {
-    expiresIn: "15m",
-  });
-  const refreshToken = uuidv4(); // Opaque string
-
-  // Sets redis key with newly generated refreshToken, user.uuid, and issued date
-  await redisClient.setEx(
-    `refreshToken:${refreshToken}`,
-    604800,
-    JSON.stringify({
-      userUUID: newUser.uuid,
-      iat: Date.now(),
-    })
-  );
+  const { accessToken, refreshToken } = await generateTokens(newUser);
 
   return {
     username: newUser.username,
-    uuid: newUser.uuid,
+    publicId: newUser.publicId,
     accessToken,
     refreshToken,
   };
@@ -58,6 +42,45 @@ export async function validateCredentials(email, password) {
   const valid = await verifyPassword(password, user.passwordHash);
   if (!valid) throw new Error("INVALID_CREDENTIALS");
 
+  const { accessToken, refreshToken } = await generateTokens(user);  
+
+  return {
+    username: user.username,
+    publicId: user.publicId,
+    accessToken,
+    refreshToken,
+  };
+}
+
+export async function refreshTokens(refreshToken) {
+  // Checks if refresh token is blacklisted
+  const revoked = await redisClient.exists(`revoked:${refreshToken}`);
+  if (revoked) throw new Error("UNAUTHORIZED");
+
+  // Checks if refresh token is valid
+  const stored = await redisClient.get(`refreshToken:${refreshToken}`);
+  if (!stored) throw new Error("UNAUTHORIZED");
+
+  // Checks if the refreshToken has expired
+  const { userUUID, iat } = JSON.parse(stored);
+  const now = Date.now();
+  const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+  const timeElapsed = now - iat;
+  if (timeElapsed > sevenDaysInMs) throw new Error("UNAUTHORIZED");
+
+  await revokeRefreshToken(refreshToken); // Revokes refreshToken
+
+  // Gets user information from database **[Think about adding username to redis cache to avoid having to query db]**
+  const user = await userRepo.findOneUserByUUID(userUUID);
+
+  const tokens = await generateTokens(user);
+  const newAccessToken = tokens.accessToken;
+  const newRefreshToken = tokens.refreshToken;
+
+  return { newAccessToken, newRefreshToken };
+}
+
+export async function generateTokens(user){
   // Creates JWT payload and both the access token signed with server JWT_SECRET and refresh token.
   // Access token will expire in 15 min.
   const accessTokenPayload = {
@@ -79,62 +102,7 @@ export async function validateCredentials(email, password) {
     })
   );
 
-  return {
-    username: user.username,
-    uuid: user.uuid,
-    accessToken,
-    refreshToken,
-  };
-}
-
-export async function refreshTokens(providedUserUUID, refreshToken) {
-  // Checks if refresh token is blacklisted
-  const revoked = await redisClient.exists(`revoked:${refreshToken}`);
-  if (revoked) throw new Error("UNAUTHORIZED");
-
-  // Checks if refresh token is valid
-  const stored = await redisClient.get(`refreshToken:${refreshToken}`);
-  if (!stored) throw new Error("UNAUTHORIZED");
-
-  await revokeRefreshToken(refreshToken); // we always revoke the current refresh token regardless of validity
-
-  // Verifies if the token belongs to the user requesting a token refresh
-  const { userUUID, iat } = JSON.parse(stored);
-  if (!providedUserUUID || providedUserUUID !== userUUID) {
-    throw new Error("UNAUTHORIZED");
-  }
-
-  // Checks if the refreshToken has expired
-  const now = Date.now();
-  const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
-  const timeElapsed = now - iat;
-  if (timeElapsed > sevenDaysInMs) throw new Error("UNAUTHORIZED");
-
-  // Gets user information from database **[Think about adding username to redis cache to avoid having to query db]**
-  const user = await userRepo.findOneUserByUUID(userUUID);
-
-  // Creates new JWT payload and both the new accessToken signed with server JWT_SECRET and refresh token.
-  // Access token will expire in 15 min.
-  const accessTokenPayload = {
-    sub: user.uuid.toString(),
-    username: user.username,
-  };
-  const newAccessToken = jwt.sign(accessTokenPayload, getEnv("JWT_SECRET"), {
-    expiresIn: "15m",
-  });
-  const newRefreshToken = uuidv4(); // Opaque string
-
-  // Updates redis key with newly generated refreshToken, user.uuid, and issued date
-  await redisClient.setEx(
-    `refreshToken:${newRefreshToken}`,
-    604800,
-    JSON.stringify({
-      userUUID: user.uuid,
-      iat: Date.now(),
-    })
-  );
-
-  return { newAccessToken, newRefreshToken };
+  return { accessToken,  refreshToken }
 }
 
 export async function revokeRefreshToken(refreshToken) {

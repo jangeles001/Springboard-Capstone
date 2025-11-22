@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 
 // Mongoose schema definition
 const userSchema = new mongoose.Schema(
   {
-    uuid: { type: String, default: uuidv4, unique: true, index: true },
+    uuid: { type: String, required: true, unique: true },
+    publicId: { type: String, required: true, unique: true },
     firstName: { type: String, minlength: 1, required: true, trim: true },
     lastName: { type: String, minlength: 1, required: true, trim: true },
     username: { type: String, minlength: 4, required: true, trim: true },
