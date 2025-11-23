@@ -7,17 +7,16 @@ import {
   logout,
   refreshSessionTokens,
 } from "../controllers/authController.js";
-import requireAuth from "../middleware/authMiddleware.js";
 
 // Swagger and stellar for api documentation
 
 const router = express.Router();
 
 router
-  .post("/register", validate(newUserZodSchema), createUser)
+  .post("/register", validate(newUserZodSchema).strict(), createUser)
   .post(
     "/login",
-    validate(newUserZodSchema.pick({ email: true, password: true })),
+    validate(newUserZodSchema.pick({ email: true, password: true }).strict()),
     login
   )
   .get("/logout", logout)

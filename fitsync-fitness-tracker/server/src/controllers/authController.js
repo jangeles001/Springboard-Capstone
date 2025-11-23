@@ -1,6 +1,5 @@
 import * as userService from "../services/userService.js";
-import dotenv from "dotenv";
-dotenv.config();
+import { getEnv } from "../config/envConfig.js";
 
 export const createUser = async (req, res) => {
   try {
@@ -9,14 +8,14 @@ export const createUser = async (req, res) => {
     // Sets the cookie
     res.cookie("accessToken", results.accessToken, {
       httpOnly: true, // prevents access via JavaScript
-      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
       maxAge: 15 * 60 * 1000, // 15 min lifetime
     });
 
     res.cookie("refreshToken", results.refreshToken, {
       httpOnly: true, // prevents access via JavaScript
-      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
@@ -45,14 +44,14 @@ export async function login(req, res) {
 
     res.cookie("accessToken", validatedUser.accessToken, {
       httpOnly: true, // prevents access via JavaScript
-      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
       maxAge: 15 * 60 * 1000, // 15 min lifetime
     });
 
     res.cookie("refreshToken", validatedUser.refreshToken, {
       httpOnly: true, // prevents access via JavaScript
-      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
@@ -76,14 +75,14 @@ export async function refreshSessionTokens(req, res) {
 
     res.cookie("accessToken", results.newAccessToken, {
       httpOnly: true, // prevents access via JavaScript
-      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
       maxAge: 15 * 60 * 1000, // 15 min lifetime
     });
 
     res.cookie("refreshToken", results.newRefreshToken, {
       httpOnly: true, // prevents access via JavaScript
-      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
       sameSite: "strict", // CSRF protection
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });

@@ -15,10 +15,10 @@ export async function registerNewUser(userData) {
   const salt = await generateSalt();
   const passwordHash = await hashPassword(userData.password, salt);
   const newUserUUID = uuidv4(); // creates newUsers uuid
-  const publicId = makePublicId(newUserUUID); // calls util function to create short public uuid for the newUser
+  const userUUID = makePublicId(newUserUUID); // calls util function to create short public uuid for the newUser
 
   delete userData.password; // Removes the unhashed password from the userData object
-  userData = { ...userData, uuid: newUserUUID, publicId, passwordHash }; // Combines all the required userData for the newUser document
+  userData = { ...userData, uuid: newUserUUID, userUUID, passwordHash }; // Combines all the required userData for the newUser document
 
   // Creates new User document with the userData object
   const newUser = await userRepo.createNewUser(userData);
@@ -27,7 +27,7 @@ export async function registerNewUser(userData) {
 
   return {
     username: newUser.username,
-    publicId: newUser.publicId,
+    userUUID: newUser.userUUID,
     accessToken,
     refreshToken,
   };
@@ -46,7 +46,7 @@ export async function validateCredentials(email, password) {
 
   return {
     username: user.username,
-    publicId: user.publicId,
+    userUUID: user.userUUID,
     accessToken,
     refreshToken,
   };
@@ -128,3 +128,35 @@ export async function revokeRefreshToken(refreshToken) {
     return;
   }
 }
+
+export async function getUserPrivateInformation(userUUID) {
+  const user = await userRepo.findOneUserByUUID(userUUID);
+
+  const privateInformation = {
+    firstname: user.firstName,
+    lastName: user.lastName,
+    username: user.username,
+    height: user.height,
+    age: user.age,
+    weight: user.weight,
+  }
+
+  return { ...privateInformation };
+
+}
+
+export async function updatePrivateUserInformation(userUUID, updatedFields){
+   const user = await userRepo.updateMultipleUserFieldsByUUID(userUUID, updatedFields);
+
+   const updatedPrivateInformation = {
+    firstname: user.firstName,
+    lastName: user.lastName,
+    username: user.username,
+    height: user.height,
+    age: user.age,
+    weight: user.weight,
+  }
+
+  return { ...updatedPrivateInformation };
+}
+

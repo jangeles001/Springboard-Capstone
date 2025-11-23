@@ -9,7 +9,7 @@ const exerciseSchema = new mongoose.Schema(
     muscles: { type: [String], default: [] }, // primary and secondary muscles
     difficulty: { type: Number, default: 1 }, // AI-computed difficulty score
     met: { type: Number, default: 0 }, // MET value from wger
-    equipment: { type: [String], default: [] },
+    equipment: { type: [String], default: ["none (bodyweight exercise)"] },
     aiFeatures: { type: Object, default: {} }, // future AI features
   },
   { timestamps: true }

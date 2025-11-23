@@ -471,10 +471,10 @@ describe(" Test cases for ALL routes", function () {
       creatorPublicId: newUserA.publicId,
       workoutName: "Push Dayyyy",
       exercises:[
-        "57",
-        "31",
-        "56",
-        "805",
+        {id: "57", sets: 3, reps: 8, weight:220},
+        {id: "31", sets: 3, reps: 10, weight:221},
+        {id: "56", sets: 3, reps: 8, weight:222},
+        {id: "805", sets: 3, reps: 12, weight:223},
       ] 
     }
 
