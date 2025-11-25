@@ -5,6 +5,7 @@ import redisClient from "../config/redisClient.js";
 import { generateSalt, hashPassword, verifyPassword } from "../utils/hash.js";
 import { makePublicId } from "../utils/publicIds.js";
 import { getEnv } from "../config/envConfig.js";
+import { getMembershipDuration } from "../utils/MembershipDuration.js";
 
 export async function registerNewUser(userData) {
   // Checks if a user has already registered with the provided email
@@ -15,10 +16,17 @@ export async function registerNewUser(userData) {
   const salt = await generateSalt();
   const passwordHash = await hashPassword(userData.password, salt);
   const newUserUUID = uuidv4(); // creates newUsers uuid
-  const userUUID = makePublicId(newUserUUID); // calls util function to create short public uuid for the newUser
+  const userPublicId = makePublicId(newUserUUID); // calls util function to create short public uuid for the newUser
 
   delete userData.password; // Removes the unhashed password from the userData object
-  userData = { ...userData, uuid: newUserUUID, userUUID, passwordHash }; // Combines all the required userData for the newUser document
+
+  // Constructs newUser data object with the required fields for a new user
+  userData = {
+    ...userData,
+    uuid: newUserUUID,
+    publicId: userPublicId,
+    passwordHash,
+  };
 
   // Creates new User document with the userData object
   const newUser = await userRepo.createNewUser(userData);
@@ -27,7 +35,7 @@ export async function registerNewUser(userData) {
 
   return {
     username: newUser.username,
-    userUUID: newUser.userUUID,
+    publicId: newUser.publicId,
     accessToken,
     refreshToken,
   };
@@ -42,11 +50,11 @@ export async function validateCredentials(email, password) {
   const valid = await verifyPassword(password, user.passwordHash);
   if (!valid) throw new Error("INVALID_CREDENTIALS");
 
-  const { accessToken, refreshToken } = await generateTokens(user);  
+  const { accessToken, refreshToken } = await generateTokens(user);
 
   return {
     username: user.username,
-    userUUID: user.userUUID,
+    publicId: user.publicId,
     accessToken,
     refreshToken,
   };
@@ -80,7 +88,7 @@ export async function refreshTokens(refreshToken) {
   return { newAccessToken, newRefreshToken };
 }
 
-export async function generateTokens(user){
+export async function generateTokens(user) {
   // Creates JWT payload and both the access token signed with server JWT_SECRET and refresh token.
   // Access token will expire in 15 min.
   const accessTokenPayload = {
@@ -102,7 +110,7 @@ export async function generateTokens(user){
     })
   );
 
-  return { accessToken,  refreshToken }
+  return { accessToken, refreshToken };
 }
 
 export async function revokeRefreshToken(refreshToken) {
@@ -129,34 +137,47 @@ export async function revokeRefreshToken(refreshToken) {
   }
 }
 
-export async function getUserPrivateInformation(userUUID) {
+export async function getPublicUserInformation(userUUID) {
+  const user = await userRepo.findOneUserByUUID(userUUID);
+
+  const publicInformation = {
+    username: user.username,
+    age: user.age,
+    memberSince: getMembershipDuration(user.createdAt),
+  };
+
+  return { ...publicInformation };
+}
+
+export async function getPrivateUserInformation(userUUID) {
   const user = await userRepo.findOneUserByUUID(userUUID);
 
   const privateInformation = {
-    firstname: user.firstName,
+    firstName: user.firstName,
     lastName: user.lastName,
     username: user.username,
     height: user.height,
     age: user.age,
     weight: user.weight,
-  }
+  };
 
   return { ...privateInformation };
-
 }
 
-export async function updatePrivateUserInformation(userUUID, updatedFields){
-   const user = await userRepo.updateMultipleUserFieldsByUUID(userUUID, updatedFields);
+export async function updatePrivateUserInformation(userUUID, updatedFields) {
+  const user = await userRepo.updateMultipleUserFieldsByUUID(
+    userUUID,
+    updatedFields
+  );
 
-   const updatedPrivateInformation = {
+  const updatedPrivateInformation = {
     firstname: user.firstName,
     lastName: user.lastName,
     username: user.username,
     height: user.height,
     age: user.age,
     weight: user.weight,
-  }
+  };
 
   return { ...updatedPrivateInformation };
 }
-

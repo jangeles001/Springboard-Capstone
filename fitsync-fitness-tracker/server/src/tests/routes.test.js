@@ -3,7 +3,7 @@ process.env.NODE_ENV = "test";
 import { expect } from "chai";
 import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
-import { Workout } from "../models/WorkoutModel.js"
+import { Workout } from "../models/WorkoutModel.js";
 import { userA, userB } from "./helpers/axiosClients.js";
 import { getEnv } from "../config/envConfig.js";
 import {
@@ -28,6 +28,7 @@ describe(" Test cases for ALL routes", function () {
     await userB.jar.removeAllCookies();
 
     const userData = {
+      publicId: 1,
       firstName: "notChris",
       lastName: "Chisterson",
       username: "christersonchrischris",
@@ -38,10 +39,9 @@ describe(" Test cases for ALL routes", function () {
       email: "chirstersonchrisss@gmail.com",
     };
 
-    // Creates new user before each test
-    const { username, publicId, accessToken, refreshToken } = await registerNewUser(
-      userData
-    );
+    // Creates new users before each test
+    const { username, publicId, accessToken, refreshToken } =
+      await registerNewUser(userData);
 
     await userA.jar.setCookie(`accessToken=${accessToken}`, BASE_URL);
     await userA.jar.setCookie(`refreshToken=${refreshToken}`, BASE_URL);
@@ -56,7 +56,7 @@ describe(" Test cases for ALL routes", function () {
     await mongoose.connection.close();
   });
 
-  it("POST api/v1/auth/register should register a new user and set both the access and refresh token as a cookie for the session", async () => {
+  it("POST api/v1/auth/register should register a new users and set both the access and refresh token as a cookie for the session", async () => {
     const newUser = {
       firstName: "Chris",
       lastName: "Christianson",
@@ -97,7 +97,7 @@ describe(" Test cases for ALL routes", function () {
   });
 
   it("POST api/v1/auth/register should return 409 error since the email address is already in use", async () => {
-    // Same userData as the default user created before each test
+    // Same userData as the default users created before each test
     const newUser = {
       firstName: "notChris",
       lastName: "Chisterson",
@@ -126,7 +126,7 @@ describe(" Test cases for ALL routes", function () {
   });
 
   it("POST api/v1/auth/register should return 400 error validation failure age and first name is required", async () => {
-    // Same userData as the default user created before each test
+    // Same userData as the default users created before each test
     const newUser = {
       lastName: "Chisterson",
       username: "christersonchrischris",
@@ -156,7 +156,7 @@ describe(" Test cases for ALL routes", function () {
   });
 
   it("POST api/v1/auth/register should return 400 error validation failure age and weight must be a number", async () => {
-    // Same userData as the default user created before each test
+    // Same userData as the default users created before each test
     const newUser = {
       firstName: "notChris",
       lastName: "Chisterson",
@@ -188,7 +188,7 @@ describe(" Test cases for ALL routes", function () {
   });
 
   it("POST api/v1/auth/login should return 200 login successful and set accessToken and refreshToken cookies to the client session", async () => {
-    // Same userData as the default user created before each test
+    // Same userData as the default users created before each test
     const userCredentials = {
       email: "chirstersonchrisss@gmail.com",
       password: "abc1234",
@@ -269,17 +269,14 @@ describe(" Test cases for ALL routes", function () {
     // Required to ensure a new token is generated
     await new Promise((resolve) => setTimeout(resolve, 940));
 
-    // Stores initial cookies provided to the client upon user creation at start of test
+    // Stores initial cookies provided to the client upon users creation at start of test
     const initialCookies = await userA.jar.getCookies(BASE_URL);
 
-    const results = await userA.client.get(
-      `${BASE_URL}/api/v1/auth/refresh`,
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" },
-        validateStatus: () => true, // Allows for statuses outside of 200 range
-      }
-    );
+    const results = await userA.client.get(`${BASE_URL}/api/v1/auth/refresh`, {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true, // Allows for statuses outside of 200 range
+    });
 
     expect(results.status).to.equal(201);
     expect(results.data.message).to.equal(`TOKENS_REFRESHED`);
@@ -298,14 +295,11 @@ describe(" Test cases for ALL routes", function () {
     // Revokes refreshToken, but doesn't delete it from the client session
     await revokeRefreshToken(refreshToken);
 
-    const results = await userA.client.get(
-      `${BASE_URL}/api/v1/auth/refresh`,
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" },
-        validateStatus: () => true, // Allows for statuses outside of 200 range
-      }
-    );
+    const results = await userA.client.get(`${BASE_URL}/api/v1/auth/refresh`, {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true, // Allows for statuses outside of 200 range
+    });
 
     expect(results.status).to.equal(401);
     expect(results.data.error).to.equal("UNAUTHORIZED");
@@ -317,14 +311,11 @@ describe(" Test cases for ALL routes", function () {
     const cookies = await userA.jar.getCookies(BASE_URL);
     const refreshToken = cookies[1].value;
 
-    const results = await userA.client.get(
-      `${BASE_URL}/api/v1/auth/logout`,
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" },
-        validateStatus: () => true, // Allows for statuses outside of 200 range
-      }
-    );
+    const results = await userA.client.get(`${BASE_URL}/api/v1/auth/logout`, {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true, // Allows for statuses outside of 200 range
+    });
 
     const cookiesAfterRequest = await userA.jar.getCookies(BASE_URL);
     expect(cookiesAfterRequest.length).to.equal(0);
@@ -344,39 +335,18 @@ describe(" Test cases for ALL routes", function () {
     const cookies = await userA.jar.getCookies(BASE_URL);
     expect(cookies.length).to.equal(0);
 
-    const results = await userA.client.get(
-      `${BASE_URL}/api/v1/auth/logout`,
-      {
-        headers: { "Content-Type": "application/json" },
-        validateStatus: () => true, // Allows for statuses outside of 200 range
-      }
-    );
+    const results = await userA.client.get(`${BASE_URL}/api/v1/auth/logout`, {
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true, // Allows for statuses outside of 200 range
+    });
 
     expect(results.status).to.equal(200);
     expect(results.data.message).to.equal("Log Out Successful!");
   });
 
-  it("GET api/v1/users/me should return 200 and display the private information for the user", async () => {
-    const results = await userA.client.get(`${BASE_URL}/api/v1/user/${newUserA.publicId}`,
-      {
-        headers: { "Content-Type": "application/json"},
-        validateStatus: () => true,
-      }
-    );
-
-    const user = User.findOne({ publicId: newUserA.publicId })
-
-    expect(results.status).to.equal(200)
-    expect(results.data.username).to.equal(newUserA.username);
-    expect(results.data.age).to.equal(user.age);
-    expect(results.data.height).to.equal(user.height);
-    
-  })
-
   it("GET api/v1/users/me should return 200 and display the logged in users' private information", async () => {
-    // userData used to create the test user
+    // userData that will be compared to the results data
     const userData = {
-      publicId: newUserA.publicId,
       firstName: "notChris",
       lastName: "Chisterson",
       username: "christersonchrischris",
@@ -385,30 +355,28 @@ describe(" Test cases for ALL routes", function () {
       weight: 221,
     };
 
-    const results = await userA.client.get(`${BASE_URL}/api/v1/user/me`,
-      {
-        headers: { "Content-Type": "application/json"},
-        validateStatus: () => true,
-      }
-    );
+    const results = await userA.client.get(`${BASE_URL}/api/v1/users/me`, {
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true,
+    });
 
-    expect(results.status).to.equal(200)
-    expect(results.data).to.deep.equal(userData)
-  })
+    expect(results.status).to.equal(200);
+    expect(results.data.userInfo).to.deep.equal(userData);
+  });
 
-  it("POST api/v1/users/me should return 200 and display the logged in users' private information", async () => {
-    // Gets user from database
-    const user = User.findOne({ publicId: newUserA.publicId });
-    
+  it("PATCH api/v1/users/me should return 200 and the updated private user information", async () => {
+    // Gets users from database
+    const users = await User.findOne({ publicId: newUserA.publicId });
+
     // Saves initialPrivateData before any changes are made
     const initialPrivateData = {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
-      height: user.heigth,
-      age: user.age,
-      weight: user.weight,
-    }
+      firstName: users.firstName,
+      lastName: users.lastName,
+      username: users.username,
+      height: users.height,
+      age: users.age,
+      weight: users.weight,
+    };
 
     // New private data
     const newPrivateUserData = {
@@ -420,76 +388,96 @@ describe(" Test cases for ALL routes", function () {
       weight: 222,
     };
 
-    const results = await userA.client.post(`${BASE_URL}/api/v1/user/me`,
+    const results = await userA.client.post(
+      `${BASE_URL}/api/v1/users/me`,
       newPrivateUserData,
       {
-        headers: { "Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         validateStatus: () => true,
       }
     );
 
-    expect(results.status).to.equal(200)
+    expect(results.status).to.equal(200);
     expect(results.data).to.deep.equal(newPrivateUserData);
     expect(newPrivateUserData).to.not.deep.equal(initialPrivateData);
-  })
-  
-  it("GET api/v1/users/:user should return 200 and display the public information for the user", async () => {
-    const results = await userA.client.get(`${BASE_URL}/api/v1/user/${newUserA.publicId}`,
+  });
+
+  it("GET api/v1/users/:userPublicId should return 200 and the public information for the user with the publicId provided in the url params", async () => {
+    const results = await userA.client.get(
+      `${BASE_URL}/api/v1/users/${newUserA.publicId}`,
       {
-        headers: { "Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         validateStatus: () => true,
       }
     );
 
-    const user = User.findOne({ publicId: newUserA.publicId })
+    const users = await User.findOne({ publicId: newUserA.publicId });
 
-    expect(results.status).to.equal(200)
-    expect(results.data.username).to.equal(user.username);
-    expect(results.data.age).to.equal(user.age);
-    expect(results.data.height).to.equal(user.height);
+    expect(results.status).to.equal(200);
+    expect(results.data.username).to.equal(newUserA.username);
+    expect(results.data.age).to.equal(users.age);
+    expect(results.data.height).to.equal(users.height);
+  });
+
+  it("GET api/v1/users/:userPublicId should return 200 and display the public information for the user", async () => {
+    const results = await userA.client.get(
+      `${BASE_URL}/api/v1/users/${newUserA.publicId}`,
+      {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      }
+    );
+
+    const users = User.findOne({ publicId: newUserA.publicId });
+
+    expect(results.status).to.equal(200);
+    expect(results.data.username).to.equal(users.username);
+    expect(results.data.age).to.equal(users.age);
+    expect(results.data.height).to.equal(users.height);
 
     // TODO: Determine how much is too much information .-.
-    
-  })
+  });
 
-  it("GET api/v1/users/:user/workouts should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
+  it("GET api/v1/users/workouts/:userPubilcId should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
     const workouts = await Workout.find({ userPublicId: newUserA.publicId });
 
-    const results = await userA.client.get(`${BASE_URL}/api/v1/user/${userA.publicId}/workouts`,
+    const results = await userA.client.get(
+      `${BASE_URL}/api/v1/users/workouts/${userA.publicId}`,
       {
-        headers: { "Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         validateStatus: () => true,
       }
     );
 
-    expect(results.status).to.equal(200)
+    expect(results.status).to.equal(200);
     expect(results.data.workouts.length).to.equal(0);
-  })
+  });
 
-  it("GET api/v1/users/:user/workouts should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
+  it("GET api/v1/users/workouts/:userPublicId should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
     const workoutInformation = {
       creatorPublicId: newUserA.publicId,
       workoutName: "Push Dayyyy",
-      exercises:[
-        {id: "57", sets: 3, reps: 8, weight:220},
-        {id: "31", sets: 3, reps: 10, weight:221},
-        {id: "56", sets: 3, reps: 8, weight:222},
-        {id: "805", sets: 3, reps: 12, weight:223},
-      ] 
-    }
+      exercises: [
+        { id: "57", sets: 3, reps: 8, weight: 220 },
+        { id: "31", sets: 3, reps: 10, weight: 221 },
+        { id: "56", sets: 3, reps: 8, weight: 222 },
+        { id: "805", sets: 3, reps: 12, weight: 223 },
+      ],
+    };
 
     const workouts = await Workout.find({ userPublicId: newUserA.publicId });
 
-    const results = await userA.client.get(`${BASE_URL}/api/v1/user/${userA.publicId}/workouts`,
+    const results = await userA.client.get(
+      `${BASE_URL}/api/v1/users/workouts/${userA.publicId}`,
       {
-        headers: { "Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         validateStatus: () => true,
       }
     );
 
-    expect(results.status).to.equal(200)
+    expect(results.status).to.equal(200);
     expect(results.data.workouts.length).to.equal(workouts);
-  })
+  });
 
   // TODO: Create test for other endpoints
 });

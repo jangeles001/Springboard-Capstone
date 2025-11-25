@@ -13,7 +13,7 @@ import {
 const router = express.Router();
 
 router
-  .post("/register", validate(newUserZodSchema).strict(), createUser)
+  .post("/register", validate(newUserZodSchema.strict()), createUser)
   .post(
     "/login",
     validate(newUserZodSchema.pick({ email: true, password: true }).strict()),

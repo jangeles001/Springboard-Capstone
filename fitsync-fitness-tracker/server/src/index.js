@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 import workoutsRouter from "./routes/workouts.js";
 import authRouter from "./routes/auth.js";
-// import usersRouter from "./routes/user.js"
+import usersRouter from "./routes/users.js";
 // import mealsRouter from "./routes/meal.js"
 // import postsRouter from "./routes/post.js"
 import connectDB from "./config/connect.js";
@@ -31,7 +31,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/v1/auth", authRouter);
-// app.use("/api/v1/user, userRouter");
+app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/workouts", workoutsRouter);
 // app.use("/api/v1/meals", mealsRouter);
 // app.use("/api/v1/posts", postsRouter);
