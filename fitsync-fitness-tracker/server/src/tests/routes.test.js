@@ -3,13 +3,14 @@ process.env.NODE_ENV = "test";
 import { expect } from "chai";
 import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
-import { Workout } from "../models/WorkoutModel.js";
+import { Workout } from "../models/workoutModel.js";
 import { userA, userB } from "./helpers/axiosClients.js";
 import { getEnv } from "../config/envConfig.js";
 import {
   registerNewUser,
   revokeRefreshToken,
 } from "../services/userService.js";
+import { getMembershipDuration } from "../utils/MembershipDuration.js";
 import redisClient from "../config/redisClient.js";
 
 const BASE_URL = `http://localhost:${getEnv("PORT")}`;
@@ -388,7 +389,7 @@ describe(" Test cases for ALL routes", function () {
       weight: 222,
     };
 
-    const results = await userA.client.post(
+    const results = await userA.client.patch(
       `${BASE_URL}/api/v1/users/me`,
       newPrivateUserData,
       {
@@ -398,8 +399,53 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(200);
-    expect(results.data).to.deep.equal(newPrivateUserData);
+    expect(results.data.userInfo).to.deep.equal(newPrivateUserData);
     expect(newPrivateUserData).to.not.deep.equal(initialPrivateData);
+  });
+
+    it("PATCH api/v1/users/me should return 200 and update only the provided private user information", async () => {
+    // Gets users from database
+    const users = await User.findOne({ publicId: newUserA.publicId });
+
+    // Saves initialPrivateData before any changes are made
+    const initialPrivateData = {
+      firstName: users.firstName,
+      lastName: users.lastName,
+      username: users.username,
+      height: users.height,
+      age: users.age,
+      weight: users.weight,
+    };
+
+    // New private data
+    const newPrivateUserData = {
+      firstName: "Chrisssssss",
+      lastName: "Chistersonson",
+      age: 31,
+      weight: 222,
+    };
+
+    const results = await userA.client.patch(
+      `${BASE_URL}/api/v1/users/me`,
+      newPrivateUserData,
+      {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      }
+    );
+
+    const { firstName, lastName, age, weight } = results.data.userInfo; // Destructures the updated fields
+    // Creates object to test if the fields have been updated.
+    const updatedFields = { 
+      firstName,
+      lastName,
+      age,
+      weight,
+    };
+
+    expect(results.status).to.equal(200);
+    expect(updatedFields).to.deep.equal(newPrivateUserData);
+    expect(results.data.userInfo).to.not.deep.equal(initialPrivateData);
   });
 
   it("GET api/v1/users/:userPublicId should return 200 and the public information for the user with the publicId provided in the url params", async () => {
@@ -411,64 +457,62 @@ describe(" Test cases for ALL routes", function () {
       }
     );
 
-    const users = await User.findOne({ publicId: newUserA.publicId });
+    const user = await User.findOne({ publicId: newUserA.publicId });
 
     expect(results.status).to.equal(200);
-    expect(results.data.username).to.equal(newUserA.username);
-    expect(results.data.age).to.equal(users.age);
-    expect(results.data.height).to.equal(users.height);
+    expect(results.data.userInfo.username).to.equal(user.username);
+    expect(results.data.userInfo.age).to.equal(user.age);
+    expect(results.data.userInfo.memberSince).to.deep.equal(getMembershipDuration(user.createdAt));
   });
 
-  it("GET api/v1/users/:userPublicId should return 200 and display the public information for the user", async () => {
+  it("GET api/v1/users/:userPublicId should return 404 user not found", async () => {
     const results = await userA.client.get(
-      `${BASE_URL}/api/v1/users/${newUserA.publicId}`,
+      `${BASE_URL}/api/v1/users/1`,
       {
         headers: { "Content-Type": "application/json" },
         validateStatus: () => true,
       }
     );
 
-    const users = User.findOne({ publicId: newUserA.publicId });
-
-    expect(results.status).to.equal(200);
-    expect(results.data.username).to.equal(users.username);
-    expect(results.data.age).to.equal(users.age);
-    expect(results.data.height).to.equal(users.height);
-
-    // TODO: Determine how much is too much information .-.
+    expect(results.status).to.equal(404);
+    expect(results.data.error).to.equal("USER_NOT_FOUND");
   });
 
-  it("GET api/v1/users/workouts/:userPubilcId should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
+  it("GET api/v1/users/:userPublicId/workouts should return 200 and display the created workouts for the user with the provided userPublicId", async () => {
     const workouts = await Workout.find({ userPublicId: newUserA.publicId });
 
     const results = await userA.client.get(
-      `${BASE_URL}/api/v1/users/workouts/${userA.publicId}`,
+      `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts`,
       {
         headers: { "Content-Type": "application/json" },
         validateStatus: () => true,
       }
     );
+    console.log(results.data);
 
     expect(results.status).to.equal(200);
-    expect(results.data.workouts.length).to.equal(0);
+    expect(results.data.userWorkouts.length).to.equal(0);
+    expect(results.data.userWorkouts).to.deep.equal(workouts);
   });
 
-  it("GET api/v1/users/workouts/:userPublicId should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
+  it("GET api/v1/users/:userPublicId/workouts should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
     const workoutInformation = {
       creatorPublicId: newUserA.publicId,
       workoutName: "Push Dayyyy",
       exercises: [
-        { id: "57", sets: 3, reps: 8, weight: 220 },
-        { id: "31", sets: 3, reps: 10, weight: 221 },
-        { id: "56", sets: 3, reps: 8, weight: 222 },
-        { id: "805", sets: 3, reps: 12, weight: 223 },
+        { exerciseId: "57", difficultyAtCreation: 3, sets: 3, reps: 8, weight: 220 },
+        { exerciseId: "31", difficultyAtCreation: 1, sets: 3, reps: 10, weight: 221 },
+        { exerciseId: "56", difficultyAtCreation: 2, sets: 3, reps: 8, weight: 222 },
+        { exerciseId: "805", difficultyAtCreation: 5, sets: 3, reps: 12, weight: 223 },
       ],
     };
+
+    await Workout.create(workoutInformation);
 
     const workouts = await Workout.find({ userPublicId: newUserA.publicId });
 
     const results = await userA.client.get(
-      `${BASE_URL}/api/v1/users/workouts/${userA.publicId}`,
+      `${BASE_URL}/api/v1/users/${userA.publicId}/workouts`,
       {
         headers: { "Content-Type": "application/json" },
         validateStatus: () => true,
@@ -481,3 +525,15 @@ describe(" Test cases for ALL routes", function () {
 
   // TODO: Create test for other endpoints
 });
+
+
+/** 
+ *
+ *   Use this to call populate and only get fields that are needed.
+ *  .populate({
+ *    path: "exerciseDetails",
+ *    select: "exerciseId name difficulty category"
+ *  })
+ *
+ * 
+ */

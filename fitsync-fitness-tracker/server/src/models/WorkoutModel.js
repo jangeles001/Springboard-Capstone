@@ -3,15 +3,22 @@ import { v4 as uuidv4 } from "uuid";
 
 const workoutExerciseSchema = new mongoose.Schema(
   {
-    exercise: {
+    exerciseId: {
       type: String,
       required: true,
       trim: true,
+      validate: {
+        validator: async function (id) {
+          const exists = await Exercise.exists({ exerciseId: id });
+          return !!exists; // !! Ensures true or false is returned
+        },
+        message: "Invalid exerciseId: Exercise does not exist!"
+      },
     },
-    difficultyAtCreation: { type: Number }, // snapshot of difficulty at workout creation
+    difficultyAtCreation: { type: Number, default: 5, required: true }, // snapshot of difficulty at workout creation
     sets: {
       type: Number,
-      min: [0, "Sets cannot be negative"],
+      min: [0, "Sets cannot be negative!"],
       validate: {
         validator: (v) => Number.isInteger(v),
         message: "Sets must be an integer!",
@@ -19,13 +26,23 @@ const workoutExerciseSchema = new mongoose.Schema(
     },
     reps: {
       type: Number,
+      default: 0,
       min: [0, "Reps cannot be negative!"],
       validate: {
         validator: (v) => Number.isInteger(v),
-        message: "Reps must be an integer",
+        message: "Reps must be an integer!",
       },
     },
-    duration: { type: Number, min: [0, "Duration cannot be negative!"] }, // for cardio/time-based exercises
+    weight: { 
+      type: Number, 
+      default: 0,
+      min: [0, "Weight Cannot be negative!"],
+      validate: { 
+        validator: (v) => Number.isInteger(v),
+        message: "Weight must be an integer!"
+      } 
+    },
+    duration: { type: Number, default: 0, min: [0, "Duration cannot be negative!"] }, // for cardio/time-based exercises
     aiFeatures: { type: Object, default: {} }, // snapshot AI features
   },
   { _id: false }
@@ -46,21 +63,18 @@ const workoutSchema = new mongoose.Schema(
     },
     exercises: {
       type: [workoutExerciseSchema],
-      ref: "Exercise",
       required: true,
-      default: [],
-
       validate: [
         {
-          validator: function (arr) {
-            return arr.length <= 50;
+          validator: function (array) {
+            return array.length <= 50;
           },
           message: "A workout cannot contain more than 50 exercises.",
         },
         {
-          validator: function (arr) {
+          validator: function (array) {
             // Ensures no duplicate exerciseId entries
-            const ids = arr.map((e) => e.exerciseId);
+            const ids = array.map((entry) => entry.exerciseId);
             return new Set(ids).size === ids.length;
           },
           message: "Duplicate exercises are not allowed.",
@@ -70,6 +84,14 @@ const workoutSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Virtual Populate for Exercise Details
+workoutSchema.virtual("exerciseDetails", {
+  ref: "Exercise",
+  localField: "exercises.exerciseId",
+  foreignField: "exerciseId",
+  justOne: false,
+});
 
 // Generates Mongoose model
 export const Workout = mongoose.model("Workout", workoutSchema);

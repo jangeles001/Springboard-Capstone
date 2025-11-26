@@ -2,12 +2,13 @@ import * as userService from "../services/userService.js";
 
 export async function getPublicUserInformationController(req, res) {
   try {
-    const userUUID = req.user.sub;
+    const { userPublicId } = req.params;
     const publicUserInformation = await userService.getPublicUserInformation(
-      userUUID
+      userPublicId
     );
     return res.status(200).json({ userInfo: publicUserInformation });
   } catch (error) {
+    if(error.message === "USER_NOT_FOUND") return res.status(404).json({ error: error.message })
     return res.status(500).json({ error: error.message });
   }
 }
@@ -28,19 +29,31 @@ export async function updatePrivateUserInformationController(req, res) {
   try {
     const userUUID = req.user.sub;
     const updatedFields = req.validatedBody;
-    const updatedUserInformation = await updatePrivateUserInformation(
+    const updatedUserInformation = await userService.updatePrivateUserInformation(
       userUUID,
       updatedFields
     );
     return res.status(200).json({
       message: "Information Updated Successfully!",
-      updatedUserInformation,
+      userInfo: updatedUserInformation,
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 }
 
+export async function getUserWorkoutsController(req, res) {
+  try{
+    const { userPublicId } = req.params;
+    const userWorkouts = await userService.getUserWorkouts(userPublicId);
+    return res.status(200).json({ ...userWorkouts });
+  }catch(error){
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+  
+}
+
 // TODO
-export async function getUserCreatedWorkouts() {}
+
 export async function getUserCreatedMeals() {}

@@ -1,4 +1,5 @@
 import * as userRepo from "../repositories/userRepo.js";
+import * as workoutRepo from "../repositories/workoutRepo.js"
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import redisClient from "../config/redisClient.js";
@@ -137,12 +138,14 @@ export async function revokeRefreshToken(refreshToken) {
   }
 }
 
-export async function getPublicUserInformation(userUUID) {
-  const user = await userRepo.findOneUserByUUID(userUUID);
+export async function getPublicUserInformation(userPublicId) {
+  const user = await userRepo.findOneUserByPublicId(userPublicId);
+  if(!user) throw new Error("USER_NOT_FOUND");
 
   const publicInformation = {
     username: user.username,
     age: user.age,
+    // aboutMe: user.about, maybe adding this in the future.
     memberSince: getMembershipDuration(user.createdAt),
   };
 
@@ -171,7 +174,7 @@ export async function updatePrivateUserInformation(userUUID, updatedFields) {
   );
 
   const updatedPrivateInformation = {
-    firstname: user.firstName,
+    firstName: user.firstName,
     lastName: user.lastName,
     username: user.username,
     height: user.height,
@@ -180,4 +183,12 @@ export async function updatePrivateUserInformation(userUUID, updatedFields) {
   };
 
   return { ...updatedPrivateInformation };
+}
+
+export async function getUserWorkouts(userPublicId){
+  const user = await userRepo.findOneUserByPublicId(userPublicId);
+  if(!user) throw new Error("USER_NOT_FOUND");
+
+  const userWorkouts = await workoutRepo.findWorkoutsByCreatorPublicId(userPublicId);  
+  return { userWorkouts };
 }

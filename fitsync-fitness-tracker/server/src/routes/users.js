@@ -6,7 +6,7 @@ import {
   getPrivateUserInformationController,
   getPublicUserInformationController,
   updatePrivateUserInformationController,
-  getUserCreatedWorkouts,
+  getUserWorkoutsController,
   getUserCreatedMeals,
 } from "../controllers/usersController.js";
 
@@ -20,8 +20,8 @@ router
     validate(newUserZodSchema.omit({ email: true }).partial().strict()),
     updatePrivateUserInformationController
   )
-  .get("/:publicId", requireAuth, getPublicUserInformationController)
-  .get("/workouts/:publicId", requireAuth, getUserCreatedWorkouts)
-  .get("/meals/:userId", requireAuth, getUserCreatedMeals);
+  .get("/:userPublicId", requireAuth, getPublicUserInformationController)
+  .get("/:userPublicId/workouts", requireAuth, getUserWorkoutsController)
+  .get("/:userPublicId/meals", requireAuth, getUserCreatedMeals);
 
 export default router;
