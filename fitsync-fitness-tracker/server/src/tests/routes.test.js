@@ -24,6 +24,7 @@ describe(" Test cases for ALL routes", function () {
   // Clears all users and dogs from the db before each test.
   beforeEach(async () => {
     await User.deleteMany({});
+    await Workout.deleteMany({});
     await redisClient.flushDb();
     await userA.jar.removeAllCookies();
     await userB.jar.removeAllCookies();
@@ -478,8 +479,8 @@ describe(" Test cases for ALL routes", function () {
     expect(results.data.error).to.equal("USER_NOT_FOUND");
   });
 
-  it("GET api/v1/users/:userPublicId/workouts should return 200 and display the created workouts for the user with the provided userPublicId", async () => {
-    const workouts = await Workout.find({ userPublicId: newUserA.publicId });
+  it("GET api/v1/users/:userPublicId/workouts should return 200 and return an empty array since no new workouts have been made", async () => {
+    const workouts = await Workout.find({ creatorPublicId: newUserA.publicId });
 
     const results = await userA.client.get(
       `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts`,
@@ -488,7 +489,6 @@ describe(" Test cases for ALL routes", function () {
         validateStatus: () => true,
       }
     );
-    console.log(results.data);
 
     expect(results.status).to.equal(200);
     expect(results.data.userWorkouts.length).to.equal(0);
@@ -500,19 +500,22 @@ describe(" Test cases for ALL routes", function () {
       creatorPublicId: newUserA.publicId,
       workoutName: "Push Dayyyy",
       exercises: [
-        { exerciseId: "57", difficultyAtCreation: 3, sets: 3, reps: 8, weight: 220 },
-        { exerciseId: "31", difficultyAtCreation: 1, sets: 3, reps: 10, weight: 221 },
-        { exerciseId: "56", difficultyAtCreation: 2, sets: 3, reps: 8, weight: 222 },
-        { exerciseId: "805", difficultyAtCreation: 5, sets: 3, reps: 12, weight: 223 },
+        { exerciseId: "57", exerciseName: "Bear Walk", description: "None provided", difficultyAtCreation: 3, sets: 3, reps: 8, weight: 220 },
+        { exerciseId: "31", exerciseName: "Axe Hold", description: "None provided", difficultyAtCreation: 1, sets: 3, reps: 10, weight: 221 },
+        { exerciseId: "56", exerciseName: "Abdominal Stabilization", description: " None Provided", difficultyAtCreation: 2, sets: 3, reps: 8, weight: 222 },
+        { exerciseId: "805", exerciseName: "Tricep Pushdown on Cable", description: "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout.", difficultyAtCreation: 5, sets: 3, reps: 12, weight: 223 },
       ],
     };
 
     await Workout.create(workoutInformation);
 
-    const workouts = await Workout.find({ userPublicId: newUserA.publicId });
+    const workouts = await Workout.find({ creatorPublicId: newUserA.publicId }).lean();
+    const [firstWorkout] = workouts;
+    
+    const { creatorPublicId, workoutName, exercises, uuid } = firstWorkout;
 
     const results = await userA.client.get(
-      `${BASE_URL}/api/v1/users/${userA.publicId}/workouts`,
+      `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts`,
       {
         headers: { "Content-Type": "application/json" },
         validateStatus: () => true,
@@ -520,8 +523,37 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(200);
-    expect(results.data.workouts.length).to.equal(workouts);
+    expect(results.data.userWorkouts.length).to.equal(workouts.length);
+    expect(results.data.userWorkouts[0]).to.deep.equal({ creatorPublicId, workoutName, exercises, uuid });
   });
+
+  it("GET api/v1/users/:userPublicId/workouts should return 404 user not found", async () => {
+    const results = await userA.client.get(
+      `${BASE_URL}/api/v1/users/1/workouts`,
+      {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      }
+    );
+
+    expect(results.status).to.equal(404);
+    expect(results.data.error).to.equal("USER_NOT_FOUND");
+  });
+
+  it("GET api/v1/users/:userPublicId/meals should return 200 and an empty list", async () => {
+      const userMeals = await Meal.find({ creatorPublicId: newUserA.publicId });
+      const results = await userA.client.get(`${BASE_URL}/api/v1/users/${newUserA.publicId}/meals`, 
+        {
+          headers: {"Content-Type": "application/json"},
+          validateStatus: () => true,
+        }
+
+      );
+
+      expect(results.status).to.equal(200);
+      expect(results.data.userMeals).to.deep.equal(userMeals);
+
+  })
 
   // TODO: Create test for other endpoints
 });

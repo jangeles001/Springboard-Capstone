@@ -7,14 +7,9 @@ const workoutExerciseSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      validate: {
-        validator: async function (id) {
-          const exists = await Exercise.exists({ exerciseId: id });
-          return !!exists; // !! Ensures true or false is returned
-        },
-        message: "Invalid exerciseId: Exercise does not exist!"
-      },
     },
+    exerciseName: { type: String, required: true },
+    description: { type: String, required : true },
     difficultyAtCreation: { type: Number, default: 5, required: true }, // snapshot of difficulty at workout creation
     sets: {
       type: Number,

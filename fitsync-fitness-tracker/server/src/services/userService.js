@@ -145,7 +145,7 @@ export async function getPublicUserInformation(userPublicId) {
   const publicInformation = {
     username: user.username,
     age: user.age,
-    // aboutMe: user.about, maybe adding this in the future.
+    // aboutMe: user.about, maybe adding user bio this in the future.
     memberSince: getMembershipDuration(user.createdAt),
   };
 
@@ -189,6 +189,27 @@ export async function getUserWorkouts(userPublicId){
   const user = await userRepo.findOneUserByPublicId(userPublicId);
   if(!user) throw new Error("USER_NOT_FOUND");
 
-  const userWorkouts = await workoutRepo.findWorkoutsByCreatorPublicId(userPublicId);  
-  return { userWorkouts };
+  const userWorkouts = await workoutRepo.findWorkoutsByCreatorPublicId(userPublicId);
+  if(userWorkouts.length > 0){
+  const workoutsInformation = userWorkouts.map((workout) => {
+      const { creatorPublicId, workoutName, exercises, uuid } = workout; 
+      return { creatorPublicId, workoutName, exercises, uuid }
+    });
+    return workoutsInformation;
+  }
+  return userWorkouts;
+}
+
+export async function getUserMeals(userPublicId){
+  const user = await userRepo.findOneUserByPublicId(userPublicId);
+  if(!user) throw new Error("USER_NOT_FOUND");
+  const userMeals = await MealsRepo.findMealsByCreatorPublicId(userPublicId);
+  if(userMeals){  
+    const mealsInformation = userMeals.map((meal) => {
+      const { creatorPublicId, workoutName, exercises, uuid } = meal; 
+        return { creatorPublicId, workoutName, exercises, uuid }
+    });
+    return mealsInformation;
+  }
+  return userMeals;
 }
