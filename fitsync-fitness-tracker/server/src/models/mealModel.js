@@ -1,6 +1,18 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
+const mealIngredientSchema = new mongoose.Schema(
+  {
+    ingredientId: { type: Number, required: true }, // FDCID item id
+    ingredientName: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    macros: { type: mongoose.Schema.Types.Mixed, required: true },
+    calories100G: { type: Number, required: true },
+    macrosPer100G: { type: mongoose.Schema.Types.Mixed, required: true },
+  },
+  { _id: false } // Removes _id from the ingredient object
+);
+
 const mealSchema = new mongoose.Schema(
   {
     creatorPublicId: { type: String, required: true },
@@ -8,7 +20,7 @@ const mealSchema = new mongoose.Schema(
     mealName: { type: String, required: true },
     description: { type: String, required: true },
     ingredients: {
-      type: Object, // TODO: Make into a schema
+      type: [mealIngredientSchema],
       required: true,
       default: {},
     },

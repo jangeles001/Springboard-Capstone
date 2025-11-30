@@ -215,5 +215,6 @@ export async function getUserMeals(userPublicId) {
     });
     return mealsInformation;
   }
+
   return userMeals;
 }

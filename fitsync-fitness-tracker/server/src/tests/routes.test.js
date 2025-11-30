@@ -595,12 +595,35 @@ describe(" Test cases for ALL routes", function () {
     expect(results.data.userMeals).to.deep.equal(userMeals);
   });
 
-  it("GET api/v1/users/:userPublicId/meals should return 200 and an empty list", async () => {
+  it("GET api/v1/users/:userPublicId/meals should return 200 with a list containing the created mealData", async () => {
     const mealData = {
       creatorPublicId: newUserA.publicId,
       mealName: "Good Food",
       description: "Food",
-      ingredients: {},
+      ingredients: [
+        {
+          ingredientId: 1,
+          ingredientName: "bestIngredient",
+          quantity: 12,
+          macros: {
+            protein: 0,
+            fat: 0,
+            carbs: 0,
+            fiber: 0,
+            netCarbs: 0,
+            calories: 0,
+          },
+          calories100G: 2,
+          macrosPer100G: {
+            protein: 0,
+            fat: 0,
+            carbs: 0,
+            fiber: 0,
+            netCarbs: 0,
+            calories: 0,
+          },
+        },
+      ],
       protein: 20,
       fat: 0,
       carbs: 111,
@@ -624,8 +647,6 @@ describe(" Test cases for ALL routes", function () {
         validateStatus: () => true,
       }
     );
-
-    console.log(firstMeal);
 
     expect(results.status).to.equal(200);
     expect(results.data.userMeals[0]).to.deep.equal({
