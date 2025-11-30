@@ -624,12 +624,14 @@ describe(" Test cases for ALL routes", function () {
           },
         },
       ],
-      protein: 20,
-      fat: 0,
-      carbs: 111,
-      fiber: 20,
-      netCarbs: 15,
-      calories: 20,
+      mealMacros: {
+        protein: 20,
+        fat: 0,
+        carbs: 111,
+        fiber: 20,
+        netCarbs: 15,
+        calories: 20,
+      },
     };
 
     await Meal.create(mealData);

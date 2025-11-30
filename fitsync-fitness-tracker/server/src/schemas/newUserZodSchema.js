@@ -44,4 +44,11 @@ export const newUserZodSchema = z.object({
     })
     .email("Invalid email format!")
     .min(7),
+  promoConsent: z.boolean({
+    invalid_type_error: "Must be true or false!",
+  }),
+  agreeToTerms: z.boolean({
+    required_error: "You must agree to the terms or service!",
+    invalid_type_error: "Must be true or false!",
+  }),
 });

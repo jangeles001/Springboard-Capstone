@@ -19,6 +19,8 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    promoConsent: { type: Boolean, required: true },
+    agreeToTerms: { type: Boolean, required: true },
   },
   { timestamps: true }
 );

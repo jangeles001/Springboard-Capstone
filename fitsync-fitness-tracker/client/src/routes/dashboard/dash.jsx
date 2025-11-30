@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Graph from '../../components/Graph';
-import { WorkoutsListDisplay } from "../../features/workouts/components//WorkoutsListDisplay";
+import Graph from '../../components/Graph.jsx';
+import { WorkoutsListDisplay } from "../../features/workouts/components//WorkoutsListDisplay.jsx";
 
 export const Route = createFileRoute('/dashboard/dash') ({
     component: dash,
@@ -28,10 +28,9 @@ function dash() {
       //   information:  "This is the workout information!"
       // },
     //];
-    
+
     return (
         <div className='flex flex-col bg-gradient-to-r from-blue-500 to-indigo-600 h-full'>
-
           <div className="flex flex-col p-15">
             <section className='flex justify-center items-center w-full h-[400px] text-gray-400 bg-gray-100 rounded-2xl border border-gray-200 shadow-sm p-15'>
               { data ? 

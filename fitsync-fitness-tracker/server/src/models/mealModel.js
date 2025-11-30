@@ -1,12 +1,24 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
+const macrosSchema = new mongoose.Schema(
+  {
+    protein: { type: Number, required: true },
+    fat: { type: Number, required: true },
+    carbs: { type: Number, required: true },
+    fiber: { type: Number, required: true },
+    netCarbs: { type: Number, required: true },
+    calories: { type: Number, required: true },
+  },
+  { _id: false } // Removes _id from the ingredient object
+);
+
 const mealIngredientSchema = new mongoose.Schema(
   {
     ingredientId: { type: Number, required: true }, // FDCID item id
     ingredientName: { type: String, required: true },
     quantity: { type: Number, required: true },
-    macros: { type: mongoose.Schema.Types.Mixed, required: true },
+    macros: { type: macrosSchema, required: true },
     calories100G: { type: Number, required: true },
     macrosPer100G: { type: mongoose.Schema.Types.Mixed, required: true },
   },
@@ -24,12 +36,7 @@ const mealSchema = new mongoose.Schema(
       required: true,
       default: {},
     },
-    protein: { type: Number, required: true },
-    fat: { type: Number, required: true },
-    carbs: { type: Number, required: true },
-    fiber: { type: Number, required: true },
-    netCarbs: { type: Number, required: true },
-    calories: { type: Number, required: true },
+    mealMacros: { type: macrosSchema, required: true },
   },
   { timestamps: true }
 );

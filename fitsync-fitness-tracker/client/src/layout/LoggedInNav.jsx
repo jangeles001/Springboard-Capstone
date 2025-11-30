@@ -5,6 +5,7 @@ import CookiesNotification from '../features/cookies/component/CookiesNotificati
 //import logo from '../assets/360_modern.png'
 // import logo from '../assets/Redesign-1.svg'
 import logo from '../assets/Rebrand-2.svg'
+import ProfileBlock from '../components/ProfileBlock'
 
 
 export default function DefaultNav({ links }) {
@@ -24,6 +25,7 @@ export default function DefaultNav({ links }) {
                     </Link>
                     })}
             </nav>
+            <ProfileBlock />
         </div>
       <hr />
       <main>

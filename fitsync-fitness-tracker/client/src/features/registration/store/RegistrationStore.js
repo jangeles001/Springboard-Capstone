@@ -6,7 +6,7 @@ const initialFormData = {
   age: "",
   height: "",
   weight: "",
-  userName: "",
+  username: "",
   password: "",
   email: "",
   promoConsent: false,
@@ -27,7 +27,7 @@ const validators = {
   ],
   height: [(value) => (!value ? "Height is required" : "")],
   weight: [(value) => (!value ? "Weight is required" : "")],
-  userName: [
+  username: [
     (value) => (!value ? "Username is required" : ""),
     (value) =>
       value?.length < 3 ? "Username must be at least 3 characters" : "",

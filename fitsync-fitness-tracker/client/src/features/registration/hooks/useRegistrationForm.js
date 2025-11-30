@@ -1,24 +1,27 @@
 import { useState } from "react";
+import { register } from "../services/registrationService";
 import {
   useFormDataField,
   useFormErrors,
   useRegisterFormActions,
-} from "../features/registration/store/RegistrationStore";
+} from "../store/RegistrationStore";
+import { useUserActions } from "../../../store/userStore.js";
 export function useRegistrationForm({ onSuccess }) {
   // Store state slices
   const fields = {
     firstName: useFormDataField("firstName"),
     lastName: useFormDataField("lastName"),
-    age: useFormDataField("age"),
+    age: Number(useFormDataField("age")),
     height: useFormDataField("height"),
-    weight: useFormDataField("weight"),
-    userName: useFormDataField("userName"),
+    weight: Number(useFormDataField("weight")),
+    username: useFormDataField("username"),
     password: useFormDataField("password"),
     email: useFormDataField("email"),
     promoConsent: useFormDataField("promoConsent"),
     agreeToTerms: useFormDataField("agreeToTerms"),
-    formErrors: useFormErrors(),
   };
+  const formErrors = useFormErrors();
+  const { setUsername, setPublicId } = useUserActions();
 
   // Store actions slice
   const { setFormField, resetFormData, resetOnValidation, validateForm } =
@@ -44,20 +47,20 @@ export function useRegistrationForm({ onSuccess }) {
       return;
     }
     // TODO: Submit to DB using service/server component.
-    // try{
-    //   await submitToDB(fields);
-    //   resetOnValidation();
-    //  if (onSuccess) onSuccess();
-    // }catch{err}{
-    //   throw new Error(err)
-    // }
-
-    resetOnValidation();
-    if (onSuccess) onSuccess();
+    try {
+      const { username, publicId } = await register(fields);
+      resetOnValidation();
+      setUsername(username);
+      setPublicId(publicId);
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      throw new Error(error.message);
+    }
   };
 
   return {
     ...fields,
+    formErrors,
     hasErrors,
     handleChange,
     handleSubmit,

@@ -1,5 +1,5 @@
 import { useRouter, Link } from '@tanstack/react-router';
-import { useRegistrationForm } from '../../../hooks/useRegistrationForm'
+import { useRegistrationForm } from '../hooks/useRegistrationForm'
 import ErrorMessages from '../../../components/ErrorMessages';
 
 export default function RegistrationForm() {
@@ -10,7 +10,7 @@ export default function RegistrationForm() {
         age,
         height,
         weight,
-        userName,
+        username,
         password,
         email,
         promoConsent,
@@ -85,12 +85,12 @@ export default function RegistrationForm() {
                         </div>
                         <div className="col-span-4 grid grid-cols-1 md:grid-cols-1 gap-5">
                             <div className='flex flex-col col-span-2 md:col-span-2'> 
-                                <label htmlFor="userName" className={`form-label ${formErrors?.userName && !userName && 'form-label-error'}`}>Username:</label>
+                                <label htmlFor="username" className={`form-label ${formErrors?.username && !username && 'form-label-error'}`}>Username:</label>
                                 <input 
-                                className={`form-input ${formErrors?.userName && !userName && 'form-input-error'}`}
+                                className={`form-input ${formErrors?.username && !username && 'form-input-error'}`}
                                 type='text'
-                                name='userName'
-                                value={userName}
+                                name='username'
+                                value={username}
                                 onChange={handleChange}
                                 placeholder='Username'
                                 />

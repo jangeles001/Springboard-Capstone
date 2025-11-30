@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.1.13",
     "@tanstack/react-router": "^1.131.27",
     "@tanstack/react-router-devtools": "^1.131.27",
+    "axios": "^1.13.2",
     "chart.js": "^4.5.0",
     "i": "^0.3.7",
     "js-cookie": "^3.0.5",
