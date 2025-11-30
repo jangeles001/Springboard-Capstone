@@ -8,7 +8,8 @@ export async function getPublicUserInformationController(req, res) {
     );
     return res.status(200).json({ userInfo: publicUserInformation });
   } catch (error) {
-    if(error.message === "USER_NOT_FOUND") return res.status(404).json({ error: error.message })
+    if (error.message === "USER_NOT_FOUND")
+      return res.status(404).json({ error: error.message });
     return res.status(500).json({ error: error.message });
   }
 }
@@ -29,10 +30,8 @@ export async function updatePrivateUserInformationController(req, res) {
   try {
     const userUUID = req.user.sub;
     const updatedFields = req.validatedBody;
-    const updatedUserInformation = await userService.updatePrivateUserInformation(
-      userUUID,
-      updatedFields
-    );
+    const updatedUserInformation =
+      await userService.updatePrivateUserInformation(userUUID, updatedFields);
     return res.status(200).json({
       message: "Information Updated Successfully!",
       userInfo: updatedUserInformation,
@@ -43,25 +42,25 @@ export async function updatePrivateUserInformationController(req, res) {
 }
 
 export async function getUserWorkoutsController(req, res) {
-  try{
+  try {
     const { userPublicId } = req.params;
     const userWorkouts = await userService.getUserWorkouts(userPublicId);
     return res.status(200).json({ userWorkouts });
-  }catch(error){
-    if(error.message === "USER_NOT_FOUND") return res.status(404).json({ error: error.message });
+  } catch (error) {
+    if (error.message === "USER_NOT_FOUND")
+      return res.status(404).json({ error: error.message });
     return res.status(500).json({ error: error.message });
   }
 }
 
-export async function getUserCreatedMeals(req, res) {
-  try{
+export async function getUserMealsController(req, res) {
+  try {
     const { userPublicId } = req.params;
     const userMeals = await userService.getUserMeals(userPublicId);
     return res.status(200).json({ userMeals });
-  }catch(error){
-    if(error.message === "USER_NOT_FOUND") return res.status(404).json({ error: error.message });
+  } catch (error) {
+    if (error.message === "USER_NOT_FOUND")
+      return res.status(404).json({ error: error.message });
     return res.status(500).json({ error: error.message });
   }
 }
-
-

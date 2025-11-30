@@ -1,5 +1,6 @@
 import * as userRepo from "../repositories/userRepo.js";
-import * as workoutRepo from "../repositories/workoutRepo.js"
+import * as workoutRepo from "../repositories/workoutRepo.js";
+import * as mealRepo from "../repositories/mealRepo.js";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import redisClient from "../config/redisClient.js";
@@ -140,7 +141,7 @@ export async function revokeRefreshToken(refreshToken) {
 
 export async function getPublicUserInformation(userPublicId) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if(!user) throw new Error("USER_NOT_FOUND");
+  if (!user) throw new Error("USER_NOT_FOUND");
 
   const publicInformation = {
     username: user.username,
@@ -185,29 +186,32 @@ export async function updatePrivateUserInformation(userUUID, updatedFields) {
   return { ...updatedPrivateInformation };
 }
 
-export async function getUserWorkouts(userPublicId){
+export async function getUserWorkouts(userPublicId) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if(!user) throw new Error("USER_NOT_FOUND");
+  if (!user) throw new Error("USER_NOT_FOUND");
 
-  const userWorkouts = await workoutRepo.findWorkoutsByCreatorPublicId(userPublicId);
-  if(userWorkouts.length > 0){
-  const workoutsInformation = userWorkouts.map((workout) => {
-      const { creatorPublicId, workoutName, exercises, uuid } = workout; 
-      return { creatorPublicId, workoutName, exercises, uuid }
+  const userWorkouts = await workoutRepo.findWorkoutsByCreatorPublicId(
+    userPublicId
+  );
+  if (userWorkouts.length > 0) {
+    const workoutsInformation = userWorkouts.map((workout) => {
+      const { creatorPublicId, workoutName, exercises, uuid } = workout;
+      return { creatorPublicId, workoutName, exercises, uuid };
     });
     return workoutsInformation;
   }
   return userWorkouts;
 }
 
-export async function getUserMeals(userPublicId){
+export async function getUserMeals(userPublicId) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if(!user) throw new Error("USER_NOT_FOUND");
-  const userMeals = await MealsRepo.findMealsByCreatorPublicId(userPublicId);
-  if(userMeals){  
+  if (!user) throw new Error("USER_NOT_FOUND");
+
+  const userMeals = await mealRepo.findMealsByCreatorPublicId(userPublicId);
+  if (userMeals) {
     const mealsInformation = userMeals.map((meal) => {
-      const { creatorPublicId, workoutName, exercises, uuid } = meal; 
-        return { creatorPublicId, workoutName, exercises, uuid }
+      const { creatorPublicId, mealName, ingredients, uuid } = meal;
+      return { creatorPublicId, mealName, ingredients, uuid };
     });
     return mealsInformation;
   }

@@ -4,6 +4,7 @@ import { expect } from "chai";
 import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
 import { Workout } from "../models/workoutModel.js";
+import { Meal } from "../models/mealModel.js";
 import { userA, userB } from "./helpers/axiosClients.js";
 import { getEnv } from "../config/envConfig.js";
 import {
@@ -25,6 +26,7 @@ describe(" Test cases for ALL routes", function () {
   beforeEach(async () => {
     await User.deleteMany({});
     await Workout.deleteMany({});
+    await Meal.deleteMany({});
     await redisClient.flushDb();
     await userA.jar.removeAllCookies();
     await userB.jar.removeAllCookies();
@@ -404,7 +406,7 @@ describe(" Test cases for ALL routes", function () {
     expect(newPrivateUserData).to.not.deep.equal(initialPrivateData);
   });
 
-    it("PATCH api/v1/users/me should return 200 and update only the provided private user information", async () => {
+  it("PATCH api/v1/users/me should return 200 and update only the provided private user information", async () => {
     // Gets users from database
     const users = await User.findOne({ publicId: newUserA.publicId });
 
@@ -437,7 +439,7 @@ describe(" Test cases for ALL routes", function () {
 
     const { firstName, lastName, age, weight } = results.data.userInfo; // Destructures the updated fields
     // Creates object to test if the fields have been updated.
-    const updatedFields = { 
+    const updatedFields = {
       firstName,
       lastName,
       age,
@@ -463,17 +465,16 @@ describe(" Test cases for ALL routes", function () {
     expect(results.status).to.equal(200);
     expect(results.data.userInfo.username).to.equal(user.username);
     expect(results.data.userInfo.age).to.equal(user.age);
-    expect(results.data.userInfo.memberSince).to.deep.equal(getMembershipDuration(user.createdAt));
+    expect(results.data.userInfo.memberSince).to.deep.equal(
+      getMembershipDuration(user.createdAt)
+    );
   });
 
   it("GET api/v1/users/:userPublicId should return 404 user not found", async () => {
-    const results = await userA.client.get(
-      `${BASE_URL}/api/v1/users/1`,
-      {
-        headers: { "Content-Type": "application/json" },
-        validateStatus: () => true,
-      }
-    );
+    const results = await userA.client.get(`${BASE_URL}/api/v1/users/1`, {
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true,
+    });
 
     expect(results.status).to.equal(404);
     expect(results.data.error).to.equal("USER_NOT_FOUND");
@@ -500,18 +501,53 @@ describe(" Test cases for ALL routes", function () {
       creatorPublicId: newUserA.publicId,
       workoutName: "Push Dayyyy",
       exercises: [
-        { exerciseId: "57", exerciseName: "Bear Walk", description: "None provided", difficultyAtCreation: 3, sets: 3, reps: 8, weight: 220 },
-        { exerciseId: "31", exerciseName: "Axe Hold", description: "None provided", difficultyAtCreation: 1, sets: 3, reps: 10, weight: 221 },
-        { exerciseId: "56", exerciseName: "Abdominal Stabilization", description: " None Provided", difficultyAtCreation: 2, sets: 3, reps: 8, weight: 222 },
-        { exerciseId: "805", exerciseName: "Tricep Pushdown on Cable", description: "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout.", difficultyAtCreation: 5, sets: 3, reps: 12, weight: 223 },
+        {
+          exerciseId: "57",
+          exerciseName: "Bear Walk",
+          description: "None provided",
+          difficultyAtCreation: 3,
+          sets: 3,
+          reps: 8,
+          weight: 220,
+        },
+        {
+          exerciseId: "31",
+          exerciseName: "Axe Hold",
+          description: "None provided",
+          difficultyAtCreation: 1,
+          sets: 3,
+          reps: 10,
+          weight: 221,
+        },
+        {
+          exerciseId: "56",
+          exerciseName: "Abdominal Stabilization",
+          description: " None Provided",
+          difficultyAtCreation: 2,
+          sets: 3,
+          reps: 8,
+          weight: 222,
+        },
+        {
+          exerciseId: "805",
+          exerciseName: "Tricep Pushdown on Cable",
+          description:
+            "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout.",
+          difficultyAtCreation: 5,
+          sets: 3,
+          reps: 12,
+          weight: 223,
+        },
       ],
     };
 
     await Workout.create(workoutInformation);
 
-    const workouts = await Workout.find({ creatorPublicId: newUserA.publicId }).lean();
+    const workouts = await Workout.find({
+      creatorPublicId: newUserA.publicId,
+    }).lean();
     const [firstWorkout] = workouts;
-    
+
     const { creatorPublicId, workoutName, exercises, uuid } = firstWorkout;
 
     const results = await userA.client.get(
@@ -524,7 +560,12 @@ describe(" Test cases for ALL routes", function () {
 
     expect(results.status).to.equal(200);
     expect(results.data.userWorkouts.length).to.equal(workouts.length);
-    expect(results.data.userWorkouts[0]).to.deep.equal({ creatorPublicId, workoutName, exercises, uuid });
+    expect(results.data.userWorkouts[0]).to.deep.equal({
+      creatorPublicId,
+      workoutName,
+      exercises,
+      uuid,
+    });
   });
 
   it("GET api/v1/users/:userPublicId/workouts should return 404 user not found", async () => {
@@ -541,25 +582,64 @@ describe(" Test cases for ALL routes", function () {
   });
 
   it("GET api/v1/users/:userPublicId/meals should return 200 and an empty list", async () => {
-      const userMeals = await Meal.find({ creatorPublicId: newUserA.publicId });
-      const results = await userA.client.get(`${BASE_URL}/api/v1/users/${newUserA.publicId}/meals`, 
-        {
-          headers: {"Content-Type": "application/json"},
-          validateStatus: () => true,
-        }
+    const userMeals = await Meal.find({ creatorPublicId: newUserA.publicId });
+    const results = await userA.client.get(
+      `${BASE_URL}/api/v1/users/${newUserA.publicId}/meals`,
+      {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      }
+    );
 
-      );
+    expect(results.status).to.equal(200);
+    expect(results.data.userMeals).to.deep.equal(userMeals);
+  });
 
-      expect(results.status).to.equal(200);
-      expect(results.data.userMeals).to.deep.equal(userMeals);
+  it("GET api/v1/users/:userPublicId/meals should return 200 and an empty list", async () => {
+    const mealData = {
+      creatorPublicId: newUserA.publicId,
+      mealName: "Good Food",
+      description: "Food",
+      ingredients: {},
+      protein: 20,
+      fat: 0,
+      carbs: 111,
+      fiber: 20,
+      netCarbs: 15,
+      calories: 20,
+    };
 
-  })
+    await Meal.create(mealData);
+
+    const userMeals = await Meal.find({
+      creatorPublicId: newUserA.publicId,
+    }).lean();
+    const [firstMeal] = userMeals;
+    const { creatorPublicId, mealName, ingredients, uuid } = firstMeal;
+
+    const results = await userA.client.get(
+      `${BASE_URL}/api/v1/users/${newUserA.publicId}/meals`,
+      {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      }
+    );
+
+    console.log(firstMeal);
+
+    expect(results.status).to.equal(200);
+    expect(results.data.userMeals[0]).to.deep.equal({
+      creatorPublicId,
+      mealName,
+      ingredients,
+      uuid,
+    });
+  });
 
   // TODO: Create test for other endpoints
 });
 
-
-/** 
+/**
  *
  *   Use this to call populate and only get fields that are needed.
  *  .populate({
@@ -567,5 +647,5 @@ describe(" Test cases for ALL routes", function () {
  *    select: "exerciseId name difficulty category"
  *  })
  *
- * 
+ *
  */
