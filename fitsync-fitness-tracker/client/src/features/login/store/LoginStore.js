@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 const initialFormData = {
-  userName: null,
-  password: null,
+  userName: "",
+  password: "",
 };
 
 const validators = {

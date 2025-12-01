@@ -4,7 +4,9 @@ import {
   useFormDataUserName,
   useFormErrors,
   useLoginActions,
-} from "../features/login/store/LoginStore";
+} from "../store/LoginStore";
+import { login } from "../services/loginService";
+import { useUserActions } from "../../../store/UserStore.js";
 
 // Custom hook to manage login form state and behavior
 export function useLoginForm({ onSuccess }) {
@@ -13,8 +15,11 @@ export function useLoginForm({ onSuccess }) {
   const formDataPassword = useFormDataPassword();
   const formErrors = useFormErrors();
 
-  // Store actions slice
+  // Login Store actions slice
   const { setFormField, resetForm, validateForm } = useLoginActions();
+
+  // User store actions slice
+  const { setUsername, setPublicId } = useUserActions();
 
   // Flag for form submission errors
   const [hasErrors, setHasErrors] = useState(false);
@@ -26,7 +31,7 @@ export function useLoginForm({ onSuccess }) {
   };
 
   // Validates and submit the form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setHasErrors(false);
 
@@ -37,12 +42,19 @@ export function useLoginForm({ onSuccess }) {
       setHasErrors(true);
       return;
     }
-
-    //TODO: Submit information to backend
-    resetForm();
-
-    // Fires success callback if provided. Made generic to allow custom behavior on login in the future.
-    if (onSuccess) onSuccess();
+    try {
+      const { username, publicId } = await login({
+        email: formDataUserName,
+        password: formDataPassword,
+      });
+      setUsername(username);
+      setPublicId(publicId);
+      resetForm();
+      // Fires success callback if provided. Made generic to allow custom behavior on login in the future.
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      throw new Error(error.message);
+    }
   };
 
   return {

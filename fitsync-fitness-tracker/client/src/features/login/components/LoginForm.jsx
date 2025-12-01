@@ -1,4 +1,4 @@
-import { useLoginForm } from '../../../hooks/useLoginForm';
+import { useLoginForm } from '../hooks/useLoginForm';
 import { useRouter } from '@tanstack/react-router';
 import ErrorMessages from '../../../components/ErrorMessages';
 

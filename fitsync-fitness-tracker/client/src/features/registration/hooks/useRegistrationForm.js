@@ -5,7 +5,7 @@ import {
   useFormErrors,
   useRegisterFormActions,
 } from "../store/RegistrationStore";
-import { useUserActions } from "../../../store/userStore.js";
+import { useUserActions } from "../../../store/UserStore.js";
 export function useRegistrationForm({ onSuccess }) {
   // Store state slices
   const fields = {
@@ -46,7 +46,7 @@ export function useRegistrationForm({ onSuccess }) {
       resetFormData(validationErrors);
       return;
     }
-    // TODO: Submit to DB using service/server component.
+    // Submit to DB using registration service
     try {
       const { username, publicId } = await register(fields);
       resetOnValidation();

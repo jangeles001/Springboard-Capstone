@@ -6,6 +6,7 @@ import CookiesNotification from '../features/cookies/component/CookiesNotificati
 // import logo from '../assets/Redesign-1.svg'
 import logo from '../assets/Rebrand-2.svg'
 import ProfileBlock from '../components/ProfileBlock'
+import LogoutButton from '../features/logout/components/LogoutButton'
 
 
 export default function DefaultNav({ links }) {
@@ -19,11 +20,12 @@ export default function DefaultNav({ links }) {
                 
             </header>
             <nav className="flex mt-auto ml-[4%] gap-4 mb-2">
-                {links.map((link) => {
-                    return <Link key={link.path} to={link.path} activeOptions={{ exact: true }} activeProps={{ className: " font-bold rounded-md text-blue-500"}} className="hover:underline">
-                        {link.label}
-                    </Link>
-                    })}
+              {links.map((link) => {
+                  return <Link key={link.path} to={link.path} activeOptions={{ exact: true }} activeProps={{ className: " font-bold rounded-md text-blue-500"}} className="hover:underline">
+                      {link.label}
+                  </Link>
+                })}
+              <LogoutButton />
             </nav>
             <ProfileBlock />
         </div>

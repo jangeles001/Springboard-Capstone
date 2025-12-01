@@ -58,6 +58,10 @@ export async function login(req, res) {
 
     return res.status(200).json({
       message: `${validatedUser.username} (ID: ${validatedUser.publicId}) Logged In!`,
+      userInfo: {
+        username: validatedUser.username,
+        publicId: validatedUser.publicId,
+      },
     });
   } catch (error) {
     if (error.message === "INVALID_CREDENTIALS")
@@ -71,7 +75,7 @@ export async function login(req, res) {
 export async function refreshSessionTokens(req, res) {
   try {
     const { refreshToken } = req.cookies;
-    const results = await userService.refreshTokens( refreshToken );
+    const results = await userService.refreshTokens(refreshToken);
 
     res.cookie("accessToken", results.newAccessToken, {
       httpOnly: true, // prevents access via JavaScript
@@ -114,8 +118,9 @@ export async function refreshSessionTokens(req, res) {
 export async function logout(req, res) {
   try {
     const { refreshToken } = req.cookies;
-  
-    if(!refreshToken) return res.status(200).json({ message:`Log Out Successful!` })
+
+    if (!refreshToken)
+      return res.status(200).json({ message: `Log Out Successful!` });
 
     await userService.revokeRefreshToken(refreshToken);
 
@@ -133,7 +138,7 @@ export async function logout(req, res) {
     res.clearCookie("refreshToken", { path: "/" });
     res.clearCookie("accessToken", { path: "/" });
 
-    return res.status(200).json({ message:`Log Out Successful!` });
+    return res.status(200).json({ message: `Log Out Successful!` });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
