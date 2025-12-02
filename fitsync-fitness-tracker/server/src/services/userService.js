@@ -8,6 +8,7 @@ import { generateSalt, hashPassword, verifyPassword } from "../utils/hash.js";
 import { makePublicId } from "../utils/publicIds.js";
 import { getEnv } from "../config/envConfig.js";
 import { getMembershipDuration } from "../utils/MembershipDuration.js";
+import { normalizeDBArrayData } from "../utils/normalizeDbArrayData.js";
 
 export async function registerNewUser(userData) {
   // Checks if a user has already registered with the provided email
@@ -208,13 +209,5 @@ export async function getUserMeals(userPublicId) {
   if (!user) throw new Error("USER_NOT_FOUND");
 
   const userMeals = await mealRepo.findMealsByCreatorPublicId(userPublicId);
-  if (userMeals) {
-    const mealsInformation = userMeals.map((meal) => {
-      const { creatorPublicId, mealName, ingredients, uuid } = meal;
-      return { creatorPublicId, mealName, ingredients, uuid };
-    });
-    return mealsInformation;
-  }
-
   return userMeals;
 }

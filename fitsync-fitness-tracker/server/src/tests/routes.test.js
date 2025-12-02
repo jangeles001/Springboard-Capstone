@@ -4,7 +4,7 @@ import { expect } from "chai";
 import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
 import { Workout } from "../models/workoutModel.js";
-import { Meal } from "../models/mealModel.js";
+import { Meal } from "../models/mealModel.js"
 import { userA, userB } from "./helpers/axiosClients.js";
 import { getEnv } from "../config/envConfig.js";
 import {
@@ -13,6 +13,7 @@ import {
 } from "../services/userService.js";
 import { getMembershipDuration } from "../utils/MembershipDuration.js";
 import redisClient from "../config/redisClient.js";
+import { normalizeDBArrayData } from "../utils/normalizeDbArrayData.js";
 
 const BASE_URL = `http://localhost:${getEnv("PORT")}`;
 let newUserA;
@@ -41,6 +42,8 @@ describe(" Test cases for ALL routes", function () {
       age: 30,
       weight: 221,
       email: "chirstersonchrisss@gmail.com",
+      promoConsent: true,
+      agreeToTerms: true,
     };
 
     // Creates new users before each test
@@ -70,6 +73,8 @@ describe(" Test cases for ALL routes", function () {
       age: 30,
       weight: 222,
       email: "ChrisChris@gmail.com",
+      promoConsent: true,
+      agreeToTerms: true,
     };
 
     const results = await userB.client.post(
@@ -111,6 +116,8 @@ describe(" Test cases for ALL routes", function () {
       age: 30,
       weight: 221,
       email: "chirstersonchrisss@gmail.com",
+      promoConsent: true,
+      agreeToTerms:true,
     };
 
     const results = await userB.client.post(
@@ -406,7 +413,7 @@ describe(" Test cases for ALL routes", function () {
     expect(newPrivateUserData).to.not.deep.equal(initialPrivateData);
   });
 
-  it("PATCH api/v1/users/me should return 200 and update only the provided private user information", async () => {
+    it("PATCH api/v1/users/me should return 200 and update only the provided private user information", async () => {
     // Gets users from database
     const users = await User.findOne({ publicId: newUserA.publicId });
 
@@ -439,7 +446,7 @@ describe(" Test cases for ALL routes", function () {
 
     const { firstName, lastName, age, weight } = results.data.userInfo; // Destructures the updated fields
     // Creates object to test if the fields have been updated.
-    const updatedFields = {
+    const updatedFields = { 
       firstName,
       lastName,
       age,
@@ -465,16 +472,17 @@ describe(" Test cases for ALL routes", function () {
     expect(results.status).to.equal(200);
     expect(results.data.userInfo.username).to.equal(user.username);
     expect(results.data.userInfo.age).to.equal(user.age);
-    expect(results.data.userInfo.memberSince).to.deep.equal(
-      getMembershipDuration(user.createdAt)
-    );
+    expect(results.data.userInfo.memberSince).to.deep.equal(getMembershipDuration(user.createdAt));
   });
 
   it("GET api/v1/users/:userPublicId should return 404 user not found", async () => {
-    const results = await userA.client.get(`${BASE_URL}/api/v1/users/1`, {
-      headers: { "Content-Type": "application/json" },
-      validateStatus: () => true,
-    });
+    const results = await userA.client.get(
+      `${BASE_URL}/api/v1/users/1`,
+      {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      }
+    );
 
     expect(results.status).to.equal(404);
     expect(results.data.error).to.equal("USER_NOT_FOUND");
@@ -501,53 +509,18 @@ describe(" Test cases for ALL routes", function () {
       creatorPublicId: newUserA.publicId,
       workoutName: "Push Dayyyy",
       exercises: [
-        {
-          exerciseId: "57",
-          exerciseName: "Bear Walk",
-          description: "None provided",
-          difficultyAtCreation: 3,
-          sets: 3,
-          reps: 8,
-          weight: 220,
-        },
-        {
-          exerciseId: "31",
-          exerciseName: "Axe Hold",
-          description: "None provided",
-          difficultyAtCreation: 1,
-          sets: 3,
-          reps: 10,
-          weight: 221,
-        },
-        {
-          exerciseId: "56",
-          exerciseName: "Abdominal Stabilization",
-          description: " None Provided",
-          difficultyAtCreation: 2,
-          sets: 3,
-          reps: 8,
-          weight: 222,
-        },
-        {
-          exerciseId: "805",
-          exerciseName: "Tricep Pushdown on Cable",
-          description:
-            "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout.",
-          difficultyAtCreation: 5,
-          sets: 3,
-          reps: 12,
-          weight: 223,
-        },
+        { exerciseId: "57", exerciseName: "Bear Walk", description: "None provided", difficultyAtCreation: 3, sets: 3, reps: 8, weight: 220 },
+        { exerciseId: "31", exerciseName: "Axe Hold", description: "None provided", difficultyAtCreation: 1, sets: 3, reps: 10, weight: 221 },
+        { exerciseId: "56", exerciseName: "Abdominal Stabilization", description: " None Provided", difficultyAtCreation: 2, sets: 3, reps: 8, weight: 222 },
+        { exerciseId: "805", exerciseName: "Tricep Pushdown on Cable", description: "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout.", difficultyAtCreation: 5, sets: 3, reps: 12, weight: 223 },
       ],
     };
 
     await Workout.create(workoutInformation);
 
-    const workouts = await Workout.find({
-      creatorPublicId: newUserA.publicId,
-    }).lean();
+    const workouts = await Workout.find({ creatorPublicId: newUserA.publicId }).lean();
     const [firstWorkout] = workouts;
-
+    
     const { creatorPublicId, workoutName, exercises, uuid } = firstWorkout;
 
     const results = await userA.client.get(
@@ -560,12 +533,7 @@ describe(" Test cases for ALL routes", function () {
 
     expect(results.status).to.equal(200);
     expect(results.data.userWorkouts.length).to.equal(workouts.length);
-    expect(results.data.userWorkouts[0]).to.deep.equal({
-      creatorPublicId,
-      workoutName,
-      exercises,
-      uuid,
-    });
+    expect(results.data.userWorkouts[0]).to.deep.equal({ creatorPublicId, workoutName, exercises, uuid });
   });
 
   it("GET api/v1/users/:userPublicId/workouts should return 404 user not found", async () => {
@@ -583,86 +551,196 @@ describe(" Test cases for ALL routes", function () {
 
   it("GET api/v1/users/:userPublicId/meals should return 200 and an empty list", async () => {
     const userMeals = await Meal.find({ creatorPublicId: newUserA.publicId });
-    const results = await userA.client.get(
-      `${BASE_URL}/api/v1/users/${newUserA.publicId}/meals`,
-      {
-        headers: { "Content-Type": "application/json" },
-        validateStatus: () => true,
-      }
-    );
+    const results = await userA.client.get(`${BASE_URL}/api/v1/users/${newUserA.publicId}/meals`, 
+    {
+      headers: {"Content-Type": "application/json"},
+      validateStatus: () => true,
+    });
 
     expect(results.status).to.equal(200);
     expect(results.data.userMeals).to.deep.equal(userMeals);
-  });
+  })
 
-  it("GET api/v1/users/:userPublicId/meals should return 200 with a list containing the created mealData", async () => {
-    const mealData = {
-      creatorPublicId: newUserA.publicId,
-      mealName: "Good Food",
-      description: "Food",
-      ingredients: [
-        {
-          ingredientId: 1,
-          ingredientName: "bestIngredient",
-          quantity: 12,
-          macros: {
-            protein: 0,
-            fat: 0,
-            carbs: 0,
-            fiber: 0,
-            netCarbs: 0,
-            calories: 0,
-          },
-          calories100G: 2,
-          macrosPer100G: {
-            protein: 0,
-            fat: 0,
-            carbs: 0,
-            fiber: 0,
-            netCarbs: 0,
-            calories: 0,
-          },
-        },
-      ],
-      mealMacros: {
-        protein: 20,
-        fat: 0,
-        carbs: 111,
-        fiber: 20,
-        netCarbs: 15,
-        calories: 20,
-      },
-    };
+  // TODO: Create test for other endpoints
+  // it("POST api/v1/exercises",async () => {});
+  // it("GET api/v1/exercises/:exerciseId",async () => {});
+  // it("GET api/v1/exercises",async () => {});
+  // it("POST api/v1/workouts",async () => {});
+  // it("GET api/v1/workouts/:workoutId",async () => {});
+  // it("GET api/v1/workouts",async () => {});
 
-    await Meal.create(mealData);
-
-    const userMeals = await Meal.find({
-      creatorPublicId: newUserA.publicId,
-    }).lean();
-    const [firstMeal] = userMeals;
-    const { creatorPublicId, mealName, ingredients, uuid } = firstMeal;
-
-    const results = await userA.client.get(
-      `${BASE_URL}/api/v1/users/${newUserA.publicId}/meals`,
+  it("POST api/v1/meals should return 201 status and the new meal information",async () => {
+    const newMealData = {
+    creatorPublicId: newUserA.publicId,
+    mealName: "Couse Couse",
+    description: "Meal so nice they named it twice",
+    ingredients:[
       {
-        headers: { "Content-Type": "application/json" },
+        ingredientId: 2,
+        ingredientName: "Couse Couse",
+        quantity: 10,
+        macros: {
+          protein: 2,
+          fat: 2,
+          carbs: 2,
+          fiber: 2,
+          netCarbs: 2,
+          calories: 2,
+        },
+        caloriesPer100G: 2,
+        macrosPer100G: {
+          protein: 2,
+          fat: 2,
+          carbs: 2,
+          fiber: 2,
+          netCarbs: 2,
+          calories: 2,
+        },
+      }
+    ],
+    mealMacros: {
+        protein: 2,
+        fat: 2,
+        carbs: 2,
+        fiber: 2,
+        netCarbs: 2,
+        calories: 2,
+      },
+    }
+
+    const results = await userA.client.post(`${BASE_URL}/api/v1/meals`,
+    newMealData,
+      {
+        headers: {"Content-Type": "application/json"},
         validateStatus: () => true,
       }
     );
 
-    expect(results.status).to.equal(200);
-    expect(results.data.userMeals[0]).to.deep.equal({
-      creatorPublicId,
-      mealName,
-      ingredients,
-      uuid,
-    });
+    const newMeal = await Meal.findOne({ creatorPublicId: newUserA.publicId }).lean();
+    expect(newMeal).to.exist;
+    expect(results.status).to.equal(201);
+    expect(results.data.createdMeal).to.exist;
+    expect(results.data.createdMeal).to.deep.equal({...newMealData, uuid: newMeal.uuid });
   });
 
-  // TODO: Create test for other endpoints
+    it("GET api/v1/meals returns 200 status and an empty array since no meals have been created",async () => {
+    const results = await userA.client.get("api/v1/meals",
+      {
+        headers: {"Content-Type": "application/json"},
+        validateStatus: () => true,
+      });
+
+      expect(results.status).to.equal(200);
+      expect(results.data.allMeals.length).to.equal(0);
+  });
+
+  it("GET api/v1/meals/:mealId should return the meal information for the meal with the specified uuid",async () => {
+    const mealData = {
+    creatorPublicId: newUserA.publicId,
+    mealName: "Couse Couse",
+    description: "Meal so nice they named it twice",
+    ingredients:
+      [
+        {
+          ingredientId: 2,
+          ingredientName: "Couse Couse",
+          quantity: 10,
+          macros: {
+            protein: 2,
+            fat: 2,
+            carbs: 2,
+            fiber: 2,
+            netCarbs: 2,
+            calories: 2,
+          },
+          caloriesPer100G: 2,
+          macrosPer100G: {
+            protein: 2,
+            fat: 2,
+            carbs: 2,
+            fiber: 2,
+            netCarbs: 2,
+            calories: 2,
+          },
+        }
+      ],
+    mealMacros: {
+      protein: 2,
+      fat: 2,
+      carbs: 2,
+      fiber: 2,
+      netCarbs: 2,
+      calories: 2,
+    },
+    }
+
+   const newMeal = await Meal.create(mealData);
+   const results = await userA.client.get(`api/v1/meals/${newMeal.uuid}`,
+    {
+      headers: { "Content-Type": "application/json"},
+      validationStatus: () => true,
+    }
+   );
+
+   expect(results.status).to.equal(200);
+   expect(results.data.mealInfo).to.deep.equal({ ...mealData, uuid: newMeal.uuid });
+  });
+
+  it("GET api/v1/meals should return 200 status and an array of all created meals" ,async () => {
+    const mealData = {
+    creatorPublicId: newUserA.publicId,
+    mealName: "Couse Couse",
+    description: "Meal so nice they named it twice",
+    ingredients:
+      [
+        {
+          ingredientId: 2,
+          ingredientName: "Couse Couse",
+          quantity: 10,
+          macros: {
+            protein: 2,
+            fat: 2,
+            carbs: 2,
+            fiber: 2,
+            netCarbs: 2,
+            calories: 2,
+          },
+          caloriesPer100G: 2,
+          macrosPer100G: {
+            protein: 2,
+            fat: 2,
+            carbs: 2,
+            fiber: 2,
+            netCarbs: 2,
+            calories: 2,
+          },
+        }
+      ],
+    mealMacros: {
+      protein: 2,
+      fat: 2,
+      carbs: 2,
+      fiber: 2,
+      netCarbs: 2,
+      calories: 2,
+    },
+    }
+
+    const newMeal = await Meal.create(mealData);
+    const results = await userA.client.get("api/v1/meals",
+      {
+        headers: {"Content-Type": "application/json"},
+        validateStatus: () => true,
+      });
+      expect(results.status).to.equal(200);
+      expect(results.data.allMeals.length).to.equal(1);
+      expect(results.data.allMeals[0]).to.deep.equal({ ...mealData, uuid: newMeal.uuid });
+
+  });
 });
 
-/**
+
+/** 
  *
  *   Use this to call populate and only get fields that are needed.
  *  .populate({
@@ -670,5 +748,5 @@ describe(" Test cases for ALL routes", function () {
  *    select: "exerciseId name difficulty category"
  *  })
  *
- *
+ * 
  */

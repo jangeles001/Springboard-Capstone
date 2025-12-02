@@ -19,8 +19,8 @@ const mealIngredientSchema = new mongoose.Schema(
     ingredientName: { type: String, required: true },
     quantity: { type: Number, required: true },
     macros: { type: macrosSchema, required: true },
-    calories100G: { type: Number, required: true },
-    macrosPer100G: { type: mongoose.Schema.Types.Mixed, required: true },
+    caloriesPer100G: { type: Number, required: true },
+    macrosPer100G: { type: macrosSchema, required: true },
   },
   { _id: false } // Removes _id from the ingredient object
 );
@@ -34,11 +34,21 @@ const mealSchema = new mongoose.Schema(
     ingredients: {
       type: [mealIngredientSchema],
       required: true,
-      default: {},
+      default: [],
     },
     mealMacros: { type: macrosSchema, required: true },
   },
   { timestamps: true }
 );
+
+mealSchema.set('toJSON', {
+  transform: function(doc, ret, options) {
+    delete ret._id;
+    delete ret.__v;
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    return ret;
+  }
+});
 
 export const Meal = mongoose.model("Meal", mealSchema);
