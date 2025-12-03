@@ -8,6 +8,7 @@ import workoutsRouter from "./routes/workouts.js";
 import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/users.js";
 import mealsRouter from "./routes/meals.js"
+import exercisesRouter from "./routes/exercises.js"
 // import postsRouter from "./routes/post.js"
 import connectDB from "./config/connect.js";
 import { getEnv } from "./config/envConfig.js";
@@ -32,6 +33,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/exercises", exercisesRouter)
 app.use("/api/v1/workouts", workoutsRouter);
 app.use("/api/v1/meals", mealsRouter);
 // app.use("/api/v1/posts", postsRouter);

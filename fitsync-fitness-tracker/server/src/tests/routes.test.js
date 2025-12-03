@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
 import { Workout } from "../models/workoutModel.js";
 import { Meal } from "../models/mealModel.js"
+import { Exercise } from "../models/exerciseModel.js"
 import { userA, userB } from "./helpers/axiosClients.js";
 import { getEnv } from "../config/envConfig.js";
 import {
@@ -13,7 +14,6 @@ import {
 } from "../services/userService.js";
 import { getMembershipDuration } from "../utils/MembershipDuration.js";
 import redisClient from "../config/redisClient.js";
-import { normalizeDBArrayData } from "../utils/normalizeDbArrayData.js";
 
 const BASE_URL = `http://localhost:${getEnv("PORT")}`;
 let newUserA;
@@ -561,13 +561,51 @@ describe(" Test cases for ALL routes", function () {
     expect(results.data.userMeals).to.deep.equal(userMeals);
   })
 
+   it("POST api/v1/exercises should return 201 status and the created exercise", async () => {
+    const newExerciseData = {}; // TODO: Add data to conform to shape of exercise model
+    const results = await userA.client.post(`${BASE_URL}/api/v1/exercises`,
+      newExerciseData,
+      {
+        headers: {"Content-Type": "application/json"},
+        validationStatus: () => true,
+      }
+    )
+
+    expect(results.status).to.equal(201);
+    expect(results.data.newExercise).to.deep.equal(newExerciseData);
+  });
+
+  it("GET api/v1/exercises should return 200 and a list of all exercises in the database", async () => {
+      const exercises = await Exercise.find({}).select("-__v -_id").lean();
+      const jsonExercises = JSON.parse(JSON.stringify(exercises));
+      const results = await userA.client.get(`${BASE_URL}/api/v1/exercises`,
+        {
+          headers: {"Content-Type": "application/json"},
+          validateStatus: () => true,
+        }
+      )
+
+      expect(results.status).to.equal(200);
+      expect(results.data.exercises).to.deep.equal(jsonExercises);
+  });
+
+  it("GET api/v1/exercises/:exerciseId should return 200 status and information for the exercise with the sepcified exerciseId",async () => {
+    const exercise = await Exercise.findOne({ exerciseId: "57"});
+    const results = await userA.client.get(`${BASE_URL}/api/v1/57`,
+      {
+        headers: {"Content-Type": "application/json"},
+        validateStatus: () => true,
+      }
+    )
+
+    expect(results.status).to.equal(200);
+    expect(results.data.exerciseInfo).to.deep.equal(exercise);
+  });
   // TODO: Create test for other endpoints
-  // it("POST api/v1/exercises",async () => {});
-  // it("GET api/v1/exercises/:exerciseId",async () => {});
-  // it("GET api/v1/exercises",async () => {});
   // it("POST api/v1/workouts",async () => {});
   // it("GET api/v1/workouts/:workoutId",async () => {});
   // it("GET api/v1/workouts",async () => {});
+  // it("GET api/v1/workputs/reports",async () => {});
 
   it("POST api/v1/meals should return 201 status and the new meal information",async () => {
     const newMealData = {
