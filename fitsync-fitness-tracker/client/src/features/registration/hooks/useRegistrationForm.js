@@ -11,9 +11,9 @@ export function useRegistrationForm({ onSuccess }) {
   const fields = {
     firstName: useFormDataField("firstName"),
     lastName: useFormDataField("lastName"),
-    age: Number(useFormDataField("age")),
+    age: useFormDataField("age"),
     height: useFormDataField("height"),
-    weight: Number(useFormDataField("weight")),
+    weight: useFormDataField("weight"),
     username: useFormDataField("username"),
     password: useFormDataField("password"),
     email: useFormDataField("email"),
@@ -48,7 +48,12 @@ export function useRegistrationForm({ onSuccess }) {
     }
     // Submit to DB using registration service
     try {
-      const { username, publicId } = await register(fields);
+      const formData = {
+        ...fields,
+        age: Number(fields.age),
+        weight: Number(fields.weight),
+      };
+      const { username, publicId } = await register(formData);
       resetOnValidation();
       setUsername(username);
       setPublicId(publicId);

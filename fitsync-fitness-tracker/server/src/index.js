@@ -1,3 +1,4 @@
+import "./utils/responseEnhancer.js";
 import express from "express";
 import cors from "cors";
 import path from "path";
@@ -7,11 +8,12 @@ import cookieParser from "cookie-parser";
 import workoutsRouter from "./routes/workouts.js";
 import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/users.js";
-import mealsRouter from "./routes/meals.js"
-import exercisesRouter from "./routes/exercises.js"
+import mealsRouter from "./routes/meals.js";
+import exercisesRouter from "./routes/exercises.js";
 // import postsRouter from "./routes/post.js"
 import connectDB from "./config/connect.js";
 import { getEnv } from "./config/envConfig.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 // Setup
 const app = express();
@@ -33,7 +35,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", usersRouter);
-app.use("/api/v1/exercises", exercisesRouter)
+app.use("/api/v1/exercises", exercisesRouter);
 app.use("/api/v1/workouts", workoutsRouter);
 app.use("/api/v1/meals", mealsRouter);
 // app.use("/api/v1/posts", postsRouter);
@@ -52,6 +54,9 @@ if (getEnv("NODE_ENV") === "production") {
     res.sendFile(path.resolve(clientPath, "index.html")); // TODO: Connect vite frontend with server response?
   });
 }
+
+// Catches all errors the application throws
+app.use(errorHandler);
 
 async function startServer() {
   try {

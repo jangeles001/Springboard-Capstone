@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
+const numberValidation = {
+  validator: (v) => Number.isInteger(v),
+  message: "Must be an integer!",
+};
+
 const workoutExerciseSchema = new mongoose.Schema(
   {
     exerciseId: {
@@ -9,15 +14,12 @@ const workoutExerciseSchema = new mongoose.Schema(
       trim: true,
     },
     exerciseName: { type: String, required: true },
-    description: { type: String, required : true },
+    description: { type: String, required: true },
     difficultyAtCreation: { type: Number, default: 5, required: true }, // snapshot of difficulty at workout creation
     sets: {
       type: Number,
       min: [0, "Sets cannot be negative!"],
-      validate: {
-        validator: (v) => Number.isInteger(v),
-        message: "Sets must be an integer!",
-      },
+      validate: numberValidation,
     },
     reps: {
       type: Number,
@@ -28,16 +30,20 @@ const workoutExerciseSchema = new mongoose.Schema(
         message: "Reps must be an integer!",
       },
     },
-    weight: { 
-      type: Number, 
+    weight: {
+      type: Number,
       default: 0,
       min: [0, "Weight Cannot be negative!"],
-      validate: { 
+      validate: {
         validator: (v) => Number.isInteger(v),
-        message: "Weight must be an integer!"
-      } 
+        message: "Weight must be an integer!",
+      },
     },
-    duration: { type: Number, default: 0, min: [0, "Duration cannot be negative!"] }, // for cardio/time-based exercises
+    duration: {
+      type: Number,
+      default: 0,
+      min: [0, "Duration cannot be negative!"],
+    }, // for cardio/time-based exercises
     aiFeatures: { type: Object, default: {} }, // snapshot AI features
   },
   { _id: false }

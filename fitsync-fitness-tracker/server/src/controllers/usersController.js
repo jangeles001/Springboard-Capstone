@@ -1,15 +1,17 @@
 import * as userService from "../services/userService.js";
 
+// Look up class extensions using prototype
+
 export async function getPublicUserInformationController(req, res) {
   try {
     const { userPublicId } = req.params;
     const publicUserInformation = await userService.getPublicUserInformation(
       userPublicId
     );
-    return res.status(200).json({ userInfo: publicUserInformation });
+    return res.generateSuccessResponse(publicUserInformation);
   } catch (error) {
     if (error.message === "USER_NOT_FOUND")
-      return res.status(404).json({ error: error.message });
+      return res.generateErrorResponse(new Error("USER_NOT_FOUND"));
     return res.status(500).json({ error: error.message });
   }
 }
