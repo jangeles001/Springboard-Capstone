@@ -13,7 +13,7 @@ import exercisesRouter from "./routes/exercises.js";
 // import postsRouter from "./routes/post.js"
 import connectDB from "./config/connect.js";
 import { getEnv } from "./config/envConfig.js";
-import { errorHandler } from "./middleware/errorHandler.js";
+// import { errorHandler } from "./middleware/errorHandler.js";
 
 // Setup
 const app = express();
@@ -56,7 +56,7 @@ if (getEnv("NODE_ENV") === "production") {
 }
 
 // Catches all errors the application throws
-app.use(errorHandler);
+// app.use(errorHandler);
 
 async function startServer() {
   try {

@@ -21,7 +21,7 @@ const BASE_URL = `http://localhost:${getEnv("PORT")}`;
 let newUserA;
 
 describe(" Test cases for ALL routes", function () {
-  before(async function () {
+  before(async function(){
     await mongoose.connect(getEnv("MONGO_TEST_URI"));
   });
 
@@ -87,6 +87,7 @@ describe(" Test cases for ALL routes", function () {
         validateStatus: () => true, // Allows for statuses outside of 200 range
       }
     );
+
     expect(results.status).to.equal(201);
     expect(results.data.message).to.equal("Registration Successful!");
 
@@ -96,12 +97,12 @@ describe(" Test cases for ALL routes", function () {
     expect(cookieKeys).to.include("accessToken");
     expect(cookieKeys).to.include("refreshToken");
 
-    const newUserPublicId = results.data.newUserInfo.publicId;
+    const newUserPublicId = results.data.data.publicId;
     const dbCheck = await User.findOne({ publicId: newUserPublicId }); // Finds first match for newUserUUID in the database
     expect(dbCheck).to.exist; // Checks if db contains the newUser
 
     // Checks for well-formed newUserInfo results object
-    expect(results.data.newUserInfo).to.deep.equal({
+    expect(results.data.data).to.deep.equal({
       username: newUser.username,
       publicId: dbCheck.publicId,
     });
@@ -130,8 +131,9 @@ describe(" Test cases for ALL routes", function () {
         validateStatus: () => true, // Allows for statuses outside of 200 range
       }
     );
+
     expect(results.status).to.equal(409);
-    expect(results.data.error).to.equal("EMAIL_ALREADY_REGISTERED");
+    expect(results.data.message).to.equal("EMAIL_ALREADY_REGISTERED");
 
     // Checks if cookies not been set
     const cookies = await userB.jar.getCookies(BASE_URL);
@@ -247,14 +249,14 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(401);
-    expect(results.data.error).to.equal(`INVALID_CREDENTIALS`);
+    expect(results.data.message).to.equal(`INVALID_CREDENTIALS`);
 
     // Checks if cookies have not been set
     const cookies = await userB.jar.getCookies(BASE_URL);
     expect(cookies.length).to.equal(0); // Expects cookie jar to be empty
   });
 
-  it("POST api/v1/auth/login should return 401 invalid credentials (username)", async () => {
+  it("POST api/v1/auth/login should return 401 invalid credentials (email)", async () => {
     // Incorrect email is being provided for the userCredentials
     const userCredentials = {
       email: "chirstersonchriss@gmail.com",
@@ -271,7 +273,7 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(401);
-    expect(results.data.error).to.equal(`INVALID_CREDENTIALS`);
+    expect(results.data.message).to.equal(`INVALID_CREDENTIALS`);
 
     // Checks if cookies have not been set
     const cookies = await userB.jar.getCookies(BASE_URL);
@@ -314,8 +316,8 @@ describe(" Test cases for ALL routes", function () {
       validateStatus: () => true, // Allows for statuses outside of 200 range
     });
 
-    expect(results.status).to.equal(401);
-    expect(results.data.error).to.equal("UNAUTHORIZED");
+    expect(results.status).to.equal(403);
+    expect(results.data.message).to.equal("UNAUTHORIZED_REQUEST");
   });
 
   // TODO: Test logout functionality
@@ -374,7 +376,7 @@ describe(" Test cases for ALL routes", function () {
     });
 
     expect(results.status).to.equal(200);
-    expect(results.data.userInfo).to.deep.equal(userData);
+    expect(results.data.data).to.deep.equal(userData);
   });
 
   it("PATCH api/v1/users/me should return 200 and the updated private user information", async () => {
@@ -411,7 +413,7 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(200);
-    expect(results.data.userInfo).to.deep.equal(newPrivateUserData);
+    expect(results.data.data).to.deep.equal(newPrivateUserData);
     expect(newPrivateUserData).to.not.deep.equal(initialPrivateData);
   });
 
@@ -446,7 +448,7 @@ describe(" Test cases for ALL routes", function () {
       }
     );
 
-    const { firstName, lastName, age, weight } = results.data.userInfo; // Destructures the updated fields
+    const { firstName, lastName, age, weight } = results.data.data; // Destructures the updated fields
     // Creates object to test if the fields have been updated.
     const updatedFields = {
       firstName,
@@ -457,7 +459,7 @@ describe(" Test cases for ALL routes", function () {
 
     expect(results.status).to.equal(200);
     expect(updatedFields).to.deep.equal(newPrivateUserData);
-    expect(results.data.userInfo).to.not.deep.equal(initialPrivateData);
+    expect(results.data.data).to.not.deep.equal(initialPrivateData);
   });
 
   it("GET api/v1/users/:userPublicId should return 200 and the public information for the user with the publicId provided in the url params", async () => {
@@ -472,9 +474,9 @@ describe(" Test cases for ALL routes", function () {
     const user = await User.findOne({ publicId: newUserA.publicId });
 
     expect(results.status).to.equal(200);
-    expect(results.data.userInfo.username).to.equal(user.username);
-    expect(results.data.userInfo.age).to.equal(user.age);
-    expect(results.data.userInfo.memberSince).to.deep.equal(
+    expect(results.data.data.username).to.equal(user.username);
+    expect(results.data.data.age).to.equal(user.age);
+    expect(results.data.data.memberSince).to.deep.equal(
       getMembershipDuration(user.createdAt)
     );
   });
@@ -486,7 +488,7 @@ describe(" Test cases for ALL routes", function () {
     });
 
     expect(results.status).to.equal(404);
-    expect(results.data.error).to.equal("USER_NOT_FOUND");
+    expect(results.data.message).to.equal("USER_NOT_FOUND");
   });
 
   it("GET api/v1/users/:userPublicId/workouts should return 200 and return an empty array since no new workouts have been made", async () => {
@@ -501,8 +503,8 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(200);
-    expect(results.data.userWorkouts.length).to.equal(0);
-    expect(results.data.userWorkouts).to.deep.equal(workouts);
+    expect(results.data.data.length).to.equal(0);
+    expect(results.data.data).to.deep.equal(workouts);
   });
 
   it("GET api/v1/users/:userPublicId/workouts should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
@@ -568,8 +570,8 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(200);
-    expect(results.data.userWorkouts.length).to.equal(workouts.length);
-    expect(results.data.userWorkouts[0]).to.deep.equal({
+    expect(results.data.data.length).to.equal(workouts.length);
+    expect(results.data.data[0]).to.deep.equal({
       creatorPublicId,
       workoutName,
       exercises,
@@ -587,7 +589,7 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(404);
-    expect(results.data.error).to.equal("USER_NOT_FOUND");
+    expect(results.data.message).to.equal("USER_NOT_FOUND");
   });
 
   it("GET api/v1/users/:userPublicId/meals should return 200 and an empty list", async () => {
@@ -601,11 +603,16 @@ describe(" Test cases for ALL routes", function () {
     );
 
     expect(results.status).to.equal(200);
-    expect(results.data.userMeals).to.deep.equal(userMeals);
+    expect(results.data.data).to.deep.equal(userMeals);
   });
 
   it("POST api/v1/exercises should return 201 status and the created exercise", async () => {
-    const newExerciseData = {}; // TODO: Add data to conform to shape of exercise model
+    const newExerciseData = {
+      exerciseId: 11111112,
+      name: "test",
+      category: "strength",
+    };
+
     const results = await userA.client.post(
       `${BASE_URL}/api/v1/exercises`,
       newExerciseData,
@@ -615,8 +622,11 @@ describe(" Test cases for ALL routes", function () {
       }
     );
 
+    const createdExercise = await Exercise.findOne({ exerciseId: newExerciseData.exerciseId }).select("-__v -_id -updatedAt").lean();
+    const jsonExercise = JSON.parse(JSON.stringify(createdExercise));
+    await Exercise.deleteOne({ exerciseId: 11111112 });
     expect(results.status).to.equal(201);
-    expect(results.data.newExercise).to.deep.equal(newExerciseData);
+    expect(results.data.data).to.deep.equal(jsonExercise);
   });
 
   it("GET api/v1/exercises should return 200 and a list of all exercises in the database", async () => {
@@ -628,18 +638,19 @@ describe(" Test cases for ALL routes", function () {
     });
 
     expect(results.status).to.equal(200);
-    expect(results.data.exercises).to.deep.equal(jsonExercises);
+    expect(results.data.data).to.deep.equal(jsonExercises);
   });
 
   it("GET api/v1/exercises/:exerciseId should return 200 status and information for the exercise with the sepcified exerciseId", async () => {
-    const exercise = await Exercise.findOne({ exerciseId: "57" });
-    const results = await userA.client.get(`${BASE_URL}/api/v1/57`, {
+    const exercise = await Exercise.findOne({ exerciseId: "57" }).select("-__v -_id -updatedAt -aiFeatures").lean();
+    const jsonExercise = JSON.parse(JSON.stringify(exercise));
+    const results = await userA.client.get(`${BASE_URL}/api/v1/exercises/57`, {
       headers: { "Content-Type": "application/json" },
       validateStatus: () => true,
     });
 
     expect(results.status).to.equal(200);
-    expect(results.data.exerciseInfo).to.deep.equal(exercise);
+    expect(results.data.data).to.deep.equal(jsonExercise);
   });
   // TODO: Create test for other endpoints
   // it("POST api/v1/workouts",async () => {});
@@ -832,3 +843,25 @@ describe(" Test cases for ALL routes", function () {
  *
  *
  */
+
+
+// describe("Validation Tests", function(){
+//   before(function(){});
+//   beforeEach(async () => {});
+//   after(async () => {});
+  
+// });
+
+// describe("Endpoint Database Creation Tests", function(){
+//   before(function(){});
+//   beforeEach(async () => {});
+//   after(async () => {});
+  
+// });
+
+// describe("Endpoint Database Fetching Tests", function(){
+//   before(function(){});
+//   beforeEach(async () => {});
+//   after(async () => {});
+  
+// });

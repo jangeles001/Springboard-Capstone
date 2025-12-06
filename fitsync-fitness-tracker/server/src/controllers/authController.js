@@ -1,9 +1,12 @@
 import * as userService from "../services/userService.js";
 import { getEnv } from "../config/envConfig.js";
+import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 
-export const createUser = async (req, res) => {
+export const createUser = async (req, res, next) => {
   try {
     const results = await userService.registerNewUser({ ...req.validatedBody });
+    const userInfo = { username: results.username, publicId: results.publicId };
+    const message = "Registration Successful!";
 
     // Sets the cookie
     res.cookie("accessToken", results.accessToken, {
@@ -20,16 +23,9 @@ export const createUser = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
 
-    return res.status(201).json({
-      message: "Registration Successful!",
-      newUserInfo: { username: results.username, publicId: results.publicId },
-    });
+    return res.generateSuccessResponse(userInfo, message, 201)
   } catch (error) {
-    if (error.message === "EMAIL_ALREADY_REGISTERED")
-      return res.status(409).json({ error: error.message });
-    return res
-      .status(500)
-      .json({ error: "Database error", error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode)
   }
 };
 
@@ -41,6 +37,9 @@ export async function login(req, res) {
       email,
       password
     );
+
+    const userInfo = { username: validatedUser.username, publicId: validatedUser.publicId };
+    const successMessage = `${validatedUser.username} (ID: ${validatedUser.publicId}) Logged In!`
 
     res.cookie("accessToken", validatedUser.accessToken, {
       httpOnly: true, // prevents access via JavaScript
@@ -56,19 +55,9 @@ export async function login(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
 
-    return res.status(200).json({
-      message: `${validatedUser.username} (ID: ${validatedUser.publicId}) Logged In!`,
-      userInfo: {
-        username: validatedUser.username,
-        publicId: validatedUser.publicId,
-      },
-    });
+    return res.generateSuccessResponse(userInfo, successMessage, 200 )
   } catch (error) {
-    if (error.message === "INVALID_CREDENTIALS")
-      return res.status(401).json({ error: error.message });
-    return res
-      .status(500)
-      .json({ error: "Server error", error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
@@ -94,7 +83,7 @@ export async function refreshSessionTokens(req, res) {
     return res.status(201).json({ message: "TOKENS_REFRESHED" });
   } catch (error) {
     // Checks if refresh token was invalid and deletes session and cookies
-    if (error.message === "UNAUTHORIZED") {
+    if (error instanceof UnauthorizedError) {
       // Creates new promise so that the the function can await for the session destruction
       await new Promise((resolve) => {
         req.session.destroy((destroyError) => {
@@ -109,9 +98,9 @@ export async function refreshSessionTokens(req, res) {
       res.clearCookie("refreshToken", { path: "/" });
       res.clearCookie("accessToken", { path: "/" });
 
-      return res.status(401).json({ error: error.message });
+      return res.generateErrorResponse(error.message, error.statusCode);
     }
-    return res.status(500).json({ error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
@@ -138,8 +127,8 @@ export async function logout(req, res) {
     res.clearCookie("refreshToken", { path: "/" });
     res.clearCookie("accessToken", { path: "/" });
 
-    return res.status(200).json({ message: `Log Out Successful!` });
+    return res.generateSuccessResponse(null, "Log Out Successful!", 200);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }

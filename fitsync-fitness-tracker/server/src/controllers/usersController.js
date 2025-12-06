@@ -10,9 +10,7 @@ export async function getPublicUserInformationController(req, res) {
     );
     return res.generateSuccessResponse(publicUserInformation);
   } catch (error) {
-    if (error.message === "USER_NOT_FOUND")
-      return res.generateErrorResponse(new Error("USER_NOT_FOUND"));
-    return res.status(500).json({ error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
@@ -22,9 +20,9 @@ export async function getPrivateUserInformationController(req, res) {
     const privateUserInformation = await userService.getPrivateUserInformation(
       userUUID
     );
-    return res.status(200).json({ userInfo: privateUserInformation });
+    return res.generateSuccessResponse(privateUserInformation, null, 200);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
@@ -34,12 +32,12 @@ export async function updatePrivateUserInformationController(req, res) {
     const updatedFields = req.validatedBody;
     const updatedUserInformation =
       await userService.updatePrivateUserInformation(userUUID, updatedFields);
-    return res.status(200).json({
-      message: "Information Updated Successfully!",
-      userInfo: updatedUserInformation,
-    });
+    const message = "Information Updated Successfully!";
+    
+    return res.generateSuccessResponse(updatedUserInformation, message)
+
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
@@ -47,11 +45,9 @@ export async function getUserWorkoutsController(req, res) {
   try {
     const { userPublicId } = req.params;
     const userWorkouts = await userService.getUserWorkouts(userPublicId);
-    return res.status(200).json({ userWorkouts });
+    return res.generateSuccessResponse(userWorkouts, null, 200);
   } catch (error) {
-    if (error.message === "USER_NOT_FOUND")
-      return res.status(404).json({ error: error.message });
-    return res.status(500).json({ error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
@@ -59,10 +55,8 @@ export async function getUserMealsController(req, res) {
   try {
     const { userPublicId } = req.params;
     const userMeals = await userService.getUserMeals(userPublicId);
-    return res.status(200).json({ userMeals });
+    return res.generateSuccessResponse(userMeals, null, 200);
   } catch (error) {
-    if (error.message === "USER_NOT_FOUND")
-      return res.status(404).json({ error: error.message });
-    return res.status(500).json({ error: error.message });
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }

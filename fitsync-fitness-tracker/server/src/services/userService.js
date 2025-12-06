@@ -8,12 +8,15 @@ import { generateSalt, hashPassword, verifyPassword } from "../utils/hash.js";
 import { makePublicId } from "../utils/publicIds.js";
 import { getEnv } from "../config/envConfig.js";
 import { getMembershipDuration } from "../utils/MembershipDuration.js";
-import { normalizeDBArrayData } from "../utils/normalizeDbArrayData.js";
+import { ConflictError } from "../errors/ConflictError.js"
+import { InvalidCredentialsError } from "../errors/InvalidCredentialsError.js"
+import { NotFoundError } from "../errors/NotFoundError.js"
+import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 
 export async function registerNewUser(userData) {
   // Checks if a user has already registered with the provided email
   const user = await userRepo.findOneUserByEmail(userData.email);
-  if (user) throw new Error("EMAIL_ALREADY_REGISTERED");
+  if (user) throw new ConflictError("EMAIL");
 
   // Password Encryption
   const salt = await generateSalt();
@@ -47,11 +50,11 @@ export async function registerNewUser(userData) {
 export async function validateCredentials(email, password) {
   // Checks if user email has been registered
   const user = await userRepo.findOneUserByEmail(email);
-  if (!user) throw new Error("INVALID_CREDENTIALS");
+  if (!user) throw new InvalidCredentialsError();
 
   // Verifies password is correct
   const valid = await verifyPassword(password, user.passwordHash);
-  if (!valid) throw new Error("INVALID_CREDENTIALS");
+  if (!valid) throw new InvalidCredentialsError();
 
   const { accessToken, refreshToken } = await generateTokens(user);
 
@@ -66,18 +69,18 @@ export async function validateCredentials(email, password) {
 export async function refreshTokens(refreshToken) {
   // Checks if refresh token is blacklisted
   const revoked = await redisClient.exists(`revoked:${refreshToken}`);
-  if (revoked) throw new Error("UNAUTHORIZED");
+  if (revoked) throw new UnauthorizedError();
 
   // Checks if refresh token is valid
   const stored = await redisClient.get(`refreshToken:${refreshToken}`);
-  if (!stored) throw new Error("UNAUTHORIZED");
+  if (!stored) throw new UnauthorizedError();
 
   // Checks if the refreshToken has expired
   const { userUUID, iat } = JSON.parse(stored);
   const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
   const timeElapsed = now - iat;
-  if (timeElapsed > sevenDaysInMs) throw new Error("UNAUTHORIZED");
+  if (timeElapsed > sevenDaysInMs) throw new UnauthorizedError();
 
   await revokeRefreshToken(refreshToken); // Revokes refreshToken
 
@@ -142,7 +145,7 @@ export async function revokeRefreshToken(refreshToken) {
 
 export async function getPublicUserInformation(userPublicId) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if (!user) throw new Error("USER_NOT_FOUND");
+  if (!user) throw new NotFoundError("USER");
 
   const publicInformation = {
     username: user.username,
@@ -156,6 +159,7 @@ export async function getPublicUserInformation(userPublicId) {
 
 export async function getPrivateUserInformation(userUUID) {
   const user = await userRepo.findOneUserByUUID(userUUID);
+  if (!user) throw new NotFoundError("USER");
 
   const privateInformation = {
     firstName: user.firstName,
@@ -189,7 +193,7 @@ export async function updatePrivateUserInformation(userUUID, updatedFields) {
 
 export async function getUserWorkouts(userPublicId) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if (!user) throw new Error("USER_NOT_FOUND");
+  if (!user) throw new NotFoundError("USER");
 
   const userWorkouts = await workoutRepo.findWorkoutsByCreatorPublicId(
     userPublicId
@@ -206,7 +210,7 @@ export async function getUserWorkouts(userPublicId) {
 
 export async function getUserMeals(userPublicId) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if (!user) throw new Error("USER_NOT_FOUND");
+  if (!user) throw new NotFoundError("USER");
 
   const userMeals = await mealRepo.findMealsByCreatorPublicId(userPublicId);
   return userMeals;

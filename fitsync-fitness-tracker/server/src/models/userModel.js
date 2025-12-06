@@ -25,5 +25,14 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.set('toJSON', {
+  transform: function (doc, ret, options){
+    delete ret._id;
+    delete ret.__v;
+    delete ret.updatedAt;
+    return ret;
+  }
+})
+
 // Generates Mongoose model
 export const User = mongoose.model("User", userSchema);

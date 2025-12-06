@@ -1,7 +1,8 @@
 import { User } from "../models/userModel.js"
 
 export async function createNewUser(userData){
-    return await User.create(userData);
+    const newUser = await User.create(userData);
+    return newUser.toJSON();
 }
 
 export async function findOneUserByEmail(userEmail){
