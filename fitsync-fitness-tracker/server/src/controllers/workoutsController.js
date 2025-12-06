@@ -10,10 +10,23 @@ export async function createWorkoutController(req, res) {
   }
 }
 
+export async function getWorkoutInformationController(req, res){
+  try{
+    const workoutId = req.params.workoutId;
+    const workoutInformation = await workoutService.getWorkoutInformation(workoutId);
+    return res.generateSuccessResponse(workoutInformation, "Success!", 200);
+  }catch(error){
+    return res.generateErrorResponse(error.message, error.statusCode);
+  }
+
+}
+
 export async function getAllWorkoutsController(req, res) {
-  const workouts = [
-    { id: 1, name: "Push-ups", reps: 20 },
-    { id: 2, name: "Squats", reps: 15 },
-  ];
-  return res.status(200).json(workouts);
+  try{
+    const workouts = await workoutService.getAllWorkouts();
+    return res.generateSuccessResponse(workouts, "Success!", 200);
+  }catch(error){
+    return res.generateErrorResponse(error.message, error.statusCode);
+  }
+
 }

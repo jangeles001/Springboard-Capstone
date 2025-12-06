@@ -86,6 +86,15 @@ const workoutSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+workoutSchema.set("toJSON",{
+  transform: function (doc, ret, options){
+    delete ret.__v;
+    delete ret._id;
+    delete ret.updatedAt;
+    return ret;
+  }
+});
+
 // Virtual Populate for Exercise Details
 workoutSchema.virtual("exerciseDetails", {
   ref: "Exercise",

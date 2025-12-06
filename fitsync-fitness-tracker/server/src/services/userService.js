@@ -198,13 +198,6 @@ export async function getUserWorkouts(userPublicId) {
   const userWorkouts = await workoutRepo.findWorkoutsByCreatorPublicId(
     userPublicId
   );
-  if (userWorkouts.length > 0) {
-    const workoutsInformation = userWorkouts.map((workout) => {
-      const { creatorPublicId, workoutName, exercises, uuid } = workout;
-      return { creatorPublicId, workoutName, exercises, uuid };
-    });
-    return workoutsInformation;
-  }
   return userWorkouts;
 }
 

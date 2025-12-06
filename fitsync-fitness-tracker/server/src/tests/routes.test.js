@@ -19,6 +19,7 @@ import redisClient from "../config/redisClient.js";
 
 const BASE_URL = `http://localhost:${getEnv("PORT")}`;
 let newUserA;
+let newWorkoutA;
 
 describe(" Test cases for ALL routes", function () {
   before(async function(){
@@ -50,7 +51,7 @@ describe(" Test cases for ALL routes", function () {
 
     // Creates new users before each test
     const { username, publicId, accessToken, refreshToken } =
-      await registerNewUser(userData);
+    await registerNewUser(userData);  
 
     await userA.jar.setCookie(`accessToken=${accessToken}`, BASE_URL);
     await userA.jar.setCookie(`refreshToken=${refreshToken}`, BASE_URL);
@@ -59,6 +60,58 @@ describe(" Test cases for ALL routes", function () {
       username,
       publicId,
     };
+
+    const newWorkoutData = {
+      creatorPublicId: newUserA.publicId,
+      workoutName: "Push Dayyyy",
+      exercises: [
+        {
+          exerciseId: "57",
+          exerciseName: "Bear Walk",
+          description: "None provided",
+          difficultyAtCreation: 3,
+          sets: 3,
+          reps: 8,
+          weight: 220,
+        },
+        {
+          exerciseId: "31",
+          exerciseName: "Axe Hold",
+          description: "None provided",
+          difficultyAtCreation: 1,
+          sets: 3,
+          reps: 10,
+          weight: 221,
+        },
+        {
+          exerciseId: "56",
+          exerciseName: "Abdominal Stabilization",
+          description: " None Provided",
+          difficultyAtCreation: 2,
+          sets: 3,
+          reps: 8,
+          weight: 222,
+        },
+        {
+          exerciseId: "805",
+          exerciseName: "Tricep Pushdown on Cable",
+          description:
+            "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout.",
+          difficultyAtCreation: 5,
+          sets: 3,
+          reps: 12,
+          weight: 223,
+        },
+      ],
+    };
+
+    const { uuid, creatorPublicId } = await Workout.create(newWorkoutData);  
+
+    newWorkoutA = {
+      uuid,
+      creatorPublicId
+    };
+
   });
 
   after(async function () {
@@ -491,75 +544,12 @@ describe(" Test cases for ALL routes", function () {
     expect(results.data.message).to.equal("USER_NOT_FOUND");
   });
 
-  it("GET api/v1/users/:userPublicId/workouts should return 200 and return an empty array since no new workouts have been made", async () => {
-    const workouts = await Workout.find({ creatorPublicId: newUserA.publicId });
-
-    const results = await userA.client.get(
-      `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts`,
-      {
-        headers: { "Content-Type": "application/json" },
-        validateStatus: () => true,
-      }
-    );
-
-    expect(results.status).to.equal(200);
-    expect(results.data.data.length).to.equal(0);
-    expect(results.data.data).to.deep.equal(workouts);
-  });
-
   it("GET api/v1/users/:userPublicId/workouts should return 200 and display the created workouts for the user with the corresponding publicId", async () => {
-    const workoutInformation = {
-      creatorPublicId: newUserA.publicId,
-      workoutName: "Push Dayyyy",
-      exercises: [
-        {
-          exerciseId: "57",
-          exerciseName: "Bear Walk",
-          description: "None provided",
-          difficultyAtCreation: 3,
-          sets: 3,
-          reps: 8,
-          weight: 220,
-        },
-        {
-          exerciseId: "31",
-          exerciseName: "Axe Hold",
-          description: "None provided",
-          difficultyAtCreation: 1,
-          sets: 3,
-          reps: 10,
-          weight: 221,
-        },
-        {
-          exerciseId: "56",
-          exerciseName: "Abdominal Stabilization",
-          description: " None Provided",
-          difficultyAtCreation: 2,
-          sets: 3,
-          reps: 8,
-          weight: 222,
-        },
-        {
-          exerciseId: "805",
-          exerciseName: "Tricep Pushdown on Cable",
-          description:
-            "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout.",
-          difficultyAtCreation: 5,
-          sets: 3,
-          reps: 12,
-          weight: 223,
-        },
-      ],
-    };
-
-    await Workout.create(workoutInformation);
-
     const workouts = await Workout.find({
       creatorPublicId: newUserA.publicId,
-    }).lean();
+    }).select("-__v -_id -updatedAt").lean();
     const [firstWorkout] = workouts;
-
-    const { creatorPublicId, workoutName, exercises, uuid } = firstWorkout;
+    const firstWorkoutJSON = JSON.parse(JSON.stringify(firstWorkout));
 
     const results = await userA.client.get(
       `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts`,
@@ -571,12 +561,7 @@ describe(" Test cases for ALL routes", function () {
 
     expect(results.status).to.equal(200);
     expect(results.data.data.length).to.equal(workouts.length);
-    expect(results.data.data[0]).to.deep.equal({
-      creatorPublicId,
-      workoutName,
-      exercises,
-      uuid,
-    });
+    expect(results.data.data[0]).to.deep.equal(firstWorkoutJSON);
   });
 
   it("GET api/v1/users/:userPublicId/workouts should return 404 user not found", async () => {
@@ -652,11 +637,99 @@ describe(" Test cases for ALL routes", function () {
     expect(results.status).to.equal(200);
     expect(results.data.data).to.deep.equal(jsonExercise);
   });
+
+  it("POST api/v1/workouts should return 201 and the new created workout information",async () => {
+    const newWorkoutData = {
+      creatorPublicId: newUserA.publicId,
+      workoutName: "Pull Dayyyy",
+      exercises: [
+        {
+          exerciseId: "57",
+          exerciseName: "Bear Walk",
+          description: "None provided",
+          difficultyAtCreation: 3,
+          sets: 3,
+          reps: 8,
+          weight: 220,
+        },
+        {
+          exerciseId: "31",
+          exerciseName: "Axe Hold",
+          description: "None provided",
+          difficultyAtCreation: 1,
+          sets: 3,
+          reps: 10,
+          weight: 221,
+        },
+        {
+          exerciseId: "56",
+          exerciseName: "Abdominal Stabilization",
+          description: " None Provided",
+          difficultyAtCreation: 2,
+          sets: 3,
+          reps: 8,
+          weight: 222,
+        },
+        {
+          exerciseId: "805",
+          exerciseName: "Tricep Pushdown on Cable",
+          description:
+            "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout.",
+          difficultyAtCreation: 5,
+          sets: 3,
+          reps: 12,
+          weight: 223,
+        },
+      ],
+    };
+
+    const results = await userA.client.post(`${BASE_URL}/api/v1/workouts/create`,
+      newWorkoutData,
+      {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      }
+    );
+
+    const newWorkout = await Workout.findOne({ workoutName: "Pull Dayyyy" }).select("-__v -_id -updatedAt").lean();
+    const newWorkoutJSON = JSON.parse(JSON.stringify(newWorkout));
+
+    expect(results.status).to.equal(201);
+    expect(results.data.data).to.deep.equal(newWorkoutJSON);
+
+  });
+
+  it("GET api/v1/workouts/:workoutId should return 200 status and the information for the workout with the specified uuid ",async () => {
+    const results = await userA.client.get(`${BASE_URL}/api/v1/workouts/${ newWorkoutA.uuid }`) // TODO: Create workout before all tests
+    const workout = await Workout.findOne({ uuid: newWorkoutA.uuid });
+    const workoutJSON = JSON.parse(JSON.stringify(workout));
+    
+    expect(results.status).to.equal(200);
+    expect(results.data.data).to.deep.equal(workoutJSON);
+  });
+
+  it("GET api/v1/workouts should return 200 and a list of all the workouts",async () => {
+    //Finds all workouts in the database. Should only be 1.
+    const workouts = await Workout.find({}).select("-__v -_id -updatedAt").lean();
+    
+    //Converts date objects in the mongoose document to strings
+    const [firstWorkout] =  workouts;
+    const firstWorkoutJSON = JSON.parse(JSON.stringify(firstWorkout));
+
+    const results = await userA.client.get(`${BASE_URL}/api/v1/workouts`,
+      {
+        headers: { 'Content-Type': "application/json" },
+        validateStatus: () => true,
+      }
+    );
+
+    expect(results.status).to.equal(200);
+    expect(results.data.data[0]).to.deep.equal(firstWorkoutJSON);
+
+  });
+  
   // TODO: Create test for other endpoints
-  // it("POST api/v1/workouts",async () => {});
-  // it("GET api/v1/workouts/:workoutId",async () => {});
-  // it("GET api/v1/workouts",async () => {});
-  // it("GET api/v1/workputs/reports",async () => {});
+  // it("GET api/v1/workouts/reports",async () => {});
 
   it("POST api/v1/meals should return 201 status and the new meal information", async () => {
     const newMealData = {
