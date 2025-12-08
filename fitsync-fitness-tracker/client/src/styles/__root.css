@@ -6,11 +6,11 @@
 
 @layer components {
   .form-input {
-    @apply w-full border rounded-lg px-3 py-2 mb-5 focus:outline-none focus:ring focus:ring-blue-400;
+    @apply w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400;
   }
 
   .form-input-error {
-    @apply w-full border rounded-lg px-3 py-2 mb-5 text-red-500 placeholder:text-red-500 focus:outline-none focus:ring focus:ring-red-700;
+    @apply w-full border rounded-lg px-3 py-2 text-red-500 placeholder:text-red-500 focus:outline-none focus:ring focus:ring-red-700;
   }
 
   .form-label {

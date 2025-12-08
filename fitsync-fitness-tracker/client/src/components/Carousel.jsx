@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useEffectEvent, useState, useRef } from 'react'
 
 export default function Carousel({ items, interval = 3000 }){
 
     const [ activeIndex, setActiveIndex ] = useState(1);
-    const [ isTransitioning, setIsTransitioning  ] = useState(true);
+    const [ isTransitioning, setIsTransitioning ] = useState(false);
     const timerID = useRef(null);
 
     const totalSlides = items.length;
@@ -22,15 +22,21 @@ export default function Carousel({ items, interval = 3000 }){
         }, interval)
     }
 
-    useEffect(() => {
+     const reset = useEffectEvent(() => {
         resetTimer();
+    })
+
+    useEffect(() => {
+        reset();
         
-        return () => clearTimer();
+        return clearTimer;
 
     }, [interval]);
 
 
     const nextSlide = (reset = true) => {
+        if (isTransitioning) return;
+        setIsTransitioning(true);
         setActiveIndex((prev) => prev + 1);
         if (reset) {
             resetTimer()
@@ -38,6 +44,8 @@ export default function Carousel({ items, interval = 3000 }){
     }
 
     const prevSlide = () => {
+        if (isTransitioning) return;
+        setIsTransitioning(true);
         setActiveIndex((prev) => prev - 1);
         resetTimer();
     }
@@ -46,18 +54,16 @@ export default function Carousel({ items, interval = 3000 }){
     if (activeIndex === totalSlides + 1) {
       setIsTransitioning(false);
       setActiveIndex(1);
+      return;
     }
     if (activeIndex === 0) {
       setIsTransitioning(false);
       setActiveIndex(totalSlides);
+      return;
     }
-  };
 
-  useEffect(() => {
-    if (!isTransitioning) {
-      requestAnimationFrame(() => setIsTransitioning(true));
-    }
-  }, [isTransitioning]);
+    setIsTransitioning(false);
+  };
 
     return (
         <div className="flex relative w-full h-auto items-center overflow-hidden">
@@ -84,12 +90,14 @@ export default function Carousel({ items, interval = 3000 }){
 
             <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-gray-700 text-white">
+            className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-gray-700 text-white"
+            >
                 Prev
             </button>
             <button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-gray-700 text-white">
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-gray-700 text-white"
+            >
                 Next
             </button>
         </div>

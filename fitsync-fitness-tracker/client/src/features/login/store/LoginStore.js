@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 const initialFormData = {
-  userName: "",
+  Email: "",
   password: "",
 };
 
 const validators = {
-  userName: [(value) => (!value ? "Username is required" : "")],
-  password: [(value) => (!value ? "password is required" : "")],
+  Email: [(value) => (!value ? "Email is required" : "")],
+  password: [(value) => (!value ? "Password is required" : "")],
 };
 
 const useLoginFormStore = create((set, get) => ({
@@ -56,8 +56,8 @@ const useLoginFormStore = create((set, get) => ({
 }));
 
 // State selectors
-export const useFormDataUserName = () =>
-  useLoginFormStore((state) => state.formData.userName);
+export const useFormDataEmail = () =>
+  useLoginFormStore((state) => state.formData.Email);
 export const useFormDataPassword = () =>
   useLoginFormStore((state) => state.formData.password);
 export const useFormData = () => useLoginFormStore((state) => state.formData);

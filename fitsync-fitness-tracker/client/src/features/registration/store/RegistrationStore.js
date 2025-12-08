@@ -46,7 +46,7 @@ const validators = {
   ],
   agreeToTerms: [
     (value) =>
-      value === false ? "Agreement to Terms of Service is required" : "",
+      value === false ? "Agreement to our Terms of Service is required" : "",
   ],
 };
 

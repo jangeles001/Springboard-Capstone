@@ -25,9 +25,16 @@ function RouteComponent() {
       <section className="text-center py-20 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
         <h1 className="text-5xl font-bold mb-4">Your Workout, Personalized</h1>
         <p className="text-lg mb-6">Get custom fitness recommendations based on your health data and goals.</p>
-        <a href="/auth/ " className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-gray-200">
-          Start Free Today
-        </a>
+        <div className='flex justify-center'>
+          <div className='grid grid-cols-1 md:grid-cols-2 max-w-[500px] gap-10'>
+            <a href="/auth/ " className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-gray-200">
+              Start Free Today
+            </a>
+            <a href="/auth/login " className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-gray-200">
+              Login
+            </a>
+          </div>
+        </div>
       </section>
 
       <section id="features" className="py-20 px-6 max-w-6xl mx-auto">

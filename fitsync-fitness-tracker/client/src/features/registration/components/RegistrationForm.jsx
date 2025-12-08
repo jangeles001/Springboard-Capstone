@@ -1,6 +1,6 @@
 import { useRouter, Link } from '@tanstack/react-router';
 import { useRegistrationForm } from '../hooks/useRegistrationForm'
-import ErrorMessages from '../../../components/ErrorMessages';
+import FieldErrorMessages from '../../../components/FieldErrorMessages';
 
 export default function RegistrationForm() {
     const router = useRouter();
@@ -37,6 +37,11 @@ export default function RegistrationForm() {
                         onChange={handleChange}
                         placeholder='First Name'
                         />
+                        {hasErrors && formErrors.firstName &&
+                            <div className='col-span-1 md:col-span-3'>
+                                <FieldErrorMessages field="firstName" error={formErrors.firstName} />
+                            </div> 
+                        }
                     </div>
                     <div className='flex flex-col col-span-1 md:col-span-2'>   
                         <label htmlFor="lastName" className={`form-label ${formErrors?.lastName && !lastName && 'form-label-error'}`}>Last Name:</label>
@@ -48,6 +53,11 @@ export default function RegistrationForm() {
                         onChange={handleChange}
                         placeholder='Last Name'
                         />
+                        {hasErrors && formErrors.lastName &&
+                            <div className='col-span-1 md:col-span-3'>
+                                <FieldErrorMessages field="lasttName" error={formErrors.lastName} />
+                            </div> 
+                        }
                     </div>
                     <div className="col-span-1 grid grid-cols-3 col-start-1 min-w-[600px] md:col-span-4 grid-cols-2 gap-5">
                         <div className='flex flex-col col-span-1'>  
@@ -60,6 +70,11 @@ export default function RegistrationForm() {
                             onChange={handleChange}
                             placeholder='Age'
                             />
+                            {hasErrors && formErrors.age &&
+                                <div className='col-span-1 md:col-span-3'>
+                                    <FieldErrorMessages field="age" error={formErrors.age} />
+                                </div> 
+                            }
                         </div>
                         <div className='flex flex-col col-span-1 md:col-span-2'>     
                             <label htmlFor="height" className={`form-label ${formErrors?.height && !height && 'form-label-error'}`}>Height:</label>
@@ -71,6 +86,11 @@ export default function RegistrationForm() {
                             onChange={handleChange}
                             placeholder='Height'
                             />
+                            {hasErrors && formErrors.height &&
+                                <div className='col-span-1 md:col-span-3'>
+                                    <FieldErrorMessages field="height" error={formErrors.height} />
+                                </div> 
+                            }
                         </div>
                         <div className='flex flex-col col-span-1'> 
                             <label htmlFor="weight" className={`form-label ${formErrors?.weight && !weight && 'form-label-error'}`}>Weight:</label>
@@ -82,6 +102,11 @@ export default function RegistrationForm() {
                             onChange={handleChange}
                             placeholder='Weight'
                             />
+                            {hasErrors && formErrors.weight &&
+                                <div className='col-span-1 md:col-span-3'>
+                                    <FieldErrorMessages field="weight" error={formErrors.weight} />
+                                </div> 
+                            }
                         </div>
                         <div className="col-span-4 grid grid-cols-1 md:grid-cols-1 gap-5">
                             <div className='flex flex-col col-span-2 md:col-span-2'> 
@@ -94,6 +119,11 @@ export default function RegistrationForm() {
                                 onChange={handleChange}
                                 placeholder='Username'
                                 />
+                                {hasErrors && formErrors.username &&
+                                    <div className='col-span-1 md:col-span-3'>
+                                        <FieldErrorMessages field="username" error={formErrors.username} />
+                                    </div> 
+                                }
                             </div>
                         </div>
                         <div className='flex flex-col col-span-4'> 
@@ -106,6 +136,11 @@ export default function RegistrationForm() {
                             onChange={handleChange}
                             placeholder='Password'
                             />
+                            {hasErrors && formErrors.password &&
+                                <div className='col-span-1 md:col-span-3'>
+                                    <FieldErrorMessages field="password" error={formErrors.password} />
+                                </div> 
+                            }
                         </div>
                         <div className='flex flex-col col-span-4'> 
                             <label htmlFor="email" className={`form-label ${formErrors?.email && !email &&'form-label-error'}`}>Email:</label>
@@ -117,6 +152,11 @@ export default function RegistrationForm() {
                             onChange={handleChange}
                             placeholder='user@example.com'
                             />
+                            {hasErrors && formErrors.email &&
+                                <div className='col-span-1 md:col-span-3'>
+                                    <FieldErrorMessages field="email" error={formErrors.email} />
+                                </div> 
+                            }
                         </div>
                         <div className='flex flex-row col-span-4 gap-3'> 
                             <input 
@@ -126,7 +166,7 @@ export default function RegistrationForm() {
                             checked={promoConsent}
                             onChange={handleChange}
                             />
-                            <label htmlFor="email" className={`form-label`}>Agree to receive occasional promotional emails</label>
+                            <label htmlFor="promoConsent" className={`form-label`}>Agree to receive occasional promotional emails</label>
                         </div>
                         <div className='flex flex-row col-span-4 gap-3'>
                             <input 
@@ -136,14 +176,14 @@ export default function RegistrationForm() {
                             checked={agreeToTerms}
                             onChange={handleChange}
                             />
-                            <label htmlFor="email" className={`form-label ${formErrors?.agreeToTerms && !agreeToTerms && 'text-red-700'}`}>Agree to our <Link to="/legal/terms" className='hover:underline'>Terms of Service&#129133;</Link></label>
+                            <label htmlFor="agreeToTerms" className={`form-label ${formErrors?.agreeToTerms && !agreeToTerms && 'text-red-700'}`}>Agree to our <Link to="/legal/terms" className='hover:underline'>Terms of Service&#129133;</Link></label>
+                            {hasErrors && formErrors.agreeToTerms &&
+                                <div className='col-span-1 md:col-span-3'>
+                                    <FieldErrorMessages field="agreeToTerms" error={formErrors.agreeToTerms} />
+                                </div> 
+                            }
                         </div>
                     </div>
-                        {hasErrors &&
-                        <div className='col-span-1 md:col-span-3'>
-                            <ErrorMessages errors={formErrors} />
-                        </div> 
-                        }
                     <div className="col-span-1 md:col-span-4 flex justify-center max-h-20">
                         <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100'>Submit</button>
                     </div>

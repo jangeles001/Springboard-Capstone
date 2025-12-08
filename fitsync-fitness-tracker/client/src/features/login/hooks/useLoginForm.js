@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   useFormDataPassword,
-  useFormDataUserName,
+  useFormDataEmail,
   useFormErrors,
   useLoginActions,
 } from "../store/LoginStore";
@@ -11,7 +11,7 @@ import { useUserActions } from "../../../store/UserStore.js";
 // Custom hook to manage login form state and behavior
 export function useLoginForm({ onSuccess }) {
   // Store state slices
-  const formDataUserName = useFormDataUserName();
+  const formDataEmail = useFormDataEmail();
   const formDataPassword = useFormDataPassword();
   const formErrors = useFormErrors();
 
@@ -44,7 +44,7 @@ export function useLoginForm({ onSuccess }) {
     }
     try {
       const { username, publicId } = await login({
-        email: formDataUserName,
+        email: formDataEmail,
         password: formDataPassword,
       });
       setUsername(username);
@@ -58,7 +58,7 @@ export function useLoginForm({ onSuccess }) {
   };
 
   return {
-    formDataUserName,
+    formDataEmail,
     formDataPassword,
     formErrors,
     hasErrors,
