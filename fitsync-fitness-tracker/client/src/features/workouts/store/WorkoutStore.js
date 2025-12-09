@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
-const useWorkoutStore = create((set, get) => ({
+const useWorkoutStore = create((set) => ({
   workoutsList: [],
   recentWorkouts: [],
   generatedWorkout: [],
   createdWorkout: null, // { workoutName: , exercises: }
+  totalWorkouts: null, // grab total user workouts count from api.
   actions: {
     setWorkoutsList: () => {
-      const response = [""]; // call fetch from fetching service
       set({ workoutsList: [] });
     },
     removeFromWorkoutsList: (name) => {
@@ -20,13 +20,13 @@ const useWorkoutStore = create((set, get) => ({
     addToWorkoutsList: (workout) =>
       set((state) => ({
         workoutsList: [...state.workoutsList, workout],
-      })),
+    })),
     addToCreatedWorkout: (exercise) =>
       set((state) => ({
         createdWorkout: state.createdWorkout
           ? [...state.createdWorkout, exercise]
           : [exercise],
-      })),
+    })),
     removeFromCreatedWorkout: (id) =>
       set((state) => {
         if (!state.createdWorkout) return {};
@@ -34,23 +34,8 @@ const useWorkoutStore = create((set, get) => ({
           (exercise) => exercise.id !== id
         );
         return { createdWorkout: filtered.length > 0 ? filtered : null };
-      }),
+    }),
     resetCreatedWorkout: () => set({ createdWorkout: null }),
-    createWorkout: (name) => {
-      //create random name geneartor to call if name of workout is blank.
-      const state = get();
-      if (!state.createdWorkout) return;
-      const newWorkout = {
-        workoutName: name || "TBA",
-        workouts: [...state.createdWorkout],
-      };
-      set((prevState) => ({
-        workoutsList: state.workoutsList
-          ? [...prevState.workoutsList, newWorkout]
-          : [newWorkout],
-        createdWorkout: null,
-      }));
-    },
   },
 }));
 

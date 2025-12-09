@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query"
 import { useCreatedWorkout, useWorkoutsList } from "../store/WorkoutStore";
 import { useWorkoutActions } from "../store/WorkoutStore";
+import { api } from "../../../services/api";
 
 export default function useWorkouts() {
   // Store state selector
@@ -8,11 +10,23 @@ export default function useWorkouts() {
   const createdWorkout = useCreatedWorkout();
 
   // Store actions selector
-  const { removeFromCreatedWorkout, createWorkout, removeFromWorkoutsList } =
+  const { removeFromCreatedWorkout, resetCreatedWorkout, removeFromWorkoutsList } =
     useWorkoutActions();
 
   // Local State
   const [workoutName, setWorkoutName] = useState("");
+  const mutation = useMutation({
+    mutationFn: (workout) => {
+      return api.post(`workouts`, workout)
+    },
+    onSuccess: (response) => {
+      console.log(response);
+      resetCreatedWorkout();
+    }, 
+    onError: (error) => {
+      console.error('Error creating resource', error);
+    },
+  }); 
 
   // Changes the workout name
   const handleChange = (e) => {
@@ -27,7 +41,8 @@ export default function useWorkouts() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (createdWorkout) {
-      createWorkout(workoutName);
+      const workoutData = {...createdWorkout, workoutName: workoutName}
+      mutation.mutate(workoutData);
       setWorkoutName("");
     }
   };
