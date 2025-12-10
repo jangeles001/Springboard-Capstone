@@ -1,15 +1,21 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import fetchExercises from "../services/fetchExercises";
-import { useWorkoutActions, useCreatedWorkout } from "../features/workouts/store/WorkoutStore";
+import {
+  useWorkoutActions,
+  useCreatedWorkout,
+} from "../features/workouts/store/WorkoutStore";
+import { api } from "../services/api";
 
 const BASE_URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
 
 export function useExercises(initialUrl = BASE_URL) {
   // Store State
-  const createdWorkout  = useCreatedWorkout();
+  const createdWorkout = useCreatedWorkout();
 
   // Store Actions
-  const { resetCreatedWorkout, addToCreatedWorkout } = useWorkoutActions();
+  const { resetCreatedWorkout, addExerciseToCreatedWorkout } =
+    useWorkoutActions();
 
   // Local state
   const [response, setResponse] = useState([]);
@@ -33,7 +39,7 @@ export function useExercises(initialUrl = BASE_URL) {
       setError(error);
       setStatus("error");
     }
-  },[]);
+  }, []);
 
   // Fetches exercise data from wger api using the url passed in
   const loadByCategory = useCallback(
@@ -54,7 +60,14 @@ export function useExercises(initialUrl = BASE_URL) {
   }, [response, createdWorkout]);
 
   const handleClick = (exercise) => {
-    addToCreatedWorkout(exercise);
+    /* const exerciseData = {
+      exerciseId: exercise.id,
+      exerciseName: exercise.translations?.[0]?.name || `Exercise #${exercise.id}`,
+      description: exercise.translations?.[0]?.description || " No description provided",
+
+    }
+  */
+    addExerciseToCreatedWorkout(exercise);
     console.log(createdWorkout);
   };
 

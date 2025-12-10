@@ -16,11 +16,6 @@ const workoutExerciseSchema = new mongoose.Schema(
     exerciseName: { type: String, required: true },
     description: { type: String, required: true },
     difficultyAtCreation: { type: Number, default: 5, required: true }, // snapshot of difficulty at workout creation
-    sets: {
-      type: Number,
-      min: [0, "Sets cannot be negative!"],
-      validate: numberValidation,
-    },
     reps: {
       type: Number,
       default: 0,
@@ -32,7 +27,6 @@ const workoutExerciseSchema = new mongoose.Schema(
     },
     weight: {
       type: Number,
-      default: 0,
       min: [0, "Weight Cannot be negative!"],
       validate: {
         validator: (v) => Number.isInteger(v),
@@ -41,7 +35,6 @@ const workoutExerciseSchema = new mongoose.Schema(
     },
     duration: {
       type: Number,
-      default: 0,
       min: [0, "Duration cannot be negative!"],
     }, // for cardio/time-based exercises
     aiFeatures: { type: Object, default: {} }, // snapshot AI features
@@ -86,13 +79,13 @@ const workoutSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-workoutSchema.set("toJSON",{
-  transform: function (doc, ret, options){
+workoutSchema.set("toJSON", {
+  transform: function (doc, ret, options) {
     delete ret.__v;
     delete ret._id;
     delete ret.updatedAt;
     return ret;
-  }
+  },
 });
 
 // Virtual Populate for Exercise Details

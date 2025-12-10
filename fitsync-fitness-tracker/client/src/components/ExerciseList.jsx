@@ -34,7 +34,7 @@ export default function ExerciseList() {
             )})
           }
           </div>
-          <div className='flex flex-row pb-10 gap-4'>
+          <div className='flex flex-row justify-center pb-10 gap-4'>
             {prevLink && <button onClick={() => loadData(prevLink)} className='hover:underline'>Prev</button>}
             {nextLink && <button onClick={() => loadData(nextLink)} className='hover:underline'>Next</button>}
           </div>
