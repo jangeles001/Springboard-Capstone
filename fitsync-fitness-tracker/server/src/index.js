@@ -20,7 +20,12 @@ const app = express();
 const configPort = getEnv("PORT") || 5000;
 
 // Middleware
-app.use(cors({ origin: getEnv("CLIENT_ORIGIN"), credentials: true }));
+app.use(cors({ 
+  origin: getEnv("CLIENT_ORIGIN"), 
+  credentials: true, 
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use(express.json());
 app.use(
   session({

@@ -6,20 +6,30 @@ const useWorkoutStore = create((set) => ({
   createdWorkout: null, // { workoutName: , exercises: }
   totalWorkouts: null, // grab total user workouts count from api.
   actions: {
-    setExerciseInformation: (id, fields) =>
+    setExerciseInformation: (id, fields) => 
       set((state) => {
-        const newMap = state.createdWorkout.map((ex) =>
-          ex.id === id ? { ...ex, ...fields } : ex
-        );
-
-        return { createdWorkout: newMap };
+        const newMap = state.createdWorkout.map((exercise) => 
+          exercise.id === id ? {...exercise, ...fields } : exercise );
+          return { createdWorkout: newMap };
       }),
+    removeFromWorkoutsList: (name) => {
+      set((state) => ({
+        workoutsList: state?.workoutsList?.filter((workout) => {
+          return workout.name != name;
+        }),
+      }));
+    },
+    addToWorkoutsList: (workout) =>
+      set((state) => ({
+        workoutsList: [...state.workoutsList, workout],
+    })),
+    setCreatedWorkout: (workout) => set({createdWorkout: workout}),
     addExerciseToCreatedWorkout: (exercise) =>
       set((state) => ({
         createdWorkout: state.createdWorkout
           ? [...state.createdWorkout, exercise]
           : [exercise],
-      })),
+    })),
     removeFromCreatedWorkout: (id) =>
       set((state) => {
         if (!state.createdWorkout) return {};
@@ -27,7 +37,7 @@ const useWorkoutStore = create((set) => ({
           (exercise) => exercise.id !== id
         );
         return { createdWorkout: filtered.length > 0 ? filtered : null };
-      }),
+    }),
     resetCreatedWorkout: () => set({ createdWorkout: null }),
   },
 }));

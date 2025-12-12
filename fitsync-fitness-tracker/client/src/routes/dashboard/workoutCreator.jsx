@@ -13,7 +13,7 @@ function RouteComponent() {
   if(error) return <div className="p-4 text-red-600">Error: {error.message}</div>;;
 
   return (
-      <div className='flex flex-col md:flex-row md:items-start bg-gradient-to-r from-blue-500 to-indigo-600 gap-10 min-w-sm'>
+      <div className='flex flex-col max-sm:items-center md:flex-row min-w-min gap-5 p-3'>
         <WorkoutsCreatorForm />
         <ExerciseList />
       </div>

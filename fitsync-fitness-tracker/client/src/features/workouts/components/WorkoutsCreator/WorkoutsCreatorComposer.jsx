@@ -5,8 +5,8 @@ export function WorkoutsCreatorComposer({ children }) {
     const workouts = useWorkouts();
     return (
         <WorkoutsCreatorContext.Provider value={workouts}>
-            <div className='flex flex-col items-center self-auto rounded-2xl border border-gray-200 
-            shadow-md bg-gray-100 min-h-[400px] min-w-[700px] max-w-[700px] p-10 pt-5 m-5 md:mt-20 md:mb-20 gap-5'>
+            <div className='flex flex-col rounded-2xl border border-gray-200 
+            shadow-md bg-gray-100 md:basis-1/2 min-w-[500px] max-h-min p-5 pt-5 m-5 md:mb-20 gap-5'>
                 <form className="flex flex-col gap-3" onSubmit={workouts.handleSubmit}>
                     {children}
                 </form>

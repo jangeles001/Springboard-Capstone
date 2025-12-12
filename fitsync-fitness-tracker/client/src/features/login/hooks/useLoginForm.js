@@ -53,7 +53,7 @@ export function useLoginForm({ onSuccess }) {
       // Fires success callback if provided. Made generic to allow custom behavior on login in the future.
       if (onSuccess) onSuccess();
     } catch (error) {
-      throw new Error(error.message);
+      console.log(error);
     }
   };
 

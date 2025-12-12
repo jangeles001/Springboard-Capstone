@@ -60,13 +60,7 @@ export function useExercises(initialUrl = BASE_URL) {
   }, [response, createdWorkout]);
 
   const handleClick = (exercise) => {
-    /* const exerciseData = {
-      exerciseId: exercise.id,
-      exerciseName: exercise.translations?.[0]?.name || `Exercise #${exercise.id}`,
-      description: exercise.translations?.[0]?.description || " No description provided",
-
-    }
-  */
+    console.log(exercise);
     addExerciseToCreatedWorkout(exercise);
     console.log(createdWorkout);
   };
