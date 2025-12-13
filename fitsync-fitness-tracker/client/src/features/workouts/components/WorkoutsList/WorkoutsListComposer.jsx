@@ -1,8 +1,8 @@
 import { WorkoutsListContext } from './WorkoutsListContext'
-import useWorkouts from "../../hooks/useWorkouts"
+import { useWorkoutsList } from '../../hooks/useWorkoutsList';
 
 export function WorkoutsListComposer({ children }){
-    const workouts = useWorkouts();
+    const workouts = useWorkoutsList({ limit: 5 });
     return (
         <WorkoutsListContext.Provider value={workouts}>
             {children}

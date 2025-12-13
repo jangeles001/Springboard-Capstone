@@ -4,13 +4,13 @@ import {
   createWorkoutController,
   getWorkoutInformationController,
 } from "../controllers/workoutsController.js";
+import requireAuth from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router
-.post("/create", createWorkoutController)
-.get("/", getAllWorkoutsController)
-.get("/:workoutId", getWorkoutInformationController)
-
+  .post("/create", requireAuth, createWorkoutController)
+  .get("/", requireAuth, getAllWorkoutsController)
+  .get("/:workoutId", requireAuth, getWorkoutInformationController);
 
 export default router;

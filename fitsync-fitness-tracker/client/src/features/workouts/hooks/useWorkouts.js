@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query"
-import { useCreatedWorkout, useWorkoutsList } from "../store/WorkoutStore";
+import { useMutation } from "@tanstack/react-query";
+import { useCreatedWorkout } from "../store/WorkoutStore";
 import { useWorkoutActions } from "../store/WorkoutStore";
 import { api } from "../../../services/api";
 
 export default function useWorkouts() {
   // Store state selector
-  const workoutsList = useWorkoutsList();
   const createdWorkout = useCreatedWorkout();
 
   // Store actions selector
-  const { setExerciseInformation, removeFromCreatedWorkout, resetCreatedWorkout, removeFromWorkoutsList } =
-    useWorkoutActions();
+  const {
+    setExerciseInformation,
+    removeFromCreatedWorkout,
+    resetCreatedWorkout,
+    removeFromWorkoutsList,
+  } = useWorkoutActions();
 
   // Local State
   const [workoutName, setWorkoutName] = useState("");
@@ -19,32 +22,31 @@ export default function useWorkouts() {
   const UNIT_OPTIONS = {
     Weight: ["lbs", "kg"],
     Duration: ["min", "sec"],
-  }
+  };
 
   const mutation = useMutation({
     mutationFn: (workout) => {
-      return api.post(`api/v1/workouts/create`, workout
-      )
+      return api.post(`api/v1/workouts/create`, workout);
     },
     onSuccess: (response) => {
       console.log(response.data.data);
       resetCreatedWorkout();
-    }, 
-    onError: (error) => {
-      console.error('Error creating resource', error);
     },
-  }); 
+    onError: (error) => {
+      console.error("Error creating resource", error);
+    },
+  });
 
   // Changes the workout name
   const handleWorkoutNameChange = (e) => {
-    if(nameError === true) setNameError(false);
+    if (nameError === true) setNameError(false);
     setWorkoutName(e.target.value);
   };
 
   const handleExerciseInformationChange = (e, id, field) => {
-      const value = e.target.value;
-      setExerciseInformation(id, { [field]: value });
-  }
+    const value = e.target.value;
+    setExerciseInformation(id, { [field]: value });
+  };
 
   // Removes exercise from create workout window
   const handleRemove = (id) => {
@@ -53,22 +55,22 @@ export default function useWorkouts() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(workoutName === ""){
+    if (workoutName === "") {
       setNameError(true);
       return;
     }
     const normalizedeExercises = createdWorkout.map((exercise) => {
       return {
-        exerciseId: exercise.id, 
+        exerciseId: exercise.id,
         exerciseName: exercise.translations?.[0]?.name,
         description: exercise.translations?.[0]?.description,
         reps: Number(exercise.reps) || 0,
         weight: Number(exercise.weight) || 0,
         duration: Number(exercise.duration) || 0,
-      }
-    })
+      };
+    });
     if (createdWorkout) {
-      const workoutData = { workoutName, exercises: [...normalizedeExercises] }
+      const workoutData = { workoutName, exercises: [...normalizedeExercises] };
       mutation.mutate(workoutData);
       resetCreatedWorkout();
       setWorkoutName("");
@@ -77,7 +79,6 @@ export default function useWorkouts() {
 
   return {
     createdWorkout,
-    workoutsList,
     workoutName,
     nameError,
     UNIT_OPTIONS,

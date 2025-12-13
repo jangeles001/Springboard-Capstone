@@ -30,7 +30,7 @@ export default function CategoryDropdown({ onChange, isLoading, style}) {
             }}
             type='text'
             name='categories'
-            className='ml-auto mr-25 m-5 border-1 rounded w-30 p-1'
+            className='ml-auto border-1 rounded w-30 p-1'
             >
                 <option value="">
                     All
