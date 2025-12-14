@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query"
 import {
   useFormDataPassword,
   useFormDataEmail,
@@ -9,26 +10,38 @@ import { login } from "../services/loginService";
 import { useUserActions } from "../../../store/UserStore.js";
 
 // Custom hook to manage login form state and behavior
-export function useLoginForm({ onSuccess }) {
-  // Store state slices
+export function useLoginForm({ onSuccessFunction }) {
+  // Mutation hook
+  const loginMutation = useMutation({
+    mutationFn: (userCredentials) => login(userCredentials),
+  });
+
+  // Login store state slices
   const formDataEmail = useFormDataEmail();
   const formDataPassword = useFormDataPassword();
   const formErrors = useFormErrors();
 
-  // Login Store actions slice
-  const { setFormField, resetForm, validateForm } = useLoginActions();
+  // Login store actions slice
+  const { setFormField, setFormErrors, resetForm, validateForm } = useLoginActions();
 
   // User store actions slice
   const { setUsername, setPublicId } = useUserActions();
 
-  // Flag for form submission errors
-  const [hasErrors, setHasErrors] = useState(false);
+  // Local State
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [hasErrors, setHasErrors] = useState(false); // Holds value for both client and mutation errors.
 
   // Updates a specific field in the form store when an input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormField(name, value);
   };
+
+  // Handles password visibility toggle
+  const handlePasswordToggle = (e) => {
+    e.preventDefault();
+    setPasswordVisible((state) => !state);
+  }
 
   // Validates and submit the form
   const handleSubmit = async (e) => {
@@ -42,27 +55,44 @@ export function useLoginForm({ onSuccess }) {
       setHasErrors(true);
       return;
     }
-    try {
-      const { username, publicId } = await login({
+    loginMutation.mutate(
+      {
         email: formDataEmail,
         password: formDataPassword,
-      });
-      setUsername(username);
-      setPublicId(publicId);
-      resetForm();
-      // Fires success callback if provided. Made generic to allow custom behavior on login in the future.
-      if (onSuccess) onSuccess();
-    } catch (error) {
-      console.log(error);
-    }
+      },
+      {
+        onSuccess: (response) => {
+          console.log(response);
+            const { username, publicId } = response.data.data;
+            setUsername(username);
+            setPublicId(publicId);
+            resetForm();
+            onSuccessFunction();
+        },
+        onError: (error) => {
+          console.log(error);
+          if (error.status === 400) {
+            const details = error.response?.data?.details;
+            if (details) {
+              setFormErrors(details);
+            }
+          }
+            setHasErrors(true);
+        },
+      }
+    )
   };
 
   return {
     formDataEmail,
     formDataPassword,
+    passwordVisible,
     formErrors,
+    error: loginMutation.error,
+    isLoading: loginMutation.isLoading,
     hasErrors,
     handleChange,
+    handlePasswordToggle,
     handleSubmit,
   };
 }

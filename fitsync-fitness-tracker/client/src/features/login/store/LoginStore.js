@@ -1,12 +1,12 @@
 import { create } from "zustand";
 
 const initialFormData = {
-  Email: "",
+  email: "",
   password: "",
 };
 
 const validators = {
-  Email: [(value) => (!value ? "Email is required" : "")],
+  email: [(value) => (!value ? "Email is required" : "")],
   password: [(value) => (!value ? "Password is required" : "")],
 };
 
@@ -24,6 +24,9 @@ const useLoginFormStore = create((set, get) => ({
           [field]: value,
         },
       })),
+    // Sets formErrors state
+    setFormErrors: (errors) => 
+      set({formErrors: errors}),
     // Resets form data and errors
     resetForm: () => {
       set({
@@ -57,7 +60,7 @@ const useLoginFormStore = create((set, get) => ({
 
 // State selectors
 export const useFormDataEmail = () =>
-  useLoginFormStore((state) => state.formData.Email);
+  useLoginFormStore((state) => state.formData.email);
 export const useFormDataPassword = () =>
   useLoginFormStore((state) => state.formData.password);
 export const useFormData = () => useLoginFormStore((state) => state.formData);

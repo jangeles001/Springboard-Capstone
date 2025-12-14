@@ -7,14 +7,14 @@ export function WorkoutsListHeader() {
         <div className="flex flex-col items-center">
             <div className="flex flex-row mb-10">
             <button 
-            className={active === "Personal" ? `border p-3 bg-gray-500` : `border p-3 bg-gray-200 hover:opacity-90`} 
+            className={active === "Personal" ? `border p-3 bg-gray-500` : `border p-3 bg-gray-200 hover:opacity-90 transition`} 
             onClick={() => handleActiveChange("Personal")}
             disabled={isLoading}
             >
                 Personal
             </button>
             <button 
-            className={active === "All" ? `border p-3 bg-gray-500` : `border p-3 bg-gray-200 hover:opacity-90`}
+            className={active === "All" ? `border p-3 bg-gray-500` : `border p-3 bg-gray-200 hover:opacity-90 transition`}
             onClick={() => handleActiveChange("All")}
             disabled={isLoading}
             >

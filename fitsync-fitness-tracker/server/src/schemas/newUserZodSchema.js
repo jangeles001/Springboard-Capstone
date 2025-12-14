@@ -42,8 +42,7 @@ export const newUserZodSchema = z.object({
     .string({
       required_error: "Email is required!",
     })
-    .email("Invalid email format!")
-    .min(7),
+    .email("Invalid email format!"),
   promoConsent: z.boolean({
     invalid_type_error: "Must be true or false!",
   }),
