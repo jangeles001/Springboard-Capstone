@@ -1,23 +1,49 @@
-import { useEffect, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchCreatedWorkouts } from "../services/fetchCreatedWorkouts";
+import { fetchAllWorkouts } from "../services/fetchAllWorkouts";
 import { api } from "../../../services/api";
+import { usePublicId } from "../../../store/UserStore";
 
 export function useWorkoutsList({ limit }) {
-  const [page, setPage] = useState(1);
+  const queryClient = useQueryClient();
+  const publicId = usePublicId();
+
+  const [pages, setPages] = useState({
+    Personal: 1,
+    All: 1,
+  });
+  const [active, setActive] = useState("Personal");
+  const activePage = pages[active];
+
+  useEffect(() => {
+    const nextTab = active === "Personal" ? "All" : "Personal";
+    const nextPage = pages[nextTab];
+
+    queryClient.prefetchQuery({
+      queryKey: ["workouts", nextTab, nextPage, limit],
+      queryFn: () =>
+        nextTab === "Personal"
+          ? fetchCreatedWorkouts({ page: nextPage, limit, publicId })
+          : fetchAllWorkouts({ page: nextPage, limit }),
+    });
+  }, [active, pages, limit, queryClient]);
 
   const query = useQuery({
-    queryKey: ["createdWorkouts", { page, limit }],
-    queryFn: () => fetchCreatedWorkouts({ page, limit }),
+    queryKey: [`createdWorkouts`, active, pages[active], limit],
+    queryFn: () =>
+      active === "Personal"
+        ? fetchCreatedWorkouts({ page: pages[active], limit, publicId })
+        : fetchAllWorkouts({ page: pages[active], limit }),
     keepPreviousData: true,
   });
 
-  const removeWorkoutMutation = useMutation({
-    mutationFn: (workoutId) => api.delete(`api/v1/workouts/${workoutId}`),
+  const deleteWorkoutMutation = useMutation({
+    mutationFn: (workoutId) => api.delete(`api/v1/users/workouts/${workoutId}`),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["createdWorkouts"],
+        queryKey: ["createdWorkoutsPersonal"],
       });
     },
   });
@@ -27,26 +53,41 @@ export function useWorkoutsList({ limit }) {
     // redirect to workout page
   };
 
-  const handleExerciseClick = (exerciseId) => {};
+  const handleExerciseClick = (exerciseId) => {
+    console.log(exerciseId);
+    // redirect to exercise page
+  };
 
   const handleDeleteWorkout = (workoutId) => {
-    removeWorkoutMutation.mutate(workoutId);
+    deleteWorkoutMutation.mutate(workoutId);
+  };
+
+  const handleActiveChange = (buttonValue) => {
+    setActive(buttonValue);
   };
 
   const handleNextPage = () => {
-    setPage((state) => state + 1);
+    setPages((state) => ({
+      ...state,
+      [active]: state[active] + 1,
+    }));
   };
 
   const handlePrevioustPage = () => {
-    setPage((state) => Math.max(1, state - 1));
+    setPages((state) => ({
+      ...state,
+      [active]: Math.max(1, state[active] - 1),
+    }));
   };
 
   return {
     ...query,
-    page,
+    page: pages[active],
+    active,
     handleWorkoutClick,
     handleExerciseClick,
+    handleActiveChange,
     deleteWorkout: handleDeleteWorkout,
-    isRemoving: removeWorkoutMutation.isLoading,
+    isRemoving: deleteWorkoutMutation.isLoading,
   };
 }

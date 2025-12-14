@@ -3,10 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useCreatedWorkout } from "../store/WorkoutStore";
 import { useWorkoutActions } from "../store/WorkoutStore";
 import { api } from "../../../services/api";
+import { usePublicId } from "../../../store/UserStore";
 
 export default function useWorkouts() {
   // Store state selector
   const createdWorkout = useCreatedWorkout();
+  const publicId = usePublicId();
 
   // Store actions selector
   const {
@@ -70,7 +72,11 @@ export default function useWorkouts() {
       };
     });
     if (createdWorkout) {
-      const workoutData = { workoutName, exercises: [...normalizedeExercises] };
+      const workoutData = {
+        workoutName,
+        creatorPublicId: publicId,
+        exercises: [...normalizedeExercises],
+      };
       mutation.mutate(workoutData);
       resetCreatedWorkout();
       setWorkoutName("");

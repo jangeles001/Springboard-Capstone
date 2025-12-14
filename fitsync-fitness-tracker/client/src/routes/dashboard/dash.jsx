@@ -42,8 +42,9 @@ function dash() {
           
 
           <div className="flex flex-col justify-center items-center rounded-2xl h-[700px] min-w-full px-10 gap-5 md:flex-row">
-            <div className='flex items-center bg-white border rounded-2xl border-gray-700 shadow-sm h-full min-w-1/2 py-10'>
-              <WorkoutsListDisplay />
+            <div className='flex bg-white border rounded-2xl border-gray-700 shadow-sm h-full min-w-1/2 py-10'>
+            <h1></h1>
+
             </div>
             <div className='flex flex-col items-center bg-white border border-gray-700 rounded-2xl p-5 shadow-sm h-full min-w-1/2 md:w-auto'>
               <div className='h-1/2'>Friends</div>

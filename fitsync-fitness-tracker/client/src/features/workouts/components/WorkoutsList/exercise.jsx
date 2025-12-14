@@ -6,7 +6,7 @@ export default function Exercise({ exercise }){
             <h3 className="text-md font-medium text-gray-800">
                 {exercise.exerciseName || `Exercise# ${exercise.exerciseId}`}
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 line-clamp-4">
                 {exercise.description.replace(/<[^>]*>/g, "") || "No description provided"}
             </p>
         </div>

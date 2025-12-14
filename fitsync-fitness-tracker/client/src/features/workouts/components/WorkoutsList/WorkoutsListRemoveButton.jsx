@@ -1,14 +1,12 @@
-import { useWorkoutsListContext } from "../../hooks/useWorkoutsListContext"
 import ThemedButton from "../../../../components/ThemedButton";
 
-export function WorkoutsListRemoveButton({ workoutName }) {
-  const { removeFromWorkoutsList } = useWorkoutsListContext();
+export function WorkoutsListRemoveButton({ workoutUUID, removeFunction }) {
 
   return (
     <>
       <ThemedButton
         text="Remove Workout"
-        onClick={() => removeFromWorkoutsList(workoutName)}
+        onClick={() => removeFunction(workoutUUID)}
       />
     </>
   );
