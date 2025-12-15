@@ -2,10 +2,9 @@ import * as userService from "../services/userService.js";
 import { getEnv } from "../config/envConfig.js";
 import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 
-export const createUser = async (req, res, next) => {
+export const createUser = async (req, res) => {
   try {
     const results = await userService.registerNewUser({ ...req.validatedBody });
-    const userInfo = { username: results.username, publicId: results.publicId };
     const message = "Registration Successful!";
 
     // Sets the cookie
@@ -23,23 +22,21 @@ export const createUser = async (req, res, next) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
 
-    return res.generateSuccessResponse(userInfo, message, 201)
+    return res.generateSuccessResponse(null, message, 201);
   } catch (error) {
-    return res.generateErrorResponse(error.message, error.statusCode)
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 };
 
 export async function login(req, res) {
   try {
     const { email, password } = req.validatedBody; // Pulls out email and password from validatedBody
-
     const validatedUser = await userService.validateCredentials(
       email,
       password
     );
 
-    const userInfo = { username: validatedUser.username, publicId: validatedUser.publicId };
-    const successMessage = `${validatedUser.username} (ID: ${validatedUser.publicId}) Logged In!`
+    const successMessage = `${validatedUser.username} (ID: ${validatedUser.publicId}) Logged In!`;
 
     res.cookie("accessToken", validatedUser.accessToken, {
       httpOnly: true, // prevents access via JavaScript
@@ -55,8 +52,19 @@ export async function login(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
 
-    return res.generateSuccessResponse(userInfo, successMessage, 200 )
+    return res.generateSuccessResponse(null, successMessage, 200);
   } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode);
+  }
+}
+
+export async function getUserController(req, res) {
+  try {
+    const { username, sub } = req.user; // Pulls out email and password from validatedBody
+    const { publicId } = await userService.getPrivateUserInformation(sub);
+    return res.generateSuccessResponse({ username, publicId }, "Success!", 200);
+  } catch (error) {
+    console.log(error);
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 }

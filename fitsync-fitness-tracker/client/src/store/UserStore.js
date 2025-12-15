@@ -6,7 +6,7 @@ export const useUserStore = create((set) => ({
   actions: {
     setUsername: (state) => set({ username: state }),
     setPublicId: (state) => set({ publicId: state }),
-    resetUser: () => set({ username: "", publicId: "" }),
+    resetUser: () => set({ username: null, publicId: null }),
   },
 }));
 

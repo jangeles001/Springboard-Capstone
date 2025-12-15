@@ -5,7 +5,6 @@ import {
   useWorkoutActions,
   useCreatedWorkout,
 } from "../features/workouts/store/WorkoutStore";
-import { api } from "../services/api";
 
 const BASE_URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query";
 import {
   useFormDataPassword,
   useFormDataEmail,
@@ -7,7 +7,6 @@ import {
   useLoginActions,
 } from "../store/LoginStore";
 import { login } from "../services/loginService";
-import { useUserActions } from "../../../store/UserStore.js";
 
 // Custom hook to manage login form state and behavior
 export function useLoginForm({ onSuccessFunction }) {
@@ -22,10 +21,8 @@ export function useLoginForm({ onSuccessFunction }) {
   const formErrors = useFormErrors();
 
   // Login store actions slice
-  const { setFormField, setFormErrors, resetForm, validateForm } = useLoginActions();
-
-  // User store actions slice
-  const { setUsername, setPublicId } = useUserActions();
+  const { setFormField, setFormErrors, resetForm, validateForm } =
+    useLoginActions();
 
   // Local State
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -41,7 +38,7 @@ export function useLoginForm({ onSuccessFunction }) {
   const handlePasswordToggle = (e) => {
     e.preventDefault();
     setPasswordVisible((state) => !state);
-  }
+  };
 
   // Validates and submit the form
   const handleSubmit = async (e) => {
@@ -61,13 +58,9 @@ export function useLoginForm({ onSuccessFunction }) {
         password: formDataPassword,
       },
       {
-        onSuccess: (response) => {
-          console.log(response);
-            const { username, publicId } = response.data.data;
-            setUsername(username);
-            setPublicId(publicId);
-            resetForm();
-            onSuccessFunction();
+        onSuccess: () => {
+          resetForm();
+          onSuccessFunction();
         },
         onError: (error) => {
           console.log(error);
@@ -77,10 +70,10 @@ export function useLoginForm({ onSuccessFunction }) {
               setFormErrors(details);
             }
           }
-            setHasErrors(true);
+          setHasErrors(true);
         },
       }
-    )
+    );
   };
 
   return {

@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Graph from '../../components/Graph.jsx';
-import { WorkoutsListDisplay } from "../../features/workouts/components//WorkoutsListDisplay.jsx";
 
 export const Route = createFileRoute('/dashboard/dash') ({
     component: dash,

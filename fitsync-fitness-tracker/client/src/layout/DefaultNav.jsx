@@ -7,9 +7,16 @@ import CookiesNotification from '../features/cookies/component/CookiesNotificati
 import logo from '../assets/Rebrand-2.svg'
 import ProfileBlock from '../components/ProfileBlock'
 import LogoutButton from '../features/logout/components/LogoutButton'
+import { useUsername } from '../store/UserStore'
+import { useAuthUser } from '../hooks/useAuthUser'
 
 
-export default function DefaultNav({ links }) {
+export default function DefaultNav({ links, queryEnabled = true }) {
+  const { isLoading } = useAuthUser(queryEnabled);
+  const username = useUsername();
+
+  if (isLoading && !username) return <div>Loading...</div>;
+
   return (
     <>
         <div className="flex flex-row bg-gray-100">
@@ -25,8 +32,9 @@ export default function DefaultNav({ links }) {
                       {link.label}
                   </Link>
                 })}
+              {username && <LogoutButton />}
             </nav>
-            {/*<ProfileBlock />*/}
+            { username ? <ProfileBlock /> : <button className='border rounded-md ml-auto mr-5 mt-auto mb-2 max-h-min p-3'>Login</button>}
         </div>
       <hr />
       <main>

@@ -1,10 +1,12 @@
 import express from "express";
 import validate from "../validators/authValidator.js";
+import requireAuth from "../middleware/authMiddleware.js";
 import { newUserZodSchema } from "../schemas/newUserZodSchema.js";
 import {
   createUser,
   login,
   logout,
+  getUserController,
   refreshSessionTokens,
 } from "../controllers/authController.js";
 
@@ -20,6 +22,7 @@ router
     login
   )
   .get("/logout", logout)
-  .get("/refresh", refreshSessionTokens);
+  .get("/refresh", refreshSessionTokens)
+  .get("/me", requireAuth, getUserController);
 
 export default router;

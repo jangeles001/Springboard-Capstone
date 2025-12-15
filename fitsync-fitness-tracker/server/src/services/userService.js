@@ -8,9 +8,9 @@ import { generateSalt, hashPassword, verifyPassword } from "../utils/hash.js";
 import { makePublicId } from "../utils/publicIds.js";
 import { getEnv } from "../config/envConfig.js";
 import { getMembershipDuration } from "../utils/MembershipDuration.js";
-import { ConflictError } from "../errors/ConflictError.js"
-import { InvalidCredentialsError } from "../errors/InvalidCredentialsError.js"
-import { NotFoundError } from "../errors/NotFoundError.js"
+import { ConflictError } from "../errors/ConflictError.js";
+import { InvalidCredentialsError } from "../errors/InvalidCredentialsError.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 
 export async function registerNewUser(userData) {
@@ -40,8 +40,6 @@ export async function registerNewUser(userData) {
   const { accessToken, refreshToken } = await generateTokens(newUser);
 
   return {
-    username: newUser.username,
-    publicId: newUser.publicId,
     accessToken,
     refreshToken,
   };
@@ -59,8 +57,6 @@ export async function validateCredentials(email, password) {
   const { accessToken, refreshToken } = await generateTokens(user);
 
   return {
-    username: user.username,
-    publicId: user.publicId,
     accessToken,
     refreshToken,
   };
@@ -150,7 +146,7 @@ export async function getPublicUserInformation(userPublicId) {
   const publicInformation = {
     username: user.username,
     age: user.age,
-    // aboutMe: user.about, maybe adding user bio this in the future.
+    publicId: user.publicId,
     memberSince: getMembershipDuration(user.createdAt),
   };
 
@@ -165,6 +161,7 @@ export async function getPrivateUserInformation(userUUID) {
     firstName: user.firstName,
     lastName: user.lastName,
     username: user.username,
+    publicId: user.publicId,
     height: user.height,
     age: user.age,
     weight: user.weight,
