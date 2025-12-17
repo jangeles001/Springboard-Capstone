@@ -18,9 +18,8 @@ const initialFormData = {
 };
 
 const useMealsStore = create((set, get) => ({
-  mealsList: [],
   mealFormData: initialFormData,
-  hasErrors: null,
+  hasErrors: {},
 
   actions: {
     setMealsList: () => {
@@ -103,7 +102,7 @@ const useMealsStore = create((set, get) => ({
     resetForm: () => {
       set(() => ({
         mealFormData: initialFormData,
-        hasErrors: null,
+        hasErrors: {},
       }));
     },
   },

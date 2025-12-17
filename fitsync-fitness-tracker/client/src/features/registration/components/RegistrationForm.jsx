@@ -1,26 +1,32 @@
 import { useRouter, Link } from '@tanstack/react-router';
 import { useRegistrationForm } from '../hooks/useRegistrationForm'
 import FieldErrorMessages from '../../../components/FieldErrorMessages';
+import { FormField } from '../../../components/formField';
+import { FormInput } from '../../../components/formInput'
 
 export default function RegistrationForm() {
     const router = useRouter();
     const {
         firstName,
         lastName,
+        gender,
         age,
         height,
         weight,
         username,
         password,
+        passwordType,
         email,
         promoConsent,
         agreeToTerms,
         formErrors,
         hasErrors,
+        serverErrorMessage,
+        setPasswordType,
         handleChange,
         handleSubmit,
     } = useRegistrationForm({ 
-            onSuccess: () => router.navigate({ to: "/dashboard/" })
+            onSuccessFunction: () => router.navigate({ to: "/dashboard/" })
         });
     
     return (
@@ -28,135 +34,129 @@ export default function RegistrationForm() {
             <div className='flex bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl'>
                 <form className='grid grid-cols-1 md:grid-cols-4 gap-5' onSubmit={handleSubmit}>
                     <div className="flex flex-col col-span-1 md:col-span-2">
-                        <label htmlFor="firstName" className={`form-label ${formErrors?.firstName && !firstName && 'form-label-error'}`}>First Name:</label>
-                        <input
-                        className={`form-input ${formErrors?.firstName && !firstName && 'form-input-error'}`}
-                        type='text'
-                        name='firstName'
-                        value={firstName}
-                        onChange={handleChange}
-                        placeholder='First Name'
-                        />
-                        {hasErrors && formErrors.firstName &&
-                            <div className='col-span-1 md:col-span-3'>
-                                <FieldErrorMessages field="firstName" error={formErrors.firstName} />
-                            </div> 
-                        }
+                        <FormField name="firstName" label="First Name" formError={formErrors.firstName}>
+                            <FormInput
+                            name="firstName"
+                            inputType="text"
+                            inputValue={firstName}
+                            inputErrors={formErrors.firstName}
+                            handleChange={handleChange}
+                            placeholder="First Name"
+                            ></FormInput>
+                        </FormField>
                     </div>
                     <div className='flex flex-col col-span-1 md:col-span-2'>   
-                        <label htmlFor="lastName" className={`form-label ${formErrors?.lastName && !lastName && 'form-label-error'}`}>Last Name:</label>
-                        <input
-                        className={`form-input ${formErrors?.lastName && !lastName && 'form-input-error'}`}
-                        type='text'
-                        name='lastName'
-                        value={lastName}
-                        onChange={handleChange}
-                        placeholder='Last Name'
-                        />
-                        {hasErrors && formErrors.lastName &&
-                            <div className='col-span-1 md:col-span-3'>
-                                <FieldErrorMessages field="lasttName" error={formErrors.lastName} />
-                            </div> 
-                        }
+                        <FormField name="lastName" label="Last Name" formError={formErrors.lastName}>
+                            <FormInput
+                            name="lastName"
+                            inputType="text"
+                            inputValue={lastName}
+                            inputErrors={formErrors.lastName}
+                            handleChange={handleChange}
+                            placeholder="Last Name"
+                            ></FormInput>
+                        </FormField>
                     </div>
-                    <div className="col-span-1 grid grid-cols-3 col-start-1 min-w-[600px] md:col-span-4 grid-cols-2 gap-5">
+                    <div className="col-span-1 grid grid-cols-4 col-start-1 min-w-[600px] md:col-span-5 grid-cols-2 gap-5">
                         <div className='flex flex-col col-span-1'>  
-                            <label htmlFor="age" className={`form-label ${formErrors?.age && !age && 'form-label-error'}`}>Age:</label>
-                            <input
-                            className={`form-input ${formErrors?.age && !age && 'form-input-error'}`}
-                            type='text'
-                            name='age'
-                            value={age}
-                            onChange={handleChange}
-                            placeholder='Age'
-                            />
-                            {hasErrors && formErrors.age &&
-                                <div className='col-span-1 md:col-span-3'>
-                                    <FieldErrorMessages field="age" error={formErrors.age} />
-                                </div> 
-                            }
+                            <FormField name="age" label="Age" formError={formErrors.age}>
+                                <FormInput
+                                name="age"
+                                inputType="number"
+                                inputValue={age}
+                                inputErrors={formErrors.age}
+                                handleChange={handleChange}
+                                placeholder="Age"
+                                ></FormInput>
+                        </FormField>
                         </div>
-                        <div className='flex flex-col col-span-1 md:col-span-2'>     
-                            <label htmlFor="height" className={`form-label ${formErrors?.height && !height && 'form-label-error'}`}>Height:</label>
-                            <input 
-                            className={`form-input ${formErrors?.height && !height && 'form-input-error'}`}
-                            type='text'
-                            name='height'
-                            value={height}
-                            onChange={handleChange}
-                            placeholder='Height'
-                            />
-                            {hasErrors && formErrors.height &&
-                                <div className='col-span-1 md:col-span-3'>
-                                    <FieldErrorMessages field="height" error={formErrors.height} />
-                                </div> 
-                            }
+                        <div className='flex flex-col col-span-1'>     
+                            <FormField name="height" label="Height" formError={formErrors.height}>
+                                <FormInput
+                                name="height"
+                                inputType="text"
+                                inputValue={height}
+                                inputErrors={formErrors.height}
+                                handleChange={handleChange}
+                                placeholder="Height"
+                                ></FormInput>
+                            </FormField>
                         </div>
                         <div className='flex flex-col col-span-1'> 
-                            <label htmlFor="weight" className={`form-label ${formErrors?.weight && !weight && 'form-label-error'}`}>Weight:</label>
-                            <input 
-                            className={`form-input ${formErrors?.weight && !weight && 'form-input-error'}`}
-                            type='text'
-                            name='weight'
-                            value={weight}
-                            onChange={handleChange}
-                            placeholder='Weight'
-                            />
-                            {hasErrors && formErrors.weight &&
-                                <div className='col-span-1 md:col-span-3'>
-                                    <FieldErrorMessages field="weight" error={formErrors.weight} />
-                                </div> 
-                            }
+                            <FormField name="weight" label="Weight" formError={formErrors.weight}>
+                                <FormInput
+                                name="weight"
+                                inputType="number"
+                                inputValue={weight}
+                                inputErrors={formErrors.weight}
+                                handleChange={handleChange}
+                                placeholder="Weight"
+                                ></FormInput>
+                            </FormField>
+                        </div>
+                        <div className='flex flex-col col-span-1'> 
+                            <FormField name="gender" label="Gender" formError={formErrors.gender}>
+                                <select
+                                className={`form-input ${formErrors?.gender && !gender && 'form-input-error'}`}
+                                name='gender'
+                                value={gender}
+                                onChange={handleChange}
+                                >
+                                    <option value="">--Please Select A Gender--</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="prefer_not_to_say">Prefer Not To Say</option>
+                                </select>
+                            </FormField>
                         </div>
                         <div className="col-span-4 grid grid-cols-1 md:grid-cols-1 gap-5">
-                            <div className='flex flex-col col-span-2 md:col-span-2'> 
-                                <label htmlFor="username" className={`form-label ${formErrors?.username && !username && 'form-label-error'}`}>Username:</label>
-                                <input 
-                                className={`form-input ${formErrors?.username && !username && 'form-input-error'}`}
-                                type='text'
-                                name='username'
-                                value={username}
-                                onChange={handleChange}
-                                placeholder='Username'
-                                />
-                                {hasErrors && formErrors.username &&
-                                    <div className='col-span-1 md:col-span-3'>
-                                        <FieldErrorMessages field="username" error={formErrors.username} />
-                                    </div> 
-                                }
+                            <div className='flex flex-col col-span-1 md:col-span-1'> 
+                                <FormField name="username" label="Username" formError={formErrors.username}>
+                                    <FormInput
+                                    name="username"
+                                    inputType="text"
+                                    inputValue={username}
+                                    inputErrors={formErrors.username}
+                                    handleChange={handleChange}
+                                    placeholder="Username"
+                                    ></FormInput>
+                                </FormField>
                             </div>
                         </div>
                         <div className='flex flex-col col-span-4'> 
-                            <label htmlFor="password" className={`form-label ${formErrors?.password && !password && 'form-label-error'}`}>Password:</label>
-                            <input 
-                            className={`form-input ${formErrors?.password && !password && 'form-input-error'}`}
-                            type='text'
-                            name='password'
-                            value={password}
-                            onChange={handleChange}
-                            placeholder='Password'
-                            />
-                            {hasErrors && formErrors.password &&
-                                <div className='col-span-1 md:col-span-3'>
-                                    <FieldErrorMessages field="password" error={formErrors.password} />
-                                </div> 
-                            }
+                            <FormField name="password" label="Password" formError={formErrors.password}>
+                                    <span className='flex flex-row gap-3'>    
+                                        <FormInput
+                                        name="password"
+                                        inputType={passwordType}
+                                        inputValue={password}
+                                        inputErrors={formErrors.password}
+                                        handleChange={handleChange}
+                                        placeholder="Password"
+                                        ></FormInput>
+                                        <button 
+                            type="button" 
+                            className='border rounded-md p-1 hover:bg-gray-100'
+                            onClick={() => 
+                            passwordType === "password" ? 
+                            setPasswordType("text") : setPasswordType("password")}
+                            >
+                                👁
+                            </button>
+                                    </span>
+                            </FormField>
                         </div>
                         <div className='flex flex-col col-span-4'> 
-                            <label htmlFor="email" className={`form-label ${formErrors?.email && !email &&'form-label-error'}`}>Email:</label>
-                            <input 
-                            className={`form-input ${formErrors?.email && !email && 'form-input-error'}`}
-                            type='text'
-                            name='email'
-                            value={email}
-                            onChange={handleChange}
-                            placeholder='user@example.com'
-                            />
-                            {hasErrors && formErrors.email &&
-                                <div className='col-span-1 md:col-span-3'>
-                                    <FieldErrorMessages field="email" error={formErrors.email} />
-                                </div> 
-                            }
+                            <FormField name="email" label="Email" formError={formErrors.email}>
+                                    <FormInput
+                                    name="email"
+                                    inputType="text"
+                                    inputValue={email}
+                                    inputErrors={formErrors.email}
+                                    handleChange={handleChange}
+                                    placeholder="Email"
+                                    ></FormInput>
+                            </FormField>
                         </div>
                         <div className='flex flex-row col-span-4 gap-3'> 
                             <input 
@@ -184,7 +184,10 @@ export default function RegistrationForm() {
                             }
                         </div>
                     </div>
-                    <div className="col-span-1 md:col-span-4 flex justify-center max-h-20">
+                    <div className="flex-col col-span-1 md:col-span-4 flex items-center max-h-20 gap-5">
+                        <span className='col-span-1 text-red-500'>
+                            {serverErrorMessage && <p>{serverErrorMessage}</p>}
+                        </span>
                         <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100'>Submit</button>
                     </div>
                 </form>

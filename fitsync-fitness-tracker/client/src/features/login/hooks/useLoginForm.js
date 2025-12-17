@@ -52,7 +52,7 @@ export function useLoginForm({ onSuccessFunction }) {
       setHasErrors(true);
       return;
     }
-    loginMutation.mutate(
+    loginMutation.mutate( // Calls query mutation function with the data from the login form
       {
         email: formDataEmail,
         password: formDataPassword,
@@ -63,7 +63,6 @@ export function useLoginForm({ onSuccessFunction }) {
           onSuccessFunction();
         },
         onError: (error) => {
-          console.log(error);
           if (error.status === 400) {
             const details = error.response?.data?.details;
             if (details) {

@@ -4,9 +4,20 @@
   --font-Header: Great Vibes, cursive;
 }
 
+@layer base {
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
 @layer components {
   .form-input {
-    @apply w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400;
+    @apply w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400 ;
   }
 
   .form-input-error {

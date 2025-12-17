@@ -25,7 +25,10 @@ export const newUserZodSchema = z.object({
     .string({
       required_error: "Height is required!",
     })
-    .min(4, "Height is required!"),
+    .min(1, "Height is required!")
+    .regex(/^\d+'(0?\d|1[01])"$/, {
+      message: "Height must be in the format ex. 5'11\"!",
+    }),
   age: z
     .number({
       required_error: "Age is required!",
@@ -34,13 +37,19 @@ export const newUserZodSchema = z.object({
     .min(18, "Must be at least 18!"),
   weight: z
     .number({
-      required_error: "Weight is required",
+      required_error: "Weight is required!",
       invalid_type_error: "Weight must be a number!",
     })
     .min(70, "Weight must be at least 70!"),
+  gender: z
+  .string({
+    required_error: "Gender required!",
+    invalid_enum_value: "Gender must be one of the provided options!"
+  }),
   email: z
     .string({
       required_error: "Email is required!",
+      invalid_type_error: "Email must be a string!"
     })
     .email("Invalid email format!"),
   promoConsent: z.boolean({

@@ -3,6 +3,7 @@ import { create } from "zustand";
 const initialFormData = {
   firstName: "",
   lastName: "",
+  gender: "",
   age: "",
   height: "",
   weight: "",
@@ -21,8 +22,23 @@ const validators = {
       value?.length < 2 ? "First name must be at least 2 characters" : "",
   ],
   lastName: [(value) => (!value ? "Last name is required" : "")],
+  gender: [
+    (value) => {
+      //
+      const validOptions = { 
+        male: "male",
+        female: "female",
+        perfer_not_to_say: "prefer_not_to_say",
+      }
+      return !Object.values(validOptions).includes(value) ? "Gender is required!" : ""
+    }
+  ],
   age: [
     (value) => (!value ? "Age is required" : ""),
+    (value) =>{
+      const  heightFormat = /^\d+'(0?\d|1[01])"$/;
+      return (heightFormat.test(value) ? "Height must be formated correctly!" : "");
+    }, 
     (value) => (isNaN(Number(value)) ? "Age must be a number" : ""),
   ],
   height: [(value) => (!value ? "Height is required" : "")],
@@ -63,6 +79,9 @@ const useRegisterFormStore = create((set, get) => ({
           [field]: value,
         },
       })),
+    // Sets formErrors array to equal the provided errors
+    setFormErrors: (errors) => 
+      set({formErrors: errors}),
     // Resets fields in the form that contains errors
     resetFormData: (formErrors) => {
       set((state) => {
@@ -78,7 +97,7 @@ const useRegisterFormStore = create((set, get) => ({
     resetOnValidation: () =>
       set({
         formData: initialFormData,
-        formErrors: null,
+        formErrors: {},
         isValid: false,
       }),
     // Runs initial validations on the form data
