@@ -7,7 +7,6 @@ import "./styles/__root.css"
 
 // Import generated route tree
 import { routeTree } from './routeTree.gen'
-import { AuthBootstrap } from './features/login/components/AuthBootstrap'
 
 // Create new router instance
 const router = createRouter({ routeTree, defaultNotFoundComponent: NotFoundPage })
@@ -20,7 +19,6 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <AuthBootstrap />
         <RouterProvider router={router} />
       </QueryClientProvider>
     </StrictMode>,

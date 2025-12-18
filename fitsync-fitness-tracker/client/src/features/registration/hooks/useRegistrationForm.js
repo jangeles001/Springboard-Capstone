@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from '@tanstack/react-query'
+import { useMutation } from "@tanstack/react-query";
 import { register } from "../services/registrationService";
 import {
   useFormDataField,
@@ -24,25 +24,29 @@ export function useRegistrationForm({ onSuccessFunction }) {
   const formErrors = useFormErrors();
 
   // Store actions slice
-  const { setFormField, setFormErrors, resetFormData, resetOnValidation, validateForm } =
-    useRegisterFormActions();
+  const {
+    setFormField,
+    setFormErrors,
+    resetFormData,
+    resetOnValidation,
+    validateForm,
+  } = useRegisterFormActions();
 
   // Flag for form submission errors
   const [hasErrors, setHasErrors] = useState(false);
-  
+
   // Flag to toggle password visibility
-  const[passwordType, setPasswordType] = useState("password"); 
+  const [passwordType, setPasswordType] = useState("password");
 
   const registerMutation = useMutation({
-    mutationFn: (formData) => register(formData)
+    mutationFn: (formData) => register(formData),
   });
 
   // Updates a specific field in the form store when an input changes
   const handleChange = (e) => {
     const { name, type, value, checked } = e.target;
     setFormField(name, type === "checkbox" ? checked : value);
-    if(Object.keys(formErrors).includes(name))
-      delete formErrors[name];
+    if (Object.keys(formErrors).includes(name)) delete formErrors[name];
   };
 
   // Validates and submit the form then resets the form and errors
@@ -60,9 +64,8 @@ export function useRegistrationForm({ onSuccessFunction }) {
       age: Number(fields.age),
       weight: Number(fields.weight),
     };
-    registerMutation.mutate(formData,
-      {    
-        onSuccess: () => {
+    registerMutation.mutate(formData, {
+      onSuccess: () => {
         resetOnValidation();
         onSuccessFunction();
       },

@@ -14,7 +14,7 @@ export function useLogout({ onSuccess }) {
       // Fires success callback if provided. Made generic to allow custom behavior on logout in the future.
       if (onSuccess) onSuccess();
     } catch (error) {
-      throw new Error(error.message);
+      return null;
     }
   };
 

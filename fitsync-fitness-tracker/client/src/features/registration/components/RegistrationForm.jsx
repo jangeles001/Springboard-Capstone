@@ -133,8 +133,8 @@ export default function RegistrationForm() {
                                         inputErrors={formErrors.password}
                                         handleChange={handleChange}
                                         placeholder="Password"
-                                        ></FormInput>
-                                        <button 
+                                ></FormInput>
+                            <button 
                             type="button" 
                             className='border rounded-md p-1 hover:bg-gray-100'
                             onClick={() => 
