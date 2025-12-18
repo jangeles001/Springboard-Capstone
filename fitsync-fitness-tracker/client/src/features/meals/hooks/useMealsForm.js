@@ -1,17 +1,22 @@
+import { useMutation } from '@tanstack/react-query'
 import {
-  useMealFormDataIngredients,
-  useMealFormDataMacros,
   useMealFormDataName,
+  useMealFormDataDescription,
+  useMealFormDataIngredients,
+  useMealFormDataMealMacros,
   useMealsActions,
 } from "../store/MealsFormStore";
 import { getMacros } from "../utils/nutrition";
+import { api } from '../../../services/api';
+import { useNotification } from '../../../hooks/useNotification';
+import { usePublicId } from '../../../store/UserStore';
 
 export function useMealsForm() {
-  // Store State and action Selectors
+  // Store State and Action Selectors
   const mealName = useMealFormDataName();
+  const mealDescription = useMealFormDataDescription();
   const ingredients = useMealFormDataIngredients();
-  const macros = useMealFormDataMacros();
-
+  const mealMacros = useMealFormDataMealMacros();
   const {
     setField,
     addIngredient,
@@ -19,7 +24,21 @@ export function useMealsForm() {
     updateMacros,
     changeIngredientField,
     removeIngredient,
+    resetForm,
   } = useMealsActions();
+
+  //Global User State
+  const publicId =  usePublicId();
+
+  // Hook State
+  const { message, notify } = useNotification();
+
+  const mealMutation = useMutation({
+    mutationFn: (mealData) => {
+      const response = api.post("api/v1/meals/create", mealData);
+      return response?.data?.message;
+    }
+  });
 
   // Handles updating store form fields state
   const handleChange = (e) => {
@@ -31,8 +50,8 @@ export function useMealsForm() {
   const handleClick = (item) => {
     const macros = getMacros(item) ?? {}; // Gets macros or returns empty object
     addIngredient({
-      id: item.fdcId,
-      name: item.description,
+      ingredientId: item.fdcId,
+      ingredientName: item.description,
       quantity: "",
       macros: { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
       calories: 0,
@@ -46,16 +65,8 @@ export function useMealsForm() {
     updateMacros();
   };
 
-  const handleIngredientQuantityChange = (id, value) => {
-    // Allow empty input after clearing
-    if (value === "") {
-      changeIngredientField(id, "quantity", ""); // keep as empty string
-      changeIngredientField(id, "calories", 0);
-      return;
-    }
-
-    const quantity = Number(value);
-    if (isNaN(quantity) || quantity <= 0) return;
+  const handleIngredientQuantityChange = (e, id) => {
+    const quantity = e.target.value;
 
     // Calculates macros for this ingredient
     const per100G = getIngredientField(id, "macrosPer100G") ?? {};
@@ -64,7 +75,7 @@ export function useMealsForm() {
       return acc;
     }, {});
 
-    changeIngredientField(id, "quantity", Number(value));
+    changeIngredientField(id, "quantity", quantity);
     changeIngredientField(id, "macros", scaledMacros);
     updateMacros();
   };
@@ -72,13 +83,34 @@ export function useMealsForm() {
   // Handles form submition
   const handleSubmit = (e) => {
     e.preventDefault();
+    const mealData = {
+      mealName,
+      mealDescription,
+      creatorPublicId: publicId,
+      ingredients,
+      mealMacros: mealMacros,
+    }
+    mealMutation.mutate(
+      mealData,
+      {
+          onSuccess: (message) => {
+            resetForm();
+            notify(message);
+        },
+        onError: () => {
+          notify(message);
+        }
+      }
+    )
   };
 
   return {
     mealName,
+    mealDescription,
     ingredients,
-    macros,
+    mealMacros,
     getIngredientField,
+    message,
     handleChange,
     handleClick,
     handleRemoveClick,

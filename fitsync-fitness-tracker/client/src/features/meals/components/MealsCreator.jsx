@@ -13,6 +13,7 @@ export default function MealsCreator() {
         <div className="flex flex-col items-center justify-center bg-gray-100 h-screen min-w-screen">
         <MealsForm>
             <MealsForm.Header />
+            <MealsForm.Description />
             <MealsForm.IngredientSearch isOpen={isOpen} setIsOpen={setIsOpen} />
             <MealsForm.Ingredients />
             <MealsForm.Macros />

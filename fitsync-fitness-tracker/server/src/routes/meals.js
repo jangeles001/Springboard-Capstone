@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router
-    .post("/", requireAuth, createMealController)
+    .post("/create", requireAuth, createMealController)
     .get("/", requireAuth, getAllMealsController)
     .get("/:mealId", requireAuth, getMealController);
 

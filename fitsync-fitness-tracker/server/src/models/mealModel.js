@@ -30,7 +30,7 @@ const mealSchema = new mongoose.Schema(
     creatorPublicId: { type: String, required: true },
     uuid: { type: String, default: uuidv4, required: true, unique: true },
     mealName: { type: String, required: true },
-    description: { type: String, required: true },
+    mealDescription: { type: String, required: true },
     ingredients: {
       type: [mealIngredientSchema],
       required: true,

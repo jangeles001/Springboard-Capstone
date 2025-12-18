@@ -1,6 +1,6 @@
 import { preventScrollAndArrows } from "../utils/preventScrollAndArrows"
 
-export function FormInput({ name, inputType = "text", inputValue, inputErrors,  handleChange, placeholder,  }) {
+export function FormInput({ name, inputType = "text", inputValue, inputErrors,  handleChange, placeholder }) {
    const handlers = {}
 
    // Assigns appropriate functions to handlers

@@ -13,20 +13,15 @@ caloriesPer100G: Kcalper100g
 
 const initialFormData = {
   mealName: "",
+  mealDescription: "",
   ingredients: [],
-  macros: { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
+  mealMacros: { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
 };
 
 const useMealsStore = create((set, get) => ({
   mealFormData: initialFormData,
   hasErrors: {},
-
   actions: {
-    setMealsList: () => {
-      set((state) => ({
-        mealsList: [...state.mealsList, state.mealFormData],
-      }));
-    },
     setField: (field, value) => {
       set((state) => ({
         mealFormData: {
@@ -51,13 +46,13 @@ const useMealsStore = create((set, get) => ({
       set((state) => ({
         mealFormData: {
           ...state.mealFormData,
-          macros,
+          mealMacros: macros,
         },
       }));
     },
     getIngredientField: (itemId, field) => {
       const ingredients = get().mealFormData.ingredients;
-      const ingredient = ingredients.find((item) => item.id === itemId);
+      const ingredient = ingredients.find((item) => item.ingredientId === itemId);
       return ingredient ? ingredient[field] : undefined;
     },
     addToMealsList: (mealData) => {
@@ -83,7 +78,7 @@ const useMealsStore = create((set, get) => ({
         mealFormData: {
           ...state.mealFormData,
           ingredients: state.mealFormData.ingredients.map((ingredient) =>
-            ingredient.id === ingredientId
+            ingredient.ingredientId === ingredientId
               ? { ...ingredient, [field]: value }
               : ingredient
           ),
@@ -95,7 +90,7 @@ const useMealsStore = create((set, get) => ({
         mealFormData: {
           ...state.mealFormData,
           ingredients: state.mealFormData.ingredients.filter(
-            (ingredient) => ingredient.id !== id
+            (ingredient) => ingredient.ingredientId !== id
           ),
         },
       })),
@@ -109,11 +104,12 @@ const useMealsStore = create((set, get) => ({
 }));
 
 // State selectors
-export const useMealsList = () => useMealsStore((state) => state.mealsList);
 export const useMealFormData = () =>
   useMealsStore((state) => state.mealFormData);
 export const useMealFormDataName = () =>
   useMealsStore((state) => state.mealFormData.mealName);
+export const useMealFormDataDescription = () =>
+  useMealsStore((state) => state.mealFormData.mealDescription);
 export const useMealFormDataIngredients = () =>
   useMealsStore((state) => state.mealFormData.ingredients);
 export const useMealFormDataCalories = () =>
@@ -123,8 +119,8 @@ export const useMealFormDataCalories = () =>
       0
     )
   );
-export const useMealFormDataMacros = () =>
-  useMealsStore((state) => state.mealFormData.macros);
+export const useMealFormDataMealMacros = () =>
+  useMealsStore((state) => state.mealFormData.mealMacros);
 export const useHasErrors = () => useMealsStore((state) => state.hasErrors);
 
 // Actions selector

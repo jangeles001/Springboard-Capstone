@@ -5,36 +5,26 @@ export default function IngredientItem({ item, getIngredientField, handleRemoveC
         className="flex items-center space-x-2 my-1 p-2 hover:border-1 rounded-md"
         >
             <p className="max-w-md hover:cursor-pointer select-none"
-            onDoubleClick={() => handleRemoveClick(item.id)}
+            onDoubleClick={() => handleRemoveClick(item.ingredientId)}
             >
-                {item.name}
+                {item.ingredientName}
             </p>
             <div className="flex flex-row ml-auto">
                 <label htmlFor="quantity" className="font-bold">Quantity:</label>
                 <input
-                className="w-10 
-                [&::-webkit-inner-spin-button]:appearance-none 
-                [&::-webkit-outer-spin-button]:m-0 [appearance:textfield]
-                bg-gray-200 border-1 rounded-md"
+                className="w-11 bg-gray-100 border-1 rounded-md"
                 type="number"
                     name="quantity"
                     min={0}
                     max={999}
-                    maxLength={5}
-                    value={getIngredientField(item.id, "quantity") ?? ""}
-                    onChange={(e) => {
-                    const value = e.target.value;
-                    // Allow empty input
-                    if (value === "") {
-                        handleIngredientQuantityChange(item.id, "");
-                        return;
+                    value={getIngredientField(item.ingredientId, "quantity")}
+                    onChange={(e) => handleIngredientQuantityChange(e, item.ingredientId)}
+                    onKeyDown={(e) => {
+                            if(e.target.value.length === 3 && e.code !== "Backspace")
+                                e.preventDefault();
+                            return;
+                        }
                     }
-                    // Enforce numeric, range, and max 5 digits
-                    const num = Number(value);
-                    if (!Number.isNaN(num) && num >= 0 && num <= 999 && value.length <= 5) {
-                        handleIngredientQuantityChange(item.id, num);
-                    }
-                }}
                 />
                 <label htmlFor="quantity">g</label>
             </div> 
