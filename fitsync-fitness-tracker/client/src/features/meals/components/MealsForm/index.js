@@ -4,6 +4,7 @@ import { MealsFormIngredientSearch } from "./MealsFormIngredientSearch";
 import { MealsFormIngredients } from "./MealsFormIngredients";
 import { MealsFormMacros } from "./MealsFormMacros";
 import { MealsFormDescription } from "./MealsFormDescription";
+import { MealsFormFooter } from "./MealsFormFooter"
 
 // Attaching subcomponents to the main form component
 MealsForm.Header = MealsFormHeader;
@@ -11,5 +12,6 @@ MealsForm.IngredientSearch = MealsFormIngredientSearch;
 MealsForm.Ingredients = MealsFormIngredients;
 MealsForm.Macros = MealsFormMacros;
 MealsForm.Description = MealsFormDescription;
+MealsForm.Footer = MealsFormFooter;
 
 export { MealsForm };

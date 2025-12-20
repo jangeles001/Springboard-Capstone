@@ -1,4 +1,7 @@
-export default function IngredientItem({ item, getIngredientField, handleRemoveClick, handleIngredientQuantityChange }){
+import { FormField } from "../../../components/formField";
+import { FormInput } from "../../../components/formInput";
+
+export default function IngredientItem({ item, getIngredientField, handleRemoveClick, handleIngredientQuantityChange, formErrors }){
     return (
         <div 
         key={item.id} 
@@ -10,23 +13,27 @@ export default function IngredientItem({ item, getIngredientField, handleRemoveC
                 {item.ingredientName}
             </p>
             <div className="flex flex-row ml-auto">
-                <label htmlFor="quantity" className="font-bold">Quantity:</label>
-                <input
-                className="w-11 bg-gray-100 border-1 rounded-md"
-                type="number"
+                <span className="flex flex-row">
+                    <FormField name="quantity" label="Quantity(grams)" formError={formErrors}>
+                    <FormInput
                     name="quantity"
+                    type="number"
+                    inputValue={getIngredientField(item.ingredientId, "quantity")}
+                    inputErrors={formErrors}
+                    handleChange={(e) => handleIngredientQuantityChange(e, item.ingredientId)}
+                    placeholder=""
+                    styling="min-w-min max-w-[60px] ml-auto mr-[10px]"
                     min={0}
                     max={999}
-                    value={getIngredientField(item.ingredientId, "quantity")}
-                    onChange={(e) => handleIngredientQuantityChange(e, item.ingredientId)}
                     onKeyDown={(e) => {
                             if(e.target.value.length === 3 && e.code !== "Backspace")
                                 e.preventDefault();
                             return;
                         }
                     }
-                />
-                <label htmlFor="quantity">g</label>
+                    />
+                    </FormField>
+                </span>
             </div> 
         </div> 
     )

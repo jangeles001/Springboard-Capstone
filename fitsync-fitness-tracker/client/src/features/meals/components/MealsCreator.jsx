@@ -17,6 +17,7 @@ export default function MealsCreator() {
             <MealsForm.IngredientSearch isOpen={isOpen} setIsOpen={setIsOpen} />
             <MealsForm.Ingredients />
             <MealsForm.Macros />
+            <MealsForm.Footer />
         </MealsForm>
         </div>
         )

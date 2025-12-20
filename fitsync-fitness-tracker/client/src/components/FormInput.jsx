@@ -1,23 +1,26 @@
 import { preventScrollAndArrows } from "../utils/preventScrollAndArrows"
 
-export function FormInput({ name, inputType = "text", inputValue, inputErrors,  handleChange, placeholder }) {
-   const handlers = {}
+export function FormInput({ name, inputType = "text", inputValue, inputErrors,  handleChange, placeholder, styling, ...props }) {
+    // Assigns functions to handlers to prevent number input default behaviors
+    const handlers =
+        inputType === "number"
+      ? {
+          onKeyDown: preventScrollAndArrows.onKeyDown,
+          onWheel: preventScrollAndArrows.onWheel,
+        }
+      : undefined;
 
-   // Assigns appropriate functions to handlers
-   if(inputType === "number"){
-    handlers.onKeyDown = preventScrollAndArrows.onKeyDown;
-    handlers.onWheel = preventScrollAndArrows.onWheel;
-   }
 
     return (
     <input    
-        className={`form-input ${inputErrors && !inputValue && 'form-input-error'}`}
+        className={`${!inputErrors && "form-input"} ${inputErrors && !inputValue && 'form-input-error'} ${styling}`}
         type={inputType}
         name={name}
         value={inputValue}
-        onChange={handleChange}
+        onChange={handleChange} 
         placeholder={placeholder}
-        {...handlers} // spreads handlers into input element
+        {...handlers} // NOTE: Prop handlers override any handlers passed via handlers object.
+        {...props}
         >
         </input>
     )

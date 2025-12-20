@@ -14,7 +14,7 @@ export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
 
     return (
         <div className="flex flex-col">
-            <label htmlFor="ingredients" className="font-bold">Enter ingredients:</label>
+            <label htmlFor="ingredients" className="form-label">Enter Ingredient</label>
             <div className="relative w-full max-w-md">
                 <input
                 type='text'

@@ -18,9 +18,15 @@ const initialFormData = {
   mealMacros: { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
 };
 
+const validators = {
+  mealName: [(value) => (!value ? "Meal name is required!" : "")],
+  mealDescription: [(value) => (!value ? "Meal description is required!" : "")],
+  ingredients: [(value) =>  (value.length <= 0 ? "You must select at least one ingredient!" : "")],
+};
+
 const useMealsStore = create((set, get) => ({
   mealFormData: initialFormData,
-  hasErrors: {},
+  formErrors: {},
   actions: {
     setField: (field, value) => {
       set((state) => ({
@@ -55,16 +61,6 @@ const useMealsStore = create((set, get) => ({
       const ingredient = ingredients.find((item) => item.ingredientId === itemId);
       return ingredient ? ingredient[field] : undefined;
     },
-    addToMealsList: (mealData) => {
-      set((state) => ({
-        mealsList: [...state.mealsList, mealData],
-      }));
-    },
-    removeFromMealsList: (mealName) => {
-      set((state) => ({
-        mealsList: state.mealsList.filter((meal) => meal.mealName != mealName),
-      }));
-    },
     addIngredient: (ingredient) => {
       set((state) => ({
         mealFormData: {
@@ -97,9 +93,31 @@ const useMealsStore = create((set, get) => ({
     resetForm: () => {
       set(() => ({
         mealFormData: initialFormData,
-        hasErrors: {},
+        formErrors: {},
       }));
     },
+    validateForm: () => {
+      const { mealFormData } = get();
+      const formErrors = {};
+
+      for (const [field, rules] of Object.entries(validators)) {
+        for (const validate of rules) {
+          const error = validate(mealFormData[field]);
+          if (error) {
+            formErrors[field] = [...(formErrors[field] || []), error];
+          }
+        }
+      }
+
+      const isValid = Object.keys(formErrors)?.length === 0;
+
+      set({ formErrors, isValid });
+
+      return { isValid };
+    },
+    // Sets formErrors state
+    setFormErrors: (errors) => 
+      set({formErrors: errors}),
   },
 }));
 
@@ -121,7 +139,7 @@ export const useMealFormDataCalories = () =>
   );
 export const useMealFormDataMealMacros = () =>
   useMealsStore((state) => state.mealFormData.mealMacros);
-export const useHasErrors = () => useMealsStore((state) => state.hasErrors);
+export const useMealFormErrors = () => useMealsStore((state) => state.formErrors);
 
 // Actions selector
 export const useMealsActions = () => useMealsStore((state) => state.actions);
