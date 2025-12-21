@@ -28,6 +28,7 @@ import { Route as DashboardMealsRouteImport } from './routes/dashboard/meals'
 import { Route as DashboardDashRouteImport } from './routes/dashboard/dash'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as DashboardMealsMealIdRouteImport } from './routes/dashboard/meals.$mealId'
 
 const _notFoundRoute = _notFoundRouteImport.update({
   id: '/__not-found',
@@ -123,6 +124,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const DashboardMealsMealIdRoute = DashboardMealsMealIdRouteImport.update({
+  id: '/$mealId',
+  path: '/$mealId',
+  getParentRoute: () => DashboardMealsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -133,7 +139,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/dash': typeof DashboardDashRoute
-  '/dashboard/meals': typeof DashboardMealsRoute
+  '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
@@ -143,13 +149,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/landing/': typeof LandingIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/dash': typeof DashboardDashRoute
-  '/dashboard/meals': typeof DashboardMealsRoute
+  '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/landing': typeof LandingIndexRoute
   '/legal': typeof LegalIndexRoute
+  '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -171,7 +179,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/dash': typeof DashboardDashRoute
-  '/dashboard/meals': typeof DashboardMealsRoute
+  '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/landing/': typeof LandingIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/landing/'
     | '/legal/'
+    | '/dashboard/meals/$mealId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/legal'
+    | '/dashboard/meals/$mealId'
   id:
     | '__root__'
     | '/'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/landing/'
     | '/legal/'
+    | '/dashboard/meals/$mealId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -386,6 +398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/dashboard/meals/$mealId': {
+      id: '/dashboard/meals/$mealId'
+      path: '/$mealId'
+      fullPath: '/dashboard/meals/$mealId'
+      preLoaderRoute: typeof DashboardMealsMealIdRouteImport
+      parentRoute: typeof DashboardMealsRoute
+    }
   }
 }
 
@@ -405,9 +424,21 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface DashboardMealsRouteChildren {
+  DashboardMealsMealIdRoute: typeof DashboardMealsMealIdRoute
+}
+
+const DashboardMealsRouteChildren: DashboardMealsRouteChildren = {
+  DashboardMealsMealIdRoute: DashboardMealsMealIdRoute,
+}
+
+const DashboardMealsRouteWithChildren = DashboardMealsRoute._addFileChildren(
+  DashboardMealsRouteChildren,
+)
+
 interface DashboardRouteRouteChildren {
   DashboardDashRoute: typeof DashboardDashRoute
-  DashboardMealsRoute: typeof DashboardMealsRoute
+  DashboardMealsRoute: typeof DashboardMealsRouteWithChildren
   DashboardWorkoutCreatorRoute: typeof DashboardWorkoutCreatorRoute
   DashboardWorkoutsRoute: typeof DashboardWorkoutsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -415,7 +446,7 @@ interface DashboardRouteRouteChildren {
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardDashRoute: DashboardDashRoute,
-  DashboardMealsRoute: DashboardMealsRoute,
+  DashboardMealsRoute: DashboardMealsRouteWithChildren,
   DashboardWorkoutCreatorRoute: DashboardWorkoutCreatorRoute,
   DashboardWorkoutsRoute: DashboardWorkoutsRoute,
   DashboardIndexRoute: DashboardIndexRoute,

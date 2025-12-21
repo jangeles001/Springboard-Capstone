@@ -5,7 +5,7 @@ export function MealsFormMacros() {
 
     return (
         <div className="flex flex-col">
-            <label htmlFor="macros" className="form-label">Macros:</label>
+            <label htmlFor="macros" className="form-label">Macros</label>
             <span className="flex flex-row justify-center gap-10">
                 {Object?.entries(mealMacros || {})?.map(([key, value]) => (
                     <div 
