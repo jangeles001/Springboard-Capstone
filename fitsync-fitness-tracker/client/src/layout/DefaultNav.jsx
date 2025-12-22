@@ -18,7 +18,7 @@ export default function DefaultNav({ links, queryEnabled = true }) {
   if (isLoading && !username) return <div>Loading...</div>;
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
         <div className="flex flex-row bg-gray-100">
             <header className="flex-row items-center gap-4 p-2">
               <div className="flex w-auto h-auto">
@@ -28,20 +28,28 @@ export default function DefaultNav({ links, queryEnabled = true }) {
             </header>
             <nav className="flex mt-auto ml-[4%] gap-4 mb-2">
               {links.map((link) => {
-                  return <Link key={link.path} to={link.path} activeOptions={{ exact: true }} activeProps={{ className: " font-bold rounded-md text-blue-500"}} className="hover:underline">
+                  return ( 
+                    <Link 
+                    key={link.path} 
+                    to={link.path} 
+                    activeOptions={{ exact: true }} 
+                    activeProps={{ className: " font-bold rounded-md text-blue-500"}}
+                    className="hover:underline"
+                    >
                       {link.label}
-                  </Link>
+                    </Link>
+                  )
                 })}
               {username && <LogoutButton />}
             </nav>
             { username ? <ProfileBlock /> : <button className='border rounded-md ml-auto mr-5 mt-auto mb-2 max-h-min p-3'>Login</button>}
         </div>
       <hr />
-      <main>
+      <main className='flex-1 pb-10 min-w-screen bg-gray-100'>
         <Outlet />
       </main>
       <footer className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-10"></footer>
       <CookiesNotification />
-    </>
+    </div>
   )
 }

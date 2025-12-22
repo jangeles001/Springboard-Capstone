@@ -9,7 +9,7 @@ export const Route = createFileRoute('/dashboard/workouts')({
 
 function RouteComponent() {
   return (
-    <div className="flex flex-col items-center w-full bg-gradient-to-r from-blue-500 to-indigo-600 py-10 px-5">
+    <div className="flex flex-col w-full">
       <WorkoutsListDisplay withRemoveButton={true} />
     </div>
   )

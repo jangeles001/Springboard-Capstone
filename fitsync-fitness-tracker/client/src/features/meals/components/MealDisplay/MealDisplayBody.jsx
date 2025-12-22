@@ -5,7 +5,7 @@ export function MealDisplayBody() {
 
     return (
         <div>
-            <p>{data.data.description}</p>
+            {console.log(data)}
         </div>
     )
 }

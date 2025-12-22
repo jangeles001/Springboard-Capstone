@@ -1,7 +1,7 @@
-import { useWorkoutsListContext } from "../../hooks/useWorkoutsListContext"
+import { useMealsListContext } from "../../hooks/useMealsListContext";
 
-export function WorkoutsListHeader() {
-    const { active, isLoading, handleActiveChange } = useWorkoutsListContext();
+export function MealsListHeader() {
+    const { active, isLoading, handleActiveChange } = useMealsListContext();
 
     return (
         <div className="flex flex-col items-center w-full bg-gradient-to-r from-blue-500 to-indigo-600 mb-10">
@@ -21,11 +21,10 @@ export function WorkoutsListHeader() {
                 All
             </button>
            </div>
-           <div>
-            { active === "personal" ? 
-            <h1 className="text-4xl font-bold text-white mb-8">Your Workouts</h1> : 
-            <h1 className="text-4xl font-bold text-white mb-8">All Workouts</h1>}
-            </div>
+           { active === "personal" ? 
+           <h1 className="text-4xl font-bold text-white mb-8">Your Meals</h1> : 
+           <h1 className="text-4xl font-bold text-white mb-8">All Meals</h1>}
+          
         </div>
     )
 }

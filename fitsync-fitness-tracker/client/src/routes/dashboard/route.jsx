@@ -11,7 +11,8 @@ function dashboard() {
     { label: "Dashboard", path: "/dashboard/dash" },
     { label: "Workout Creator", path: "/dashboard/workoutCreator" },
     { label: "Workouts", path: "/dashboard/workouts"},
-    { label: "Record a Meal", path: "/dashboard/meals"},
+    { label: "Record a Meal", path: "/dashboard/mealCreator"},
+    { label: "Meals", path: "/dashboard/meals"},
   ];
 
   return (

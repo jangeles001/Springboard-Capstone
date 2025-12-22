@@ -16,6 +16,8 @@ export function useMealDisplay(mealId){
         if(query.isSuccess){
             if(query.data.data.creatorPublicId === publicId) 
                 setIsCreator(true)
+        }else{
+            return;
         }
             
     },[query, publicId])

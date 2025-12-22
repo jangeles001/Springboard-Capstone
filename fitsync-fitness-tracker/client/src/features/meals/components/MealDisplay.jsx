@@ -1,10 +1,13 @@
-export function MealDisplay({ mealId }){
-    
+import { MealDisplay } from "./MealDisplay/index.js"
+
+export function MealDisplayPage({ mealId }){ 
     return (
         <>
-            <div className="grid grid-row-">
-
-            </div>
+        <MealDisplay mealId={mealId}>
+            <MealDisplay.header />
+            <MealDisplay.Body />
+            <MealDisplay.Footer />
+        </MealDisplay>
         </>
     )
 }

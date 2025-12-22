@@ -10,7 +10,7 @@ export default function MealsCreator() {
     const [ isOpen, setIsOpen ] = useState(false); // State for dropdown
 
     return (
-        <div className="flex flex-col items-center justify-center bg-gray-100 h-screen min-w-screen">
+        <div className="flex flex-col items-center justify-center bg-gray-100 max-h-min min-w-screen">
         <MealsForm>
             <MealsForm.Header />
             <MealsForm.Description />

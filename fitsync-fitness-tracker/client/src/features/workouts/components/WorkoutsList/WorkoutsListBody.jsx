@@ -16,7 +16,7 @@ export function WorkoutsListBody() {
       {data?.data?.length === 0 ? (
         <p className="text-gray-200">No workouts created yet.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-min w-full max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-auto gap-6 h-min min-w-[100px] md:max-w-2xl lg:max-w-6xl">
           {data?.data?.map((workout) => (
             <div
               key={workout.uuid}
