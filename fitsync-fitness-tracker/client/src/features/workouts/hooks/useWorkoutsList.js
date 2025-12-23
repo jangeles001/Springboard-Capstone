@@ -87,6 +87,7 @@ export function useWorkoutsList({ limit }) {
     handleWorkoutClick,
     handleExerciseClick,
     handleActiveChange,
+    workoutClick: handleWorkoutClick,
     deleteWorkout: handleDeleteWorkout,
     isRemoving: deleteWorkoutMutation.isLoading,
   };

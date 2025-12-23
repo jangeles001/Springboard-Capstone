@@ -5,24 +5,36 @@ This repository will host my final capstone project for Sprinboard’s Software 
 
 The final topic is a health and fitness web app with the specifications listed in my Capstone-Proposal.md
 
-🔨 Technologies [Full list can be found in Capstone-Proposal.md]: React · JavaScript · Node.js · MongoDB · Tailwindcss
+FitSync
+A full-stack fitness tracking application for logging workouts and meals.
 
-📅 Status: Building Frontend
+Features
+-Create and manage workouts
+-Log meals and track nutrition
+-Responsive UI built with React and Tailwind
+-RESTful API built with Node.js and Express
 
-📌Page Status
+Tech Stack [Full list can be found in Capstone-Proposal.md]
+-Frontend: React, Vite, Tailwind CSS
+-Backend: Node.js, Express
+-Database: MongoDB
+
+What I Learned
+Structuring scalable React applications
+Designing RESTful APIs
+Managing application state cleanly
+Balancing features with maintainability
+
+App Status
 
 - Landing Page: Need to convert image carousel into testimonial carousel.
 - About Page: COMPLETED
 - Privacy Policy Page: COMPLETED
 - Terms of Service Page: COMPLETED
-- Registration Page: Need to connect to back end and database for authentication and user creation.
-- Sign Up: Need to connect to back end and and for authentication and user fetching.
+- Registration Page: COMPLETED
+- Sign Up: COMPLETED
 - Dashboard: Need to connect to database to fetch user workout history, posts, and friends list.
-- Exercises: Need to handle name collisions.
-- Meals: TBD
-- Workouts: Need to hook up to database and handle name collisions.
-- Posts TBD
+- Exercises: COMPLETED
+- Meals: COMPLETED
+- Workouts: COMPLETED
 - AI Component: TBD
-
-- Working on Frontend components...
-  Updates will be posted as development progresses...

@@ -1,12 +1,12 @@
 import { useWorkoutsListContext } from "../../hooks/useWorkoutsListContext"
-import { WorkoutsListRemoveButton } from "./WorkoutsListRemoveButton";
 import Exercise from "./exercise";
 import Loading from "../../../../components/Loading";
+import ThemedButton from "../../../../components/ThemedButton";
 
 export function WorkoutsListBody() {
   
   // Store state
-  const { data, isLoading, isError, error, deleteWorkout } = useWorkoutsListContext();
+  const { data, isLoading, isError, error, workoutClick, deleteWorkout } = useWorkoutsListContext();
 
   if(isLoading) return <Loading  type="skeleton"/>
   if(isError) return <>{console.log(error)}</>
@@ -16,13 +16,16 @@ export function WorkoutsListBody() {
       {data?.data?.length === 0 ? (
         <p className="text-gray-200">No workouts created yet.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-auto gap-6 h-min min-w-[100px] md:max-w-2xl lg:max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-auto gap-6 h-min min-w-[100px] max-w-md md:max-w-2xl lg:max-w-6xl">
           {data?.data?.map((workout) => (
             <div
               key={workout.uuid}
               className="flex flex-col bg-white rounded-2xl shadow-md p-6 border border-gray-200"
             >
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              <h2 
+              className="text-xl font-semibold text-gray-800 mb-4 hover:cursor-pointer"
+              onClick={() => workoutClick(workout.uuid)}
+              >
                 {workout.workoutName}
               </h2>
 
@@ -39,7 +42,7 @@ export function WorkoutsListBody() {
                 )}
               </div>
 
-              <WorkoutsListRemoveButton workoutUUID={workout.uuid} removeFunction={deleteWorkout}/>
+              <ThemedButton text="Delete Workout" onClick={() => deleteWorkout(workout.uuid)} />
             </div>
           ))}
         </div>

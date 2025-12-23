@@ -81,6 +81,7 @@ export function useMealsList({ limit }) {
     active,
     handleMealClick,
     handleActiveChange,
+    mealClick: handleMealClick,
     deleteWorkout: handleDeleteMeal,
     isRemoving: deleteMealMutation.isLoading,
   };
