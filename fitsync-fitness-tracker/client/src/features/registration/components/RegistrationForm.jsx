@@ -78,7 +78,7 @@ export default function RegistrationForm() {
                                 inputValue={height}
                                 inputErrors={formErrors.height}
                                 handleChange={handleChange}
-                                placeholder="Height"
+                                placeholder={"ex. 5'9\""}
                                 ></FormInput>
                             </FormField>
                         </div>
@@ -136,7 +136,7 @@ export default function RegistrationForm() {
                                 ></FormInput>
                             <button 
                             type="button" 
-                            className='border rounded-md p-1 hover:bg-gray-100'
+                            className={passwordType === "text" ?'border rounded-md p-1 hover:bg-gray-100' : 'border rounded-md p-1 bg-gray-100 hover:bg-gray-100 '}
                             onClick={() => 
                             passwordType === "password" ? 
                             setPasswordType("text") : setPasswordType("password")}

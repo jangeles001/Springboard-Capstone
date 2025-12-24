@@ -198,10 +198,42 @@ export async function getUserWorkouts(userPublicId) {
   return userWorkouts;
 }
 
+export async function deleteWorkout(publicId, workoutId){
+    const user = await userRepo.findOneUserByPublicId(publicId);
+    if(!user)
+      throw new NotFoundError("User");
+    
+    const workout = await workoutRepo.findWorkoutByWorkoutId(workoutId);
+    if(!workout)
+      throw new NotFoundError("Meal");
+
+    if(workout.creatorPublicId !== user.publicId)
+      throw new UnauthorizedError();
+
+    await workoutRepo.deleteOneWorkoutById(workoutId)
+    return;
+}
+
 export async function getUserMeals(userPublicId) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
   if (!user) throw new NotFoundError("USER");
 
   const userMeals = await mealRepo.findMealsByCreatorPublicId(userPublicId);
   return userMeals;
+}
+
+export async function deleteMeal(publicId, mealId){
+    const user = await userRepo.findOneUserByPublicId(publicId);
+    if(!user)
+      throw new NotFoundError("User");
+    
+    const meal = await mealRepo.findMealByUUID(mealId);
+    if(!meal)
+      throw new NotFoundError("Meal");
+
+    if(meal.creatorPublicId !== user.publicId)
+      throw new UnauthorizedError();
+
+    await mealRepo.deleteOneMealById(mealId)
+    return;
 }

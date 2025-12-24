@@ -5,6 +5,11 @@ export async function createWorkout(workoutData){
     return newWorkout.toJSON();
 }
 
+export async function deleteOneWorkoutById(workoutId){
+    await Workout.deleteOne({ uuid: workoutId });
+    return;
+}
+
 export async function findAllWorkouts(){
     return await Workout.find({}).select("-__v -_id -updatedAt").lean();
 }

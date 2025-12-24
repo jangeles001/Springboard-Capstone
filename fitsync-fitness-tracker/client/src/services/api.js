@@ -51,7 +51,7 @@ api.interceptors.response.use(
     /**
      * Only handle auth failures
      */
-    if ((status !== 401 && status !== 403) || originalRequest._retry) {
+    if (status !== 401 || status !== 403 || originalRequest._retry) {
       return Promise.reject(error);
     }
 

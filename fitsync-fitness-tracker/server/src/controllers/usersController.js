@@ -51,6 +51,16 @@ export async function getUserWorkoutsController(req, res) {
   }
 }
 
+export async function deleteWorkoutController(req, res) {
+    try{
+      const { workoutId, userPublicId } = req.params;
+      await userService.deleteWorkout(userPublicId, workoutId);
+      return res.generateSuccessResponse(null, "Delete Successful", 200)
+    }catch(error){
+      return res.generateErrorResponse(error.message, error.statusCode);
+    }
+}
+
 export async function getUserMealsController(req, res) {
   try {
     const { userPublicId } = req.params;
@@ -59,4 +69,14 @@ export async function getUserMealsController(req, res) {
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);
   }
+}
+
+export async function deleteMealController(req, res){
+    try{
+        const { mealId, userPublicId } = req.params;
+        await userService.deleteMeal(userPublicId, mealId);
+        return res.generateSuccessResponse(null, "Delete Successful", 200);
+    }catch(error){
+        return res.generateErrorResponse(error.message, error.statusCode);
+    }
 }

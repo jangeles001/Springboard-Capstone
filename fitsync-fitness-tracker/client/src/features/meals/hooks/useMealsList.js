@@ -30,7 +30,7 @@ export function useMealsList({ limit }) {
   }, [active, pages, limit, queryClient]);
 
   const query = useQuery({
-    queryKey: [`createdMeals`, active, pages[active], limit],
+    queryKey: [`meals`, active, pages[active], limit],
     queryFn: () =>
       active === "Personal"
         ? fetchCreatedMeals({ page: pages[active], limit, publicId })
@@ -39,11 +39,11 @@ export function useMealsList({ limit }) {
   });
 
   const deleteMealMutation = useMutation({
-    mutationFn: (mealId) => api.delete(`api/v1/users/meals/${mealId}`),
+    mutationFn: (mealId) => api.delete(`api/v1/users/${publicId}/${mealId}`),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["createdMealPersonal"],
+        queryKey: ["meals"],
       });
     },
   });
@@ -53,8 +53,8 @@ export function useMealsList({ limit }) {
     // redirect to workout page
   };
 
-  const handleDeleteMeal = (workoutId) => {
-    deleteMealMutation.mutate(workoutId);
+  const handleDeleteMeal = (mealId) => {
+    deleteMealMutation.mutate(mealId);
   };
 
   const handleActiveChange = (buttonValue) => {
@@ -82,7 +82,7 @@ export function useMealsList({ limit }) {
     handleMealClick,
     handleActiveChange,
     mealClick: handleMealClick,
-    deleteWorkout: handleDeleteMeal,
+    deleteMeal: handleDeleteMeal,
     isRemoving: deleteMealMutation.isLoading,
   };
 }

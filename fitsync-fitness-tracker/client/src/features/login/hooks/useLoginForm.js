@@ -32,6 +32,8 @@ export function useLoginForm({ onSuccessFunction }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormField(name, value);
+    if(formErrors)
+      if (Object.keys(formErrors).includes(name)) delete formErrors[name];
   };
 
   // Handles password visibility toggle

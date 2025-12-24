@@ -30,7 +30,7 @@ export function useWorkoutsList({ limit }) {
   }, [active, pages, limit, queryClient]);
 
   const query = useQuery({
-    queryKey: [`createdWorkouts`, active, pages[active], limit],
+    queryKey: [`workouts`, active, pages[active], limit],
     queryFn: () =>
       active === "Personal"
         ? fetchCreatedWorkouts({ page: pages[active], limit, publicId })
@@ -39,11 +39,11 @@ export function useWorkoutsList({ limit }) {
   });
 
   const deleteWorkoutMutation = useMutation({
-    mutationFn: (workoutId) => api.delete(`api/v1/users/workouts/${workoutId}`),
+    mutationFn: (workoutId) => api.delete(`api/v1/users/${publicId}/${workoutId}`),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["createdWorkoutsPersonal"],
+        queryKey: ["workouts"],
       });
     },
   });

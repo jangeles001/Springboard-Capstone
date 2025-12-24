@@ -13,7 +13,7 @@ export function FormInput({ name, inputType = "text", inputValue, inputErrors,  
 
     return (
     <input    
-        className={`${!inputErrors && "form-input"} ${inputErrors && !inputValue && 'form-input-error'} ${styling}`}
+        className={`form-input ${inputErrors && !inputValue && 'form-input-error'} ${styling}`}
         type={inputType}
         name={name}
         value={inputValue}

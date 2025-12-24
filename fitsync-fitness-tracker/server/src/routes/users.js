@@ -7,7 +7,9 @@ import {
   getPublicUserInformationController,
   updatePrivateUserInformationController,
   getUserWorkoutsController,
+  deleteWorkoutController,
   getUserMealsController,
+  deleteMealController,
 } from "../controllers/usersController.js";
 
 const router = express.Router();
@@ -22,6 +24,8 @@ router
   )
   .get("/:userPublicId", requireAuth, getPublicUserInformationController)
   .get("/:userPublicId/workouts", requireAuth, getUserWorkoutsController)
-  .get("/:userPublicId/meals", requireAuth, getUserMealsController);
+  .delete("/:userPublicId/:workoutId", requireAuth, deleteWorkoutController)
+  .get("/:userPublicId/meals", requireAuth, getUserMealsController)
+  .delete("/:userPublicId/:mealId", requireAuth, deleteMealController);
 
 export default router;

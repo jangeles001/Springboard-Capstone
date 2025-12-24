@@ -7,7 +7,7 @@ export const Route = createFileRoute('/auth/login')({
 
 function RouteComponent() {
   return (
-    <div className="flex flex-col justify-between items-center h-full w-full max-w-md mx-auto my-auto">
+    <div className="flex flex-col justify-between items-center h-full w-full max-w-md mx-auto pt-[50px]">
       <section className='text-3xl text-white'><h1>Welcome Back!</h1></section>
       <LoginForm />
       <div className='flex flex-row justify-between w-full mb-5 min-w-full'>

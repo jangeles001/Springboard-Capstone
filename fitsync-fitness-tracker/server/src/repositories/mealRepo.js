@@ -7,6 +7,11 @@ export async function createMeal(mealData) {
   return newMeal.toJSON();
 }
 
+export async function deleteOneMealById(mealId){
+  await Meal.deleteOne({ uuid: mealId})
+  return;
+}
+
 export async function findAllMeals(){
   return await Meal.find({}).select(PRIVATE_FIELDS_EXCLUSIONS);
 }

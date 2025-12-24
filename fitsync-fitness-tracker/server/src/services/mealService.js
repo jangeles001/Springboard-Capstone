@@ -1,3 +1,4 @@
+import { NotFoundError } from "../errors/NotFoundError.js";
 import * as mealRepo from "../repositories/mealRepo.js"
 
 export async function createNewMeal(mealData){
