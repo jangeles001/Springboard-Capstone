@@ -12,8 +12,10 @@ export async function deleteOneMealById(mealId){
   return;
 }
 
-export async function findAllMeals(){
-  return await Meal.find({}).select(PRIVATE_FIELDS_EXCLUSIONS);
+export async function findAllMeals(skip, limit){
+  const meals = await Meal.find({}).skip(skip).limit(limit).select(PRIVATE_FIELDS_EXCLUSIONS);
+  const totalCount = await Meal.countDocuments();
+  return { meals, totalCount }
 }
 
 export async function findMealsByCreatorPublicId(userPublicId) {

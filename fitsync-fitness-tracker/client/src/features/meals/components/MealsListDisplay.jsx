@@ -5,6 +5,7 @@ export function MealsListDisplay(){
         <MealsList>
             <MealsList.Header />
             <MealsList.Body />
+            <MealsList.Footer />
         </MealsList>
     )
 }

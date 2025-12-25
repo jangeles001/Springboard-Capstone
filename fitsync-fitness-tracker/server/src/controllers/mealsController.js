@@ -12,8 +12,10 @@ export async function createMealController(req, res){
 
 export async function getAllMealsController(req, res){
     try{
-        const allMeals = await mealService.getAllMeals();
-        return res.generateSuccessResponse(allMeals, "Success!", 200);
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const allMealsData = await mealService.getAllMeals(page, pageSize);
+        return res.generateSuccessResponse(allMealsData, "Success!", 200);
     }catch(error){
         return res.generateErrorResponse(error.message, error.statusCode);
     }

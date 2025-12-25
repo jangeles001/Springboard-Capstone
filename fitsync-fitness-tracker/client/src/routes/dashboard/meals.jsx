@@ -7,7 +7,7 @@ export const Route = createFileRoute('/dashboard/meals')({
 
 function RouteComponent() {
   return (
-    <div>
+    <div className='flex flex-col justify-center'>
       <MealsListDisplay />
     </div>
   )
