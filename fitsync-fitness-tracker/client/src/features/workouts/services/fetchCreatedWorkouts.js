@@ -1,9 +1,9 @@
 import { api } from "../../../services/api";
 
-export async function fetchCreatedWorkouts({ page = 1, limit = 5, publicId }) {
+export async function fetchCreatedWorkouts({ page = 1, limit = 10, publicId }) {
   const params = new URLSearchParams({
-    limit: String(limit),
-    offset: String((page - 1) * 10),
+    offset: String((page - 1) * limit),
+    pageSize: String(limit),
   });
 
   const { data } = await api.get(

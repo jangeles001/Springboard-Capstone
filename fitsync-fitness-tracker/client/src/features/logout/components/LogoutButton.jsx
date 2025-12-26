@@ -8,8 +8,8 @@ export default function LogoutButton(){
     });
 
     return (
-        <div className="border-2">
-            <button onClick={handleLogout}>Logout</button>
+        <div>
+            <button className="hover:underline" onClick={handleLogout}>Logout</button>
         </div>
     )
 }

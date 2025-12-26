@@ -5,6 +5,7 @@ export function WorkoutsListDisplay(){
             <WorkoutsList>
                 <WorkoutsList.header />
                 <WorkoutsList.Body />
+                <WorkoutsList.Footer />
             </WorkoutsList>
     )   
 }

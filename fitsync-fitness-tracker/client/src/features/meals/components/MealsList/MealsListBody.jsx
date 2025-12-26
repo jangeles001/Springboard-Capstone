@@ -30,7 +30,7 @@ export function MealsListBody() {
               </h2>
               <h3>Description</h3>
               <div className="bg-gray-100 rounded-xl p-3 border border-gray-300 mb-5">
-                  <p className="text-sm text-gray-600 line-clamp-4">{meal.description}</p>
+                  <p className="text-sm text-gray-600 line-clamp-4">{meal.mealDescription}</p>
               </div>
               <div className="flex flex-col gap-3 mb-4">
                 {meal.ingredients.slice(0,3).map((ingredient) => ( // Add creation date to card.

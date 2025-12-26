@@ -13,11 +13,11 @@ export function WorkoutsListBody() {
 
   return (
     <>
-      {data?.data?.length === 0 ? (
+      {data?.data?.workouts?.length === 0 ? (
         <p className="text-gray-500 mx-auto mt-[50px]">No workouts created yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 ml-5 h-min min-w-md max-w-md md:max-w-2xl lg:max-w-6xl">
-          {data?.data?.map((workout) => (
+          {data?.data?.workouts?.map((workout) => (
             <div
               key={workout.uuid}
               className="flex flex-col bg-white rounded-2xl shadow-md p-6 border border-gray-200"

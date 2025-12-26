@@ -36,27 +36,31 @@ api.interceptors.response.use(
     if (!error.response) {
       return Promise.reject(error);
     }
-
     const status = error.response?.status;
     const isAuthMeRequest = originalRequest.url?.endsWith("/auth/me");
     const isRefreshRequest = originalRequest.url?.endsWith("/auth/refresh");
 
     /**
-     * 🚫 NEVER retry these
+     * These requests will NEVER get retreied
      */
     if (isAuthMeRequest || isRefreshRequest) {
       return Promise.reject(error);
     }
 
+    const isTokenExpiredError =
+      status === 401 &&
+      (error?.response?.data?.message === "ACCESS_TOKEN_EXPIRED" ||
+        error?.response?.data?.message === "MISSING_AUTHORIZATION_TOKEN");
+
     /**
-     * Only handle auth failures
+     * Only auth failures get retried
      */
-    if (status !== 401 || status !== 403 || originalRequest._retry) {
+    if (!isTokenExpiredError || originalRequest._retry) {
       return Promise.reject(error);
     }
 
     /**
-     * Mark request as retried
+     * Marks request as retried
      */
     originalRequest._retry = true;
 
@@ -70,19 +74,16 @@ api.interceptors.response.use(
     }
 
     /**
-     * Start refresh flow
+     * Starts refresh flow
      */
     isRefreshing = true;
 
     try {
       await api.get("/api/v1/auth/refresh");
-
       processQueue(null);
-
       return api(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError);
-
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

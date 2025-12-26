@@ -30,7 +30,7 @@ export function useWorkoutsList({ limit }) {
   }, [active, pages, limit, queryClient]);
 
   const query = useQuery({
-    queryKey: [`workouts`, active, pages[active], limit],
+    queryKey: ["workouts", active, pages[active], limit],
     queryFn: () =>
       active === "Personal"
         ? fetchCreatedWorkouts({ page: pages[active], limit, publicId })
@@ -39,7 +39,8 @@ export function useWorkoutsList({ limit }) {
   });
 
   const deleteWorkoutMutation = useMutation({
-    mutationFn: (workoutId) => api.delete(`api/v1/users/${publicId}/${workoutId}`),
+    mutationFn: (workoutId) =>
+      api.delete(`api/v1/users/${publicId}/${workoutId}`),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -67,13 +68,14 @@ export function useWorkoutsList({ limit }) {
   };
 
   const handleNextPage = () => {
+    console.log("NEXT CLICKED", active, pages[active]);
     setPages((state) => ({
       ...state,
       [active]: state[active] + 1,
     }));
   };
 
-  const handlePrevioustPage = () => {
+  const handlePreviousPage = () => {
     setPages((state) => ({
       ...state,
       [active]: Math.max(1, state[active] - 1),
@@ -87,6 +89,8 @@ export function useWorkoutsList({ limit }) {
     handleWorkoutClick,
     handleExerciseClick,
     handleActiveChange,
+    handlePreviousPage,
+    handleNextPage,
     workoutClick: handleWorkoutClick,
     deleteWorkout: handleDeleteWorkout,
     isRemoving: deleteWorkoutMutation.isLoading,

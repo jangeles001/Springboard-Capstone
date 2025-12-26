@@ -188,52 +188,68 @@ export async function updatePrivateUserInformation(userUUID, updatedFields) {
   return { ...updatedPrivateInformation };
 }
 
-export async function getUserWorkouts(userPublicId) {
+export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
   if (!user) throw new NotFoundError("USER");
 
-  const userWorkouts = await workoutRepo.findWorkoutsByCreatorPublicId(
-    userPublicId
+  let hasNextPage = null;
+  let hasPreviousPage = null;
+
+  const { workouts, totalCount } =
+    await workoutRepo.findWorkoutsByCreatorPublicId(
+      userPublicId,
+      offset,
+      pageSize
+    );
+
+  if (offset + pageSize < totalCount - 1) hasNextPage = true;
+
+  if (offset > 0) hasPreviousPage = true;
+
+  return { workouts, hasPreviousPage, hasNextPage };
+}
+
+export async function deleteWorkout(publicId, workoutId) {
+  const user = await userRepo.findOneUserByPublicId(publicId);
+  if (!user) throw new NotFoundError("User");
+
+  const workout = await workoutRepo.findWorkoutByWorkoutId(workoutId);
+  if (!workout) throw new NotFoundError("Workout");
+
+  if (workout.creatorPublicId !== user.publicId) throw new UnauthorizedError();
+
+  await workoutRepo.deleteOneWorkoutById(workoutId);
+  return;
+}
+
+export async function getUserMeals(userPublicId, offset, pageSize) {
+  const user = await userRepo.findOneUserByPublicId(userPublicId);
+  if (!user) throw new NotFoundError("USER");
+
+  let hasNextPage = null;
+  let hasPreviousPage = null;
+  const { meals, totalCount } = await mealRepo.findMealsByCreatorPublicId(
+    userPublicId,
+    offset,
+    pageSize
   );
-  return userWorkouts;
+
+  if (offset + pageSize < totalCount - 1) hasNextPage = true;
+
+  if (offset > 0) hasPreviousPage = true;
+
+  return { meals, hasPreviousPage, hasNextPage };
 }
 
-export async function deleteWorkout(publicId, workoutId){
-    const user = await userRepo.findOneUserByPublicId(publicId);
-    if(!user)
-      throw new NotFoundError("User");
-    
-    const workout = await workoutRepo.findWorkoutByWorkoutId(workoutId);
-    if(!workout)
-      throw new NotFoundError("Meal");
+export async function deleteMeal(publicId, mealId) {
+  const user = await userRepo.findOneUserByPublicId(publicId);
+  if (!user) throw new NotFoundError("User");
 
-    if(workout.creatorPublicId !== user.publicId)
-      throw new UnauthorizedError();
+  const meal = await mealRepo.findMealByUUID(mealId);
+  if (!meal) throw new NotFoundError("Meal");
 
-    await workoutRepo.deleteOneWorkoutById(workoutId)
-    return;
-}
+  if (meal.creatorPublicId !== user.publicId) throw new UnauthorizedError();
 
-export async function getUserMeals(userPublicId) {
-  const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if (!user) throw new NotFoundError("USER");
-
-  const userMeals = await mealRepo.findMealsByCreatorPublicId(userPublicId);
-  return userMeals;
-}
-
-export async function deleteMeal(publicId, mealId){
-    const user = await userRepo.findOneUserByPublicId(publicId);
-    if(!user)
-      throw new NotFoundError("User");
-    
-    const meal = await mealRepo.findMealByUUID(mealId);
-    if(!meal)
-      throw new NotFoundError("Meal");
-
-    if(meal.creatorPublicId !== user.publicId)
-      throw new UnauthorizedError();
-
-    await mealRepo.deleteOneMealById(mealId)
-    return;
+  await mealRepo.deleteOneMealById(mealId);
+  return;
 }

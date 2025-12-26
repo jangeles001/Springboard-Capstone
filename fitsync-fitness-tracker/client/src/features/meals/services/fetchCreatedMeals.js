@@ -1,9 +1,9 @@
 import { api } from "../../../services/api";
 
-export async function fetchCreatedMeals({ page = 1, limit = 5, publicId }) {
+export async function fetchCreatedMeals({ page = 1, limit = 10, publicId }) {
   const params = new URLSearchParams({
-    limit: String(limit),
-    offset: String((page - 1) * 10),
+    page: String((page - 1) * 10),
+    pageSize: String(limit),
   });
 
   const { data } = await api.get(

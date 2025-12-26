@@ -1,16 +1,28 @@
 import * as workoutRepo from "../repositories/workoutRepo.js";
 
-export async function createWorkout(workoutData){
-    const newWorkout = await workoutRepo.createWorkout(workoutData);
-    return newWorkout;
+export async function createWorkout(workoutData) {
+  const newWorkout = await workoutRepo.createWorkout(workoutData);
+  return newWorkout;
 }
 
-export async function getWorkoutInformation(workoutId){
-    const workoutInformation = await workoutRepo.findWorkoutByWorkoutId(workoutId);
-    return workoutInformation;
+export async function getWorkoutInformation(workoutId) {
+  const workoutInformation = await workoutRepo.findWorkoutByWorkoutId(
+    workoutId
+  );
+  return workoutInformation;
 }
 
-export async function getAllWorkouts(){
-    const workouts = await workoutRepo.findAllWorkouts();
-    return workouts;
+export async function getAllWorkouts(offset = 0, pageSize = 10) {
+  let hasNextPage = false;
+  let hasPreviousPage = false;
+  const { workouts, totalCount } = await workoutRepo.findAllWorkouts(
+    offset,
+    pageSize
+  );
+
+  if (offset + pageSize < totalCount - 1) hasNextPage = true;
+
+  if (offset > 0) hasPreviousPage = true;
+
+  return { workouts, hasPreviousPage, hasNextPage };
 }

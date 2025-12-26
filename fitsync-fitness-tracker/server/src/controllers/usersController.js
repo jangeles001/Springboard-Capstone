@@ -33,9 +33,8 @@ export async function updatePrivateUserInformationController(req, res) {
     const updatedUserInformation =
       await userService.updatePrivateUserInformation(userUUID, updatedFields);
     const message = "Information Updated Successfully!";
-    
-    return res.generateSuccessResponse(updatedUserInformation, message)
 
+    return res.generateSuccessResponse(updatedUserInformation, message);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);
   }
@@ -44,7 +43,13 @@ export async function updatePrivateUserInformationController(req, res) {
 export async function getUserWorkoutsController(req, res) {
   try {
     const { userPublicId } = req.params;
-    const userWorkouts = await userService.getUserWorkouts(userPublicId);
+    const offset = parseInt(req.query.offset) || 0;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const userWorkouts = await userService.getUserWorkouts(
+      userPublicId,
+      offset,
+      pageSize
+    );
     return res.generateSuccessResponse(userWorkouts, null, 200);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);
@@ -52,31 +57,37 @@ export async function getUserWorkoutsController(req, res) {
 }
 
 export async function deleteWorkoutController(req, res) {
-    try{
-      const { workoutId, userPublicId } = req.params;
-      await userService.deleteWorkout(userPublicId, workoutId);
-      return res.generateSuccessResponse(null, "Delete Successful", 200)
-    }catch(error){
-      return res.generateErrorResponse(error.message, error.statusCode);
-    }
+  try {
+    const { workoutId, userPublicId } = req.params;
+    await userService.deleteWorkout(userPublicId, workoutId);
+    return res.generateSuccessResponse(null, "Delete Successful", 200);
+  } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode);
+  }
 }
 
 export async function getUserMealsController(req, res) {
   try {
     const { userPublicId } = req.params;
-    const userMeals = await userService.getUserMeals(userPublicId);
+    const offset = parseInt(req.query.offset) || 0;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const userMeals = await userService.getUserMeals(
+      userPublicId,
+      offset,
+      pageSize
+    );
     return res.generateSuccessResponse(userMeals, null, 200);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
-export async function deleteMealController(req, res){
-    try{
-        const { mealId, userPublicId } = req.params;
-        await userService.deleteMeal(userPublicId, mealId);
-        return res.generateSuccessResponse(null, "Delete Successful", 200);
-    }catch(error){
-        return res.generateErrorResponse(error.message, error.statusCode);
-    }
+export async function deleteMealController(req, res) {
+  try {
+    const { mealId, userPublicId } = req.params;
+    await userService.deleteMeal(userPublicId, mealId);
+    return res.generateSuccessResponse(null, "Delete Successful", 200);
+  } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode);
+  }
 }
