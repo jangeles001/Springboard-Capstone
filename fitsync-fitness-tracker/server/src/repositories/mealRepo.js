@@ -1,4 +1,4 @@
-import { Meal } from "../models/mealModel.js";
+import { Meal } from "../models/MealModel.js";
 
 const PRIVATE_FIELDS_EXCLUSIONS = "-_id -createdAt -updatedAt";
 

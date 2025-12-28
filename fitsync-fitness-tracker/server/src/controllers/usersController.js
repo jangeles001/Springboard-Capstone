@@ -91,3 +91,13 @@ export async function deleteMealController(req, res) {
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
+
+export async function generateUserReportsController(req, res) {
+  try {
+    const userUUID = req.user.sub;
+    const reportData = await userService.generateUserReports(userUUID);
+    return res.generateSuccessResponse(reportData, "Reports generated!", 201);
+  } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode);
+  }
+}

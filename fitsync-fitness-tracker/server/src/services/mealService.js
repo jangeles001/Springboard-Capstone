@@ -1,8 +1,19 @@
-import { NotFoundError } from "../errors/NotFoundError.js";
 import * as mealRepo from "../repositories/mealRepo.js";
+import * as mealLogRepo from "../repositories/mealLogRepo.js";
 
 export async function createNewMeal(mealData) {
   const meal = await mealRepo.createMeal(mealData);
+  if (meal) {
+    const mealLogData = {
+      userPublicId: meal.creatorPublicId,
+      mealUUID: meal.uuid,
+      mealNameSnapshot: meal.mealName,
+      macrosSnapshot: meal.mealMacros,
+      consumedAt: new Date(),
+    }
+  }
+
+  await mealLogRepo.createOneMealLogEntry(mealLogData);
   return meal;
 }
 

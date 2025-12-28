@@ -16,7 +16,7 @@ export default function CookiesNotification() {
     if(!navigator.cookieEnabled || consent) return null;
 
     return (
-        <div className='fixed bottom-0 w-full z-50 bg-black text-white text-md p-4 shadow-lg opacity-75 animate-slideUp hover:opacity-100 transition-opacity duration-500'>
+        <div className={`fixed bottom-0 w-full z-50 bg-black text-white text-md p-4 shadow-lg opacity-75 animate-slideUp hover:opacity-100 transition-opacity duration-500`}>
             <div className='flex flex-col items-center'>
                 This website uses cookies to ensure you get the best experience. Some cookies are essential, while others help us improve your experience.
                 <section> You may accept or reject non-essential cookies. See our <Link className='hover:underline' to='/legal/privacy'>Privacy Policy↗</Link> for more details.</section>

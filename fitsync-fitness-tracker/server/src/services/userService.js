@@ -253,3 +253,25 @@ export async function deleteMeal(publicId, mealId) {
   await mealRepo.deleteOneMealById(mealId);
   return;
 }
+
+export async function generateUserReports(userUUID) {
+  const user = await userRepo.findOneUserByUUID(userUUID);
+  if (!user) throw new NotFoundError("User");
+
+  let reports = {};
+  const { workouts } = await workoutRepo.findWorkoutsByCreatorPublicId(
+    user.publicId
+  );
+  const { meals } = await mealRepo.findMealsByCreatorPublicId(user.publicId);
+  console.log(workouts);
+  console.log(meals);
+
+  // if (workouts) {
+  //   workouts.reduce((acc, workout) => {}, {});
+  // }
+
+  // if (meals) {
+  // }
+
+  return { reports };
+}

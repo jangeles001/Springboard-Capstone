@@ -45,7 +45,7 @@ export default function DefaultNav({ links, queryEnabled = true }) {
             { username ? <ProfileBlock /> : <button className='border rounded-md ml-auto mr-5 mt-auto mb-2 max-h-min p-3'>Login</button>}
         </div>
       <hr />
-      <main className='flex-1 pb-10 bg-gray-100'>
+      <main className='flex-1 bg-gray-100'>
         <Outlet />
       </main>
       <footer className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-10"></footer>

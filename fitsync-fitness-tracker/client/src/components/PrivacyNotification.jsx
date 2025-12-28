@@ -8,7 +8,7 @@ export default function PrivacyNotification() {
     if(!visible) return null;
 
     return (
-        <div className='fixed invisible bottom-0 left-0 h-1/2 min-w-screen z-999 bg-black text-white text-md p-4 shadow-lg opacity-75 animate-slideUp hover:opacity-100 transition-opacity duration-500'>
+        <div className='fixed invisible bottom-0 left-0 h-1/3 min-w-screen z-999 bg-black text-white text-md p-4 shadow-lg opacity-75 animate-slideUp hover:opacity-100 transition-opacity duration-500'>
             <div className='flex flex-col w-full'>
                 <button className='self-end border-2 p-1 hover:border-blue-800' onClick={() => setVisible(false)}>X</button>
                 <div className='mx-auto max-w-4xl text-center flex flex-col gap-4 mt-5'>
