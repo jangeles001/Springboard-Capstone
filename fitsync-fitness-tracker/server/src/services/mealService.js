@@ -7,13 +7,15 @@ export async function createNewMeal(mealData) {
     const mealLogData = {
       userPublicId: meal.creatorPublicId,
       mealUUID: meal.uuid,
-      mealNameSnapshot: meal.mealName,
+      mealNameSnapshot: meagitl.mealName,
       macrosSnapshot: meal.mealMacros,
       consumedAt: new Date(),
+      correctedFromLogId: null,
     }
+
+    await mealLogRepo.createOneMealLogEntry(mealLogData)
   }
 
-  await mealLogRepo.createOneMealLogEntry(mealLogData);
   return meal;
 }
 
