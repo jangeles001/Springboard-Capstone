@@ -1,6 +1,7 @@
 import * as userRepo from "../repositories/userRepo.js";
 import * as workoutRepo from "../repositories/workoutRepo.js";
 import * as mealRepo from "../repositories/mealRepo.js";
+import * as mealLogRepo from "../repositories/mealLogRepo.js";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import redisClient from "../config/redisClient.js";
@@ -259,18 +260,23 @@ export async function generateUserReports(userUUID) {
   if (!user) throw new NotFoundError("User");
 
   let reports = {};
-  const { workouts } = await workoutRepo.findWorkoutsByCreatorPublicId(
+  const { mealLogs } = await mealLogRepo.findAllMealLogsByCreatorPublicId(
     user.publicId
   );
-  const { meals } = await mealRepo.findMealsByCreatorPublicId(user.publicId);
-  console.log(workouts);
-  console.log(meals);
+
+  console.log(mealLogs);
+
+  if (mealLogs) {
+    mealLogs.reduce((acc, meal) => {
+      for (const [macro, value] of Object.entries(meal.macrosSnapshot)) {
+        acc[macro] = (acc[macro] ?? 0) + value;
+      }
+      return acc;
+    }, {});
+  }
 
   // if (workouts) {
   //   workouts.reduce((acc, workout) => {}, {});
-  // }
-
-  // if (meals) {
   // }
 
   return { reports };

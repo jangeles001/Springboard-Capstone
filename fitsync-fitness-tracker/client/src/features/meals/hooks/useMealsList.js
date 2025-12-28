@@ -39,7 +39,8 @@ export function useMealsList({ limit }) {
   });
 
   const deleteMealMutation = useMutation({
-    mutationFn: (mealId) => api.delete(`api/v1/users/${publicId}/${mealId}`),
+    mutationFn: (mealId) =>
+      api.delete(`api/v1/users/${publicId}/meals/${mealId}`),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

@@ -24,10 +24,14 @@ router
     updatePrivateUserInformationController
   )
   .get("/reports", requireAuth, generateUserReportsController)
-  .get("/:userPublicId", requireAuth, getPublicUserInformationController)
   .get("/:userPublicId/workouts", requireAuth, getUserWorkoutsController)
-  .delete("/:userPublicId/:workoutId", requireAuth, deleteWorkoutController)
+  .delete(
+    "/:userPublicId/workouts/:workoutId",
+    requireAuth,
+    deleteWorkoutController
+  )
   .get("/:userPublicId/meals", requireAuth, getUserMealsController)
-  .delete("/:userPublicId/:mealId", requireAuth, deleteMealController);
+  .delete("/:userPublicId/meals/:mealId", requireAuth, deleteMealController)
+  .get("/:userPublicId", requireAuth, getPublicUserInformationController);
 
 export default router;

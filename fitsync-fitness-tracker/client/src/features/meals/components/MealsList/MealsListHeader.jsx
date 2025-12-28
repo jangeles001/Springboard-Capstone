@@ -21,7 +21,7 @@ export function MealsListHeader() {
                 All
             </button>
            </div>
-           { active === "personal" ? 
+           { active === "Personal" ? 
            <h1 className="text-4xl font-bold text-white mb-8">Your Meals</h1> : 
            <h1 className="text-4xl font-bold text-white mb-8">All Meals</h1>}
           

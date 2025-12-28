@@ -2,7 +2,7 @@ import { useWorkoutsListContext } from "../../hooks/useWorkoutsListContext"
 
 export function WorkoutsListHeader() {
     const { active, isLoading, handleActiveChange } = useWorkoutsListContext();
-
+    
     return (
         <div className="flex flex-col items-center w-full bg-gradient-to-r from-blue-500 to-indigo-600 mb-10">
             <div className="flex flex-row ml-auto mt-5 mr-5">
@@ -22,7 +22,7 @@ export function WorkoutsListHeader() {
             </button>
            </div>
            <div>
-            { active === "personal" ? 
+            { active === "Personal" ? 
             <h1 className="text-4xl font-bold text-white mb-8">Your Workouts</h1> : 
             <h1 className="text-4xl font-bold text-white mb-8">All Workouts</h1>}
             </div>

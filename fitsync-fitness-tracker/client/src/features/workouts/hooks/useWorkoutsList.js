@@ -40,7 +40,7 @@ export function useWorkoutsList({ limit }) {
 
   const deleteWorkoutMutation = useMutation({
     mutationFn: (workoutId) =>
-      api.delete(`api/v1/users/${publicId}/${workoutId}`),
+      api.delete(`api/v1/users/${publicId}/workouts/${workoutId}`),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

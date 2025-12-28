@@ -1,5 +1,5 @@
 import { createFileRoute} from '@tanstack/react-router'
-import DefaultNav from '../../layout/Default_Nav'
+import DefaultNav from '../../layout/DefaultNav'
 
 export const Route = createFileRoute('/legal')({
     component: RouteComponent
