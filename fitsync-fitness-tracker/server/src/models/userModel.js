@@ -1,5 +1,14 @@
 import mongoose from "mongoose";
 
+const ACTIVITY_LEVELS = [
+  "sedentary",
+  "light",
+  "moderate",
+  "active",
+  "very_active",
+];
+const GOAL_TYPES = ["cut", "maintain", "bulk"];
+
 // Mongoose schema definition
 const userSchema = new mongoose.Schema(
   {
@@ -9,15 +18,6 @@ const userSchema = new mongoose.Schema(
     lastName: { type: String, minlength: 1, required: true, trim: true },
     username: { type: String, minlength: 4, required: true, trim: true },
     passwordHash: { type: String, required: true },
-    height: { type: String, minlength: 4, required: true, trim: true },
-    age: { type: Number, min: 18, required: true },
-    weight: { type: Number, min: 70, required: true },
-    gender: { 
-      type: String,
-      enum: ["male", "female", "prefer_not_to_say"],
-      required: true,
-      trim: true
-      },
     email: {
       type: String,
       minlength: 7,
@@ -27,18 +27,42 @@ const userSchema = new mongoose.Schema(
     },
     promoConsent: { type: Boolean, required: true },
     agreeToTerms: { type: Boolean, required: true },
+
+    // Structured profile inputs
+    profile: {
+      heightInches: { type: Number, required: true }, // numeric inches
+      weightLbs: { type: Number, required: true }, // numeric lbs
+      age: { type: Number, min: 18, required: true },
+      gender: {
+        type: String,
+        enum: ["male", "female", "prefer_not_to_say"],
+        required: true,
+      },
+      activityLevel: { type: String, enum: ACTIVITY_LEVELS, required: true },
+      goalType: { type: String, enum: GOAL_TYPES, required: true },
+    },
+
+    // Calculated nutrition goals (read-only from frontend)
+    nutritionGoals: {
+      calories: { type: Number, required: true },
+      protein: { type: Number, required: true },
+      carbs: { type: Number, required: true },
+      fats: { type: Number, required: true },
+      calculatedAt: { type: Date, required: true },
+      formulaVersion: { type: String, required: true },
+    },
   },
   { timestamps: true }
 );
 
-userSchema.set('toJSON', {
-  transform: function (doc, ret, options){
+userSchema.set("toJSON", {
+  transform: function (doc, ret, options) {
     delete ret._id;
     delete ret.__v;
     delete ret.updatedAt;
     return ret;
-  }
-})
+  },
+});
 
 // Generates Mongoose model
 export const User = mongoose.model("User", userSchema);

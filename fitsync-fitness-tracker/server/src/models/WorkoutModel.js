@@ -6,7 +6,7 @@ const numberValidation = {
   message: "Must be an integer!",
 };
 
-const workoutExerciseSchema = new mongoose.Schema(
+export const workoutExerciseSchema = new mongoose.Schema(
   {
     exerciseId: {
       type: String,
@@ -36,11 +36,11 @@ const workoutExerciseSchema = new mongoose.Schema(
     duration: {
       type: Number,
       min: [0, "Duration cannot be negative!"],
-    }, // for cardio/time-based exercises
+    },
     aiFeatures: { type: Object, default: {} }, // snapshot AI features
   },
   { _id: false }
-); // no separate _id for each exercise entry
+);
 
 // Mongoose schema definition
 const workoutSchema = new mongoose.Schema(
@@ -97,4 +97,5 @@ workoutSchema.virtual("exerciseDetails", {
 });
 
 // Generates Mongoose model
-export const Workout = mongoose.model("Workout", workoutSchema);
+export const Workout =
+  mongoose.models.Workout || mongoose.model("Workout", workoutSchema);

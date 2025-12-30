@@ -7,6 +7,8 @@ const initialFormData = {
   age: "",
   height: "",
   weight: "",
+  activity_level: "",
+  goal: "",
   username: "",
   password: "",
   email: "",
@@ -47,6 +49,34 @@ const validators = {
   ],
   height: [(value) => (!value ? "Height is required!" : "")],
   weight: [(value) => (!value ? "Weight is required!" : "")],
+  activity_level: [
+    (value) => {
+      //
+      const validOptions = {
+        sedentary: "sedentary",
+        light: "light",
+        moderate: "moderate",
+        active: "active",
+        very_active: "very_active",
+      };
+      return !Object.values(validOptions).includes(value)
+        ? "Activity Level is required!"
+        : "";
+    },
+  ],
+  goal: [
+    (value) => {
+      //
+      const validOptions = {
+        cut: "cut",
+        maintain: "maintain",
+        bulk: "bulk",
+      };
+      return !Object.values(validOptions).includes(value)
+        ? "Goal is required!"
+        : "";
+    },
+  ],
   username: [
     (value) => (!value ? "Username is required!" : ""),
     (value) =>

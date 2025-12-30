@@ -6,6 +6,6 @@ export async function fetchAllMeals({ page = 1, limit = 10 }) {
     pageSize: String(limit),
   });
 
-  const response = await api.get(`api/v1/meals/?${params.toString()}`);
-  return response.data;
+  const { data } = await api.get(`api/v1/meals/?${params.toString()}`);
+  return data;
 }

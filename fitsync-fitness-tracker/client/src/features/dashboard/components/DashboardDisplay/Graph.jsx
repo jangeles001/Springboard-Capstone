@@ -25,6 +25,21 @@ ChartJS.register(
   Legend
 );
 
-export default function Graph({ type = "line", data, options }) {
-  return <Chart type={type} data={data} options={options} />;
+export default function Graph({ type = "line", data = [], options = {} }) {
+  if(data.length === 0)  
+    return <span className='flex text-center'>NO DATA <br></br>Record a workout to begin tracking your progress.</span>
+
+  return (
+    <>
+      {
+        type === "line" &&
+          <Chart type={type} data={data} options={options} />
+      }
+      {
+        type === "mixed-line" && <></>
+        
+      }
+      
+    </>
+  ) 
 }

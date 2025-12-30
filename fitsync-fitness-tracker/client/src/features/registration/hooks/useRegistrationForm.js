@@ -15,6 +15,8 @@ export function useRegistrationForm({ onSuccessFunction }) {
     age: useFormDataField("age"),
     height: useFormDataField("height"),
     weight: useFormDataField("weight"),
+    activity_level: useFormDataField("activity_level"),
+    goal: useFormDataField("goal"),
     username: useFormDataField("username"),
     password: useFormDataField("password"),
     email: useFormDataField("email"),
@@ -59,10 +61,25 @@ export function useRegistrationForm({ onSuccessFunction }) {
       resetFormData(validationErrors);
       return;
     }
-    const formData = {
-      ...fields,
+
+    const profile = {
+      heightInches: Number(fields.height),
+      weightLbs: Number(fields.weight),
       age: Number(fields.age),
-      weight: Number(fields.weight),
+      gender: fields.gender,
+      activityLevel: fields.activity_level,
+      goalType: fields.goal,
+    };
+
+    const formData = {
+      firstName: fields.firstName,
+      lastName: fields.lastName,
+      username: fields.username,
+      password: fields.password,
+      email: fields.email,
+      promoConsent: fields.promoConsent,
+      agreeToTerms: fields.agreeToTerms,
+      profile,
     };
     registerMutation.mutate(formData, {
       onSuccess: () => {

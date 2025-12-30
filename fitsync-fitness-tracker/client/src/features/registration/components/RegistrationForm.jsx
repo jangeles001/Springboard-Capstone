@@ -13,6 +13,8 @@ export default function RegistrationForm() {
         age,
         height,
         weight,
+        activity_level,
+        goal,
         username,
         password,
         passwordType,
@@ -71,19 +73,19 @@ export default function RegistrationForm() {
                         </FormField>
                         </div>
                         <div className='flex flex-col col-span-1'>     
-                            <FormField name="height" label="Height" formError={formErrors.height}>
+                            <FormField name="height" label="Height(inches)" formError={formErrors.height}>
                                 <FormInput
                                 name="height"
-                                inputType="text"
+                                inputType="number"
                                 inputValue={height}
                                 inputErrors={formErrors.height}
                                 handleChange={handleChange}
-                                placeholder={"ex. 5'9\""}
+                                placeholder={"Height"}
                                 ></FormInput>
                             </FormField>
                         </div>
                         <div className='flex flex-col col-span-1'> 
-                            <FormField name="weight" label="Weight" formError={formErrors.weight}>
+                            <FormField name="weight" label="Weight(lbs)" formError={formErrors.weight}>
                                 <FormInput
                                 name="weight"
                                 inputType="number"
@@ -106,6 +108,38 @@ export default function RegistrationForm() {
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
                                     <option value="prefer_not_to_say">Prefer Not To Say</option>
+                                </select>
+                            </FormField>
+                        </div>
+                        <div className='flex flex-col col-span-2'> 
+                            <FormField name="activity_level" label="Activity Level" formError={formErrors.activity_level}>
+                                <select
+                                className={`form-input ${formErrors?.activity_level && !activity_level && 'form-input-error'} placeholder: pl-5`}
+                                name='activity_level'
+                                value={activity_level}
+                                onChange={handleChange}
+                                >
+                                    <option value="">--Please Select An Activity Level--</option>
+                                    <option value="sedentary">Sedentary</option>
+                                    <option value="light">Light</option>
+                                    <option value="moderate">Moderate</option>
+                                    <option value="active">Active</option>
+                                    <option value="very_active">Very Active</option>
+                                </select>
+                            </FormField>
+                        </div>
+                            <div className='flex flex-col col-span-2'> 
+                            <FormField name="goal" label="Goal" formError={formErrors.goal}>
+                                <select
+                                className={`form-input ${formErrors?.goal && !goal && 'form-input-error'} placeholder: pl-5`}
+                                name='goal'
+                                value={goal}
+                                onChange={handleChange}
+                                >
+                                    <option value="">--Please Select A Goal--</option>
+                                    <option value="cut">Cut</option>
+                                    <option value="maintain">Maintain</option>
+                                    <option value="bulk">Bulk</option>
                                 </select>
                             </FormField>
                         </div>

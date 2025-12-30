@@ -15,7 +15,7 @@ export default function ExerciseList() {
         } = useExercises();
 
     return (
-      <div className='flex flex-col md:flex-[2] rounded-2xl border border-gray-200 shadow-md bg-gray-100 pt-5 px-5 md:mt-5 md:mb-5 max-w-screen'>
+      <div className='flex flex-col md:flex-[2] rounded-2xl border border-gray-200 shadow-md bg-gray-100 pt-5 px-5 md:mt-5 md:mb-5 max-w-screen min-w-[700px]'>
         <div className='flex flex-col md:flex-row items-center'>
         <h1 className='font-inter text-3xl md: text-5xl font-header'>Exercises</h1>
           <CategoryDropdown onChange={loadByCategory} isLoading={status} style='ml-auto'/>

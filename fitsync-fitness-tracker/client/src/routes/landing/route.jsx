@@ -9,7 +9,7 @@ function RouteComponent() {
   const navLinks = [
     { label: "Home", path: "/landing" },
     { label: "About", path: "/landing/about" },
-    { label: "Dashboard", path: "/dashboard" },
+    { label: "Terms of Service", path: "/legal/terms" },
   ];
 
   return (

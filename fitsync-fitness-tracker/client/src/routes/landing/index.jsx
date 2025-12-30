@@ -42,15 +42,15 @@ function RouteComponent() {
         <div className="grid md:grid-cols-3 gap-10 text-center">
           <div className="p-6 bg-white rounded-xl shadow">
             <h3 className="text-xl font-semibold mb-2">Personalized Plans</h3>
-            <p>Tailored workouts built around your body, preferences, and lifestyle.</p>
+            <p>Tailor workouts that are built around your body, preferences, and lifestyle.</p>
           </div>
           <div className="p-6 bg-white rounded-xl shadow">
             <h3 className="text-xl font-semibold mb-2">Track Your Progress</h3>
-            <p>Monitor performance and milestones with smart tracking tools.</p>
+            <p>Monitor performance and milestones with robust tracking tools.</p>
           </div>
           <div className="p-6 bg-white rounded-xl shadow">
             <h3 className="text-xl font-semibold mb-2">Stay Motivated</h3>
-            <p>Daily reminders, progress badges, and streak tracking to keep you on track.</p>
+            <p>Keep yourself accountable using our provided progress insights.</p>
           </div>
         </div>
       </section>

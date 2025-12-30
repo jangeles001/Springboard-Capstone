@@ -2,6 +2,7 @@ import * as userRepo from "../repositories/userRepo.js";
 import * as workoutRepo from "../repositories/workoutRepo.js";
 import * as mealRepo from "../repositories/mealRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
+import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import redisClient from "../config/redisClient.js";
@@ -13,6 +14,8 @@ import { ConflictError } from "../errors/ConflictError.js";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 import { UnauthorizedError } from "../errors/UnauthorizedError.js";
+import { getDateRange } from "../utils/getDateRange.js";
+import { calculateMacros } from "../utils/calculateMacros.js";
 
 export async function registerNewUser(userData) {
   // Checks if a user has already registered with the provided email
@@ -24,6 +27,7 @@ export async function registerNewUser(userData) {
   const passwordHash = await hashPassword(userData.password, salt);
   const newUserUUID = uuidv4(); // creates newUsers uuid
   const userPublicId = makePublicId(newUserUUID); // calls util function to create short public uuid for the newUser
+  const nutritionGoals = calculateMacros(userData.profile);
 
   delete userData.password; // Removes the unhashed password from the userData object
 
@@ -33,6 +37,7 @@ export async function registerNewUser(userData) {
     uuid: newUserUUID,
     publicId: userPublicId,
     passwordHash,
+    nutritionGoals,
   };
 
   // Creates new User document with the userData object
@@ -255,29 +260,69 @@ export async function deleteMeal(publicId, mealId) {
   return;
 }
 
-export async function generateUserReports(userUUID) {
+export async function generateUserWorkoutsReport(userUUID, range) {
   const user = await userRepo.findOneUserByUUID(userUUID);
   if (!user) throw new NotFoundError("User");
 
-  let reports = {};
-  const { mealLogs } = await mealLogRepo.findAllMealLogsByCreatorPublicId(
-    user.publicId
-  );
+  const ranges = getDateRange(range);
 
-  console.log(mealLogs);
+  if (range === "all") {
+    const [daily, weekly, monthly] = await Promise.all([
+      workoutLogRepo.findAllWorkoutLogsByUserPublicId(
+        user.publicId,
+        ranges.daily
+      ),
+      workoutLogRepo.findAllWorkoutLogsByUserPublicId(
+        user.publicId,
+        ranges.weekly
+      ),
+      workoutLogRepo.findAllWorkoutLogsByUserPublicId(
+        user.publicId,
+        ranges.monthly
+      ),
+    ]);
 
-  if (mealLogs) {
-    mealLogs.reduce((acc, meal) => {
-      for (const [macro, value] of Object.entries(meal.macrosSnapshot)) {
-        acc[macro] = (acc[macro] ?? 0) + value;
-      }
-      return acc;
-    }, {});
+    return {
+      daily,
+      weekly,
+      monthly,
+      nutritionGoals: user.nutritionGoals,
+    };
   }
 
-  // if (workouts) {
-  //   workouts.reduce((acc, workout) => {}, {});
-  // }
+  return await workoutLogRepo.findAllWorkoutLogsByUserPublicId(
+    user.publicId,
+    ranges[range]
+  );
+}
 
-  return { reports };
+export async function generateUserNutritionReport(userUUID, range) {
+  const user = await userRepo.findOneUserByUUID(userUUID);
+  if (!user) throw new NotFoundError("User");
+
+  const ranges = getDateRange(range);
+
+  // range === "all" → run all reports in parallel
+  if (range === "all") {
+    const [daily, weekly, monthly] = await Promise.all([
+      mealLogRepo.findAllMealLogsByUserPublicId(user.publicId, ranges.daily),
+      mealLogRepo.findAllMealLogsByUserPublicId(user.publicId, ranges.weekly),
+      mealLogRepo.findAllMealLogsByUserPublicId(user.publicId, ranges.monthly),
+    ]);
+
+    return {
+      daily,
+      weekly,
+      monthly,
+      nutritionGoals: user.nutritionGoals,
+    };
+  }
+
+  // Single-range request
+  const mealLogs = await mealLogRepo.findAllMealLogsByUserPublicId(
+    user.publicId,
+    ranges[range]
+  );
+
+  return { [range]: mealLogs, nutritionGoals: user.nutritionGoals };
 }

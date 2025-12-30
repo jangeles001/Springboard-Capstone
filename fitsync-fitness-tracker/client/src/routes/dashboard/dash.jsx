@@ -7,28 +7,6 @@ export const Route = createFileRoute('/dashboard/dash') ({
 })
 
 function dash() {
-
-    const data = null;
-    
-    // const data = {
-    //   labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug'],
-    //   datasets: [
-    //     { label: ['Me'], data: [30, 50, 40, 30, 50, 100], backgroundColor: 'rgba(75, 192, 192, 0.5)' },
-    //     { label: ['You'], data: [10, 20, 30, 40,50, 40], backgroundColor: 'rgba(130, 192, 75, 0.5)' }
-    //   ],
-    // };
-    
-    // const prevWorkouts = [
-      // {
-      //   name: "Workout1",
-      //   information:  "This is the workout information!"
-      // },
-      // {
-      //   name: "Workout2",
-      //   information:  "This is the workout information!"
-      // },
-    //];
-
     return (
       <Dashboard />
 

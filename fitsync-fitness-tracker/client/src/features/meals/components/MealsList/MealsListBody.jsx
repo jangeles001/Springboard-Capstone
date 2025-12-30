@@ -14,7 +14,7 @@ export function MealsListBody() {
   return (
     <>
       {data?.data?.meals?.length === 0 ? (
-        <p className="text-gray-200">No meals created yet.</p>
+        <p className="text-gray-500 mx-auto mt-[50px]">No meals created yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-auto gap-6 min-h-[500px] max-w-md md:max-w-2xl lg:max-w-6xl">
           {data?.data?.meals?.map((meal) => (

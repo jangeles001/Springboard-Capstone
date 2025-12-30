@@ -21,7 +21,7 @@ function RouteComponent() {
           </p>
           <div className="mt-8">
           <a
-          href="/auth/login"
+          href="/auth/signup"
           className="inline-flex items-center gap-2 rounded-2xl border border-transparent bg-blue-600 px-6 py-3 text-white font-semibold shadow hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           >
             Get Started Today
@@ -36,8 +36,8 @@ function RouteComponent() {
             <h2 className="text-2xl md:text-3xl font-bold">My Mission</h2>
             <p className="mt-4 text-gray-700 leading-relaxed">
               My mission is to empower individuals to take control of their fitness journey by providing
-              <span className="font-semibold"> personalized workout recommendations</span> built around their
-              unique health data. I believe that lasting progress comes from plans designed for real people
+              <span className="font-semibold"> an easy way to build your own personalized workouts</span> built around their
+              unique health metrics. I believe that lasting progress comes from plans designed for real people
               not cookie-cutter routines. By combining smart insights with a simple, user-friendly experience,
               we help you stay motivated, track your growth, and reach your goals with confidence.
             </p>
@@ -57,7 +57,7 @@ function RouteComponent() {
             <ul className="mt-6 grid gap-6 md:grid-cols-2">
               <li className="rounded-2xl border border-gray-200 p-5 shadow-sm">
                 <div className="text-xl font-semibold">Personalization</div>
-                <p className="mt-2 text-gray-700">Every workout adapts to you, not the other way around.</p>
+                <p className="mt-2 text-gray-700">Every workout is adapted to you, not the other way around.</p>
               </li>
               <li className="rounded-2xl border border-gray-200 p-5 shadow-sm">
                 <div className="text-xl font-semibold">Accessibility</div>

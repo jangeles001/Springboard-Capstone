@@ -1,6 +1,6 @@
-import { MealLog } from "../models/mealLogModel.js";
+import { MealLog } from "../models/MealLogModel.js";
 
-const PRIVATE_FIELDS_EXCLUSIONS = "-_id -createdAt -updatedAt";
+const PRIVATE_FIELDS_EXCLUSIONS = "-_id -consumedAt -updatedAt";
 
 export async function createOneMealLogEntry(mealLogData) {
   await MealLog.create(mealLogData);
@@ -15,11 +15,72 @@ export async function updateOneMealLogEntryByUUID(mealUUID, logId) {
   return;
 }
 
-export async function findAllMealLogsByCreatorPublicId(userPublicId) {
-  const mealLogs = await MealLog.find({ userPublicId })
-    .select(PRIVATE_FIELDS_EXCLUSIONS)
-    .lean();
-  const totalCount = MealLog.countDocuments({ userPublicId });
+export async function findAllMealLogsByUserPublicId(userPublicId, range) {
+  const { start, end, type } = range;
 
-  return { mealLogs, totalCount };
+  // Determine group _id by range
+  let groupId;
+  switch (type) {
+    case "daily":
+      groupId = {
+        day: { $dateToString: { format: "%Y-%m-%d", date: "$consumedAt" } },
+      };
+      break;
+    case "weekly":
+      groupId = {
+        isoWeek: { $isoWeek: "$consumedAt" },
+        year: { $isoWeekYear: "$consumedAt" },
+      };
+      break;
+    case "monthly":
+      groupId = {
+        month: { $dateToString: { format: "%Y-%m", date: "$consumedAt" } },
+      };
+      break;
+    default:
+      throw new Error(`Unsupported range type: ${type}`);
+  }
+
+  const mealLogs = await MealLog.aggregate([
+    {
+      $match: {
+        userPublicId,
+        consumedAt: { $gte: start, $lt: end },
+        isDeleted: false,
+      },
+    },
+    {
+      $group: {
+        _id: groupId,
+        calories: { $sum: "$macrosSnapshot.calories" },
+        protein: { $sum: "$macrosSnapshot.protein" },
+        carbs: { $sum: "$macrosSnapshot.carbs" },
+        fat: { $sum: "$macrosSnapshot.fat" },
+      },
+    },
+    {
+      $project: {
+        label:
+          type === "daily"
+            ? "$_id.day"
+            : type === "monthly"
+            ? "$_id.month"
+            : {
+                $concat: [
+                  { $toString: "$_id.isoWeek" },
+                  "-",
+                  { $toString: "$_id.year" },
+                ],
+              },
+        calories: 1,
+        protein: 1,
+        carbs: 1,
+        fat: 1,
+        _id: 0,
+      },
+    },
+    { $sort: { label: 1 } },
+  ]);
+
+  return { mealLogs };
 }

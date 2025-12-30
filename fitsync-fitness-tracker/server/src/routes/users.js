@@ -10,7 +10,8 @@ import {
   deleteWorkoutController,
   getUserMealsController,
   deleteMealController,
-  generateUserReportsController,
+  generateUserWorkoutsReportController,
+  generateUserNutritionReportController,
 } from "../controllers/usersController.js";
 
 const router = express.Router();
@@ -23,7 +24,8 @@ router
     validate(newUserZodSchema.omit({ email: true }).partial().strict()),
     updatePrivateUserInformationController
   )
-  .get("/reports", requireAuth, generateUserReportsController)
+  .get("/reports/workouts", requireAuth, generateUserWorkoutsReportController)
+  .get("/reports/nutrition", requireAuth, generateUserNutritionReportController)
   .get("/:userPublicId/workouts", requireAuth, getUserWorkoutsController)
   .delete(
     "/:userPublicId/workouts/:workoutId",

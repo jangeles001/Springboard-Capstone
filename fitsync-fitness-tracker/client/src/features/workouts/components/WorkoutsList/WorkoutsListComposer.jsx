@@ -4,8 +4,10 @@ import { useWorkoutsList } from '../../hooks/useWorkoutsList';
 export function WorkoutsListComposer({ children }){
     const workouts = useWorkoutsList({ limit: 10 });
     return (
-        <WorkoutsListContext.Provider value={workouts}>
-            {children}
-        </WorkoutsListContext.Provider>
+        <div className="flex flex-col w-full">
+            <WorkoutsListContext.Provider value={workouts}>
+                {children}
+            </WorkoutsListContext.Provider>
+        </div>
     )
 }

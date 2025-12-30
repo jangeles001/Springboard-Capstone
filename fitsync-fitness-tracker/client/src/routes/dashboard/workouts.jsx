@@ -9,8 +9,6 @@ export const Route = createFileRoute('/dashboard/workouts')({
 
 function RouteComponent() {
   return (
-    <div className="flex flex-col w-full">
       <WorkoutsListDisplay withRemoveButton={true} />
-    </div>
   )
 }
