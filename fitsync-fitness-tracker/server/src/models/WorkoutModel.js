@@ -18,7 +18,7 @@ export const workoutExerciseSchema = new mongoose.Schema(
     difficultyAtCreation: { type: Number, default: 5, required: true }, // snapshot of difficulty at workout creation
     reps: {
       type: Number,
-      default: 0,
+      required: true,
       min: [0, "Reps cannot be negative!"],
       validate: {
         validator: (v) => Number.isInteger(v),
@@ -54,6 +54,11 @@ const workoutSchema = new mongoose.Schema(
       trim: true,
       minlength: [1, "Workout name cannot be empty!"],
       maxlength: [60, "Workout name cannot exceed 60 characters!"],
+    },
+    workoutDuration: {
+      type: Number, // in Minutes
+      min: 0,
+      required: true,
     },
     exercises: {
       type: [workoutExerciseSchema],

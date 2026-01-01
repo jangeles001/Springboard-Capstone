@@ -6,7 +6,7 @@ import ThemedButton from "../../../../components/ThemedButton";
 export function WorkoutsListBody() {
   
   // Store state
-  const { data, isLoading, isError, error, workoutClick, deleteWorkout } = useWorkoutsListContext();
+  const { data, isLoading, isError, error, workoutClick, deleteWorkout, publicId } = useWorkoutsListContext();
 
   if(isLoading) return <Loading  type="skeleton"/>
   if(isError) return <>{console.log(error)}</>
@@ -42,7 +42,7 @@ export function WorkoutsListBody() {
                 )}
               </div>
 
-              <ThemedButton text="Delete Workout" onClick={() => deleteWorkout(workout.uuid)} />
+              {workout.creatorPublicId === publicId && <ThemedButton text="Delete Workout" onClick={() => deleteWorkout(workout.uuid)} />}
             </div>
           ))}
         </div>

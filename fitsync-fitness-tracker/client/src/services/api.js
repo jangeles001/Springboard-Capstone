@@ -23,6 +23,10 @@ const processQueue = (error) => {
   });
   failedQueue = [];
 };
+/** Hard redirect helper function */
+const redirectToHome = () => {
+  window.location.replace("/auth/login");
+};
 
 /**
  * Response interceptor
@@ -84,6 +88,7 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError);
+      redirectToHome();
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

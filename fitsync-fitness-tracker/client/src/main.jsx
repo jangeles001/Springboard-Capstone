@@ -7,10 +7,12 @@ import "./styles/__root.css"
 
 // Import generated route tree
 import { routeTree } from './routeTree.gen'
+import { useUserStore } from './store/UserStore'
 
-// Create new router instance
-const router = createRouter({ routeTree, defaultNotFoundComponent: NotFoundPage })
+// Create new router and QueryClient instances
 const queryClient = new QueryClient();
+const userStore = useUserStore.getState();
+const router = createRouter({ routeTree, context: { queryClient, userStore }, defaultNotFoundComponent: NotFoundPage })
 
 // Render app
 const rootElement = document.getElementById('root')

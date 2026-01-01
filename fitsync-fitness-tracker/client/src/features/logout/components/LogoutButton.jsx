@@ -8,8 +8,8 @@ export default function LogoutButton(){
     });
 
     return (
-        <div>
-            <button className="hover:underline" onClick={handleLogout}>Logout</button>
+        <div className="hover:cursor-pointer" onClick={handleLogout}>
+            <button className="hover:underline hover:cursor-pointer" onClick={handleLogout}>Logout</button>
         </div>
     )
 }

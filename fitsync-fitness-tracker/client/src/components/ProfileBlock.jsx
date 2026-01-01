@@ -1,12 +1,16 @@
 import { useUserProfile } from "../hooks/useUserProfile.js";
 
 export default function ProfileBlock() {
-    const { username, publicId } = useUserProfile(); 
-    
-    return (
-        <div className='ml-auto mr-5 mt-20 mb-2 pl-5 border-1 rounded shadow-md min-w-60 p-1'>
-            <h1 className="">Username: {username}</h1>
-            <p>Public ID: {publicId}</p>
-        </div>
-    );
+  const { username, publicId } = useUserProfile();
+
+  return (
+    <div className="flex flex-col border rounded shadow-sm ml-auto px-3 py-2 max-w-max overflow-hidden bg-white">
+      <p className="text-sm truncate">
+        <span className="font-semibold">User:</span> {username}
+      </p>
+      <p className="text-xs text-gray-500 truncate">
+        PublicId: {publicId}
+      </p>
+    </div>
+  );
 }

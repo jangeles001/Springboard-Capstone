@@ -15,7 +15,7 @@ export default function ExerciseList() {
         } = useExercises();
 
     return (
-      <div className='flex flex-col md:flex-[2] rounded-2xl border border-gray-200 shadow-md bg-gray-100 pt-5 px-5 md:mt-5 md:mb-5 max-w-screen min-w-[700px]'>
+      <div className='  flex flex-col flex-[2] rounded-2xl border shadow-md bg-gray-100 p-5'>
         <div className='flex flex-col md:flex-row items-center'>
         <h1 className='font-inter text-3xl md: text-5xl font-header'>Exercises</h1>
           <CategoryDropdown onChange={loadByCategory} isLoading={status} style='ml-auto'/>
@@ -25,7 +25,7 @@ export default function ExerciseList() {
             return (
               <div key={exercise.id}
               onClick={() => handleClick(exercise)}
-              className='flex flex-col items-center w-full rounded-2xl border border-gray-500 p-5 md:p- 8 shadow-md gap-1'
+              className='flex flex-col items-center w-full ml-2 rounded-2xl border border-gray-500 p-5 md:p-8 shadow-md gap-2'
               >
                 <h1 className='font-bold'>{exercise?.translations?.[0]?.name?.toUpperCase() || `Exercise #${exercise.id}`}</h1>
                 <h2>Exercise Category: {exercise?.category?.name}</h2>

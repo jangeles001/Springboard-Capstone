@@ -10,12 +10,16 @@ export const Route = createFileRoute('/dashboard/workoutCreator')({
 function RouteComponent() {
   const { error } = useExercises();
 
-  if(error) return <div className="p-4 text-red-600">Error: {error.message}</div>;;
+  if(error) return <div className="p-4 text-red-600">Error: {error.message}</div>;
 
   return (
-      <div className='flex flex-col max-sm:items-center md:flex-row min-w-min gap-5 p-10'>
-        <WorkoutsCreatorForm />
-        <ExerciseList />
+      <div className='  flex flex-col lg:flex-row w-full max-w-7xl mx-auto gap-8 px-6 py-10'>
+        <div className="flex-1 lg:flex-[1.2]">
+          <WorkoutsCreatorForm />
+        </div>
+        <div className="flex-1 lg:flex-[1.8]">
+          <ExerciseList />
+        </div>
       </div>
   ) 
 }

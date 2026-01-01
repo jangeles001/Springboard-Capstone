@@ -79,6 +79,7 @@ export function useMealsList({ limit }) {
   return {
     ...query,
     page: pages[active],
+    publicId,
     active,
     handleMealClick,
     handleActiveChange,

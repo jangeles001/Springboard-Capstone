@@ -86,6 +86,7 @@ export function useWorkoutsList({ limit }) {
     ...query,
     page: pages[active],
     active,
+    publicId,
     handleWorkoutClick,
     handleExerciseClick,
     handleActiveChange,

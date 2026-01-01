@@ -13,6 +13,5 @@ export const useUserStore = create((set) => ({
 // State Selectors
 export const useUsername = () => useUserStore((state) => state.username);
 export const usePublicId = () => useUserStore((state) => state.publicId);
-
 // Action selectors
 export const useUserActions = () => useUserStore((state) => state.actions);

@@ -6,7 +6,7 @@ import ThemedButton from "../../../../components/ThemedButton";
 export function MealsListBody() {
   
   // Store state
-  const { data, isLoading, isError, error, mealClick, deleteMeal } = useMealsListContext();
+  const { data, isLoading, isError, error, mealClick, deleteMeal, publicId } = useMealsListContext();
 
   if(isLoading) return <Loading  type="skeleton"/>
   if(isError) return <>{console.log(error)}</>
@@ -26,7 +26,7 @@ export function MealsListBody() {
               className="text-xl font-semibold text-gray-800 hover:cursor-pointer"
               onClick={() => mealClick(meal.uuid)}
               >
-                {meal.mealName}
+                {meal.mealName}{console.log(meal)}
               </h2>
               <h3>Description</h3>
               <div className="bg-gray-100 rounded-xl p-3 border border-gray-300 mb-5">
@@ -45,7 +45,7 @@ export function MealsListBody() {
                 )}
               </div>
 
-              <ThemedButton text="Remove Meal" onClick={() => deleteMeal(meal.uuid)} />
+              {meal.creatorPublicId === publicId && <ThemedButton text="Remove Meal" onClick={() => deleteMeal(meal.uuid)} />}
             </div>
           ))}
         </div>
