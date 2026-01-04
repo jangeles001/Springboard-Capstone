@@ -1,6 +1,6 @@
-import { useExercises } from "../hooks/useExercises";
-import CategoryDropdown  from './CategoryDropdown'
-import Loading from "./Loading";
+import { useExercises } from "../../../../hooks/useExercises";
+import CategoryDropdown  from '../../../../components/CategoryDropdown'
+import Loading from "../../../../components/Loading";
 
 export default function ExerciseList() {
 
@@ -17,10 +17,10 @@ export default function ExerciseList() {
     return (
       <div className='  flex flex-col flex-[2] rounded-2xl border shadow-md bg-gray-100 p-5'>
         <div className='flex flex-col md:flex-row items-center'>
-        <h1 className='font-inter text-3xl md: text-5xl font-header'>Exercises</h1>
+        <h1 className='font-inter text-3xl md:text-5xl font-header'>Exercises</h1>
           <CategoryDropdown onChange={loadByCategory} isLoading={status} style='ml-auto'/>
         </div>
-        <div className='flex flex-col items-center w-full gap-6 pt-4'>
+        <div className='flex flex-col items-center w-full gap-6 pt-4 hover:cursor-pointer'>
           {status !== "success" ? <Loading type='content-only' /> : response?.map((exercise) => {
             return (
               <div key={exercise.id}

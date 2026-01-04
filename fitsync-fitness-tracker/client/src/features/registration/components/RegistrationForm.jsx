@@ -1,8 +1,8 @@
 import { useRouter, Link } from '@tanstack/react-router';
 import { useRegistrationForm } from '../hooks/useRegistrationForm'
 import FieldErrorMessages from '../../../components/FieldErrorMessages';
-import { FormField } from '../../../components/formField';
-import { FormInput } from '../../../components/formInput'
+import { FormField } from '../../../components/FormField';
+import { FormInput } from '../../../components/FormInput'
 
 export default function RegistrationForm() {
     const router = useRouter();

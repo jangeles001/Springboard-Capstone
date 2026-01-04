@@ -24,14 +24,14 @@ export function WorkoutsCreatorSelectedExercises() {
       </div>
 
       {/* Empty state */}
-      {!createdWorkout?.length && (
+      {!createdWorkout?.exercises?.length && (
         <p className="text-center text-gray-500 py-12">
           Click on an exercise to add it to this window
         </p>
       )}
 
       {/* Rows */}
-      {createdWorkout?.map((exercise) => {
+      {createdWorkout?.exercises?.map((exercise) => {
         const isBodyWeight = exercise.equipment.some(
           (equipment) => equipment.id === 7
         )
@@ -50,7 +50,7 @@ export function WorkoutsCreatorSelectedExercises() {
               >
                 <button
                   type="button"
-                  onClick={() => handleRemove(exercise.id)}
+                  onDoubleClick={() => handleRemove(exercise.id)}
                   className="
                     w-full
                     mt-1
@@ -60,6 +60,7 @@ export function WorkoutsCreatorSelectedExercises() {
                     p-3
                     text-left
                     hover:bg-gray-50
+                    hover:cursor-pointer
                   "
                 >
                   <h3 className="font-bold">
@@ -151,7 +152,7 @@ export function WorkoutsCreatorSelectedExercises() {
                         )
                       }
                     >
-                      <option value="">Unit</option>
+                      <option value="" disabled>Unit</option>
                       {UNIT_OPTIONS[exercise.measurementType]?.map((unit) => (
                         <option key={unit} value={unit}>
                           {unit}

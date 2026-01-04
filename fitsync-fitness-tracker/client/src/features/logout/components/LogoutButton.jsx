@@ -1,15 +1,20 @@
 import { useLogout } from "../hooks/useLogout";
-import { useRouter,  } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 
-export default function LogoutButton(){
-    const router = useRouter();
-    const handleLogout = useLogout({
-        onSuccess: () => router.navigate({ to: '/'})
-    });
+export default function LogoutButton({ className = "" }) {
+  const router = useRouter();
 
-    return (
-        <div className="hover:cursor-pointer" onClick={handleLogout}>
-            <button className="hover:underline hover:cursor-pointer" onClick={handleLogout}>Logout</button>
-        </div>
-    )
+  const handleLogout = useLogout({
+    onSuccess: () => router.navigate({ to: "/" }),
+  });
+
+  return (
+    <button
+      type="button"
+      onClick={handleLogout}
+      className={`hover:underline hover:cursor-pointer ${className}`}
+    >
+      Logout
+    </button>
+  );
 }

@@ -16,7 +16,7 @@ export default function HamburgerMenu({ links, setHamburgerOpen, username }){
                 </Link>
               ))}
               {username ? (
-                <div className=" px-2 py-2 hover:bg-gray-200">
+                <div className="px-2 py-2 hover:bg-gray-200">
                   <LogoutButton />
                 </div>
               ) :

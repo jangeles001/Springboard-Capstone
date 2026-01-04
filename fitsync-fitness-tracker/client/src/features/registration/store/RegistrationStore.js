@@ -30,7 +30,7 @@ const validators = {
       const validOptions = {
         male: "male",
         female: "female",
-        perfer_not_to_say: "prefer_not_to_say!",
+        perfer_not_to_say: "prefer_not_to_say",
       };
       return !Object.values(validOptions).includes(value)
         ? "Gender is required!"
@@ -39,12 +39,6 @@ const validators = {
   ],
   age: [
     (value) => (!value ? "Age is required!" : ""),
-    (value) => {
-      const heightFormat = /^\d+'(0?\d|1[01])"$/;
-      return heightFormat.test(value)
-        ? "Height must be formated correctly!"
-        : "";
-    },
     (value) => (isNaN(Number(value)) ? "Age must be a number!" : ""),
   ],
   height: [(value) => (!value ? "Height is required!" : "")],

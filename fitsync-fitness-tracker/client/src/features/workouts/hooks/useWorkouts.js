@@ -1,29 +1,27 @@
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useCreatedWorkout } from "../store/WorkoutStore";
-import { useWorkoutActions } from "../store/WorkoutStore";
+import { useCreatedWorkout, useFormErrors, useWorkoutActions } from "../store/WorkoutStore";
 import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
 
 export default function useWorkouts() {
   // Store state selector
   const createdWorkout = useCreatedWorkout();
+  const formErrors = useFormErrors();
   const publicId = usePublicId();
 
   // Store actions selector
   const {
+    setFormField,
     setExerciseInformation,
     removeFromCreatedWorkout,
     resetCreatedWorkout,
-    removeFromWorkoutsList,
+    validateCreatedWorkout
   } = useWorkoutActions();
 
   // Local State
-  const [workoutName, setWorkoutName] = useState("");
-  const [nameError, setNameError] = useState(false);
   const UNIT_OPTIONS = {
-    Weight: ["lbs", "kg"],
-    Duration: ["min", "sec"],
+    Weight: ["lbs"],
+    Duration: ["sec"],
   };
 
   const mutation = useMutation({
@@ -40,9 +38,10 @@ export default function useWorkouts() {
   });
 
   // Changes the workout name
-  const handleWorkoutNameChange = (e) => {
-    if (nameError === true) setNameError(false);
-    setWorkoutName(e.target.value);
+  const handleFieldChange = (e) => {
+    const { name, value } = e.target;
+    setFormField(name, value);
+    if (Object.keys(formErrors).includes(name)) delete formErrors[name];
   };
 
   const handleExerciseInformationChange = (e, id, field) => {
@@ -57,11 +56,12 @@ export default function useWorkouts() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (workoutName === "") {
-      setNameError(true);
-      return;
-    }
-    const normalizedeExercises = createdWorkout.map((exercise) => {
+    if(!createdWorkout.exercises) return; 
+      
+    const { isValid } = validateCreatedWorkout();
+    if(!isValid) return;
+
+    const normalizedeExercises = createdWorkout.exercises.map((exercise) => {
       return {
         exerciseId: exercise.id,
         exerciseName: exercise.translations?.[0]?.name,
@@ -73,23 +73,20 @@ export default function useWorkouts() {
     });
     if (createdWorkout) {
       const workoutData = {
-        workoutName,
         creatorPublicId: publicId,
+        ...createdWorkout,
         exercises: [...normalizedeExercises],
       };
       mutation.mutate(workoutData);
       resetCreatedWorkout();
-      setWorkoutName("");
     }
   };
 
   return {
     createdWorkout,
-    workoutName,
-    nameError,
+    workoutName: createdWorkout.workoutName,
     UNIT_OPTIONS,
-    removeFromWorkoutsList,
-    handleWorkoutNameChange,
+    handleFieldChange,
     handleExerciseInformationChange,
     handleRemove,
     handleSubmit,

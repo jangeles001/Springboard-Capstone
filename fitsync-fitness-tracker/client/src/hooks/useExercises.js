@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
 import fetchExercises from "../services/fetchExercises";
 import {
   useWorkoutActions,
@@ -53,8 +52,8 @@ export function useExercises(initialUrl = BASE_URL) {
 
   // Filters out selected workouts from the current retreived workouts list being displayed
   const filteredResults = useMemo(() => {
-    if (!createdWorkout) return response;
-    const selectedIds = new Set(createdWorkout.map((e) => e.id));
+    if (!createdWorkout?.exercises) return response;
+    const selectedIds = new Set(createdWorkout?.exercises?.map((e) => e.id));
     return response.filter((ex) => !selectedIds.has(ex.id));
   }, [response, createdWorkout]);
 

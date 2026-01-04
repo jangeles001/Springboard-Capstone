@@ -20,39 +20,11 @@ export default function DefaultNav({ links, queryEnabled = true }) {
     <div className="w-full border-b bg-gray-100">
       <header className="relative z-40 border-b">
         <div className="max-w-screen flex items-center px-4 py-4">
-        <div className="flex-shrink-0">
-          <img src={logo} alt="Logo" className="h-30" />
-        </div>
+          <div className="flex-shrink-0">
+            <img src={logo} alt="Logo" className="h-30" />
+          </div>
 
-        {/* Nav links */}
-        <nav className="hidden lg:flex mt-[40px] ml-auto gap-6 min-w-min">
-          {links.map((link) => (
-            <Link
-            key={link.path}
-            to={link.path}
-            activeOptions={{ exact: true }}
-            activeProps={{ className: "font-bold text-blue-500" }}
-            className="hover:underline"
-            >
-              {link.label}
-            </Link>
-          ))}
-          {username && <LogoutButton />}
-          <div className="ml-auto mt-auto flex min-w-max">
-          {username ? (
-            <>
-              <ProfileBlock />
-            </>
-          ) : (
-            <Link className="hover:underline" to={"/auth/login"}>
-              Login
-            </Link>
-          )}
-        </div>
-        </nav>
-
-
-        {/* Hamburger Menu */}
+          {/* Hamburger Menu */}
           <button
           className="lg:hidden mt-auto p-2 rounded-md hover:bg-gray-200"
           onClick={() => setHamburgerOpen((prev) => !prev)}
@@ -74,8 +46,37 @@ export default function DefaultNav({ links, queryEnabled = true }) {
           </button>
           {
             hamburgerOpen && 
-              <HamburgerMenu links={links} setHamburgerOpen={setHamburgerOpen} username={username} />
+            <HamburgerMenu links={links} setHamburgerOpen={setHamburgerOpen} username={username} />
           }
+
+          {/* Nav links */}
+          <nav className="lg:flex mt-[40px] ml-auto gap-6 min-w-min">
+            <div className='hidden lg:flex gap-6'>
+              {links.map((link) => (
+                <Link
+                key={link.path}
+                to={link.path}
+                activeOptions={{ exact: true }}
+                activeProps={{ className: "font-bold text-blue-500" }}
+                className="hover:underline"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              {username && <LogoutButton className='mb-8'/>}
+            </div>
+            <div className="ml-auto mt-auto flex min-w-max">
+              {username ? (
+                <>
+                  <ProfileBlock />
+                </>
+                ) : (
+                <Link className="hover:underline" to={"/auth/login"}>
+                  Login
+                </Link>
+              )}
+            </div>
+          </nav>
         </div>
       </header>
       <main className='flex-1 min-h-[600px] w-full bg-gray-100'>

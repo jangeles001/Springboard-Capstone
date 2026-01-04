@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { WorkoutsCreatorForm } from '../../features/workouts/components/WorkoutsCreatorForm'
 import { useExercises } from '../../hooks/useExercises';
-import ExerciseList from '../../components/ExerciseList'
+import ExerciseList from '../../features/workouts/components/WorkoutsCreator/ExerciseList'
 
 export const Route = createFileRoute('/dashboard/workoutCreator')({
   component: RouteComponent,
