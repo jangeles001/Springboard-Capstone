@@ -15,10 +15,15 @@ export default function HamburgerMenu({ links, setHamburgerOpen, username }){
                   {link.label}
                 </Link>
               ))}
-              {username && (
+              {username ? (
                 <div className=" px-2 py-2 hover:bg-gray-200">
                   <LogoutButton />
                 </div>
+              ) :
+              (
+                <Link className="px-2 py-2 hover:underline" to={"/auth/login"}>
+                  Login
+                </Link>
               )}
             </nav>
         </div>

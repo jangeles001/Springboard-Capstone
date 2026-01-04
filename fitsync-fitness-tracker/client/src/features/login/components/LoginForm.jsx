@@ -50,7 +50,38 @@ export default function LoginForm() {
                                 <button 
                                 type='button'
                                 onClick={handlePasswordToggle} 
-                                className={passwordVisible ? `bg-gray-200 border h-min mt-auto rounded-md shadow-sm hover:opacity-90 transition p-2` : `border rounded-md h-min mt-auto shadow-sm p-2 hover:bg-gray-200 hover:opacity-90 transition`}>👁</button>
+                                className={passwordVisible ? 
+                                    `bg-gray-200 border h-min mt-auto rounded-md shadow-sm hover:opacity-90 transition p-2` : 
+                                    `border rounded-md h-min mt-auto shadow-sm p-2 hover:bg-gray-200 hover:opacity-90 transition`}
+                                >
+                                    <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    >
+                                        { passwordVisible === false ? 
+                                            <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={1}
+                                            d="M2 12 s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z"
+                                            /> :
+                                            <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={1}
+                                            d="M2 12 s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z M3 3 l18 18"
+                                            />
+                                        }
+                                        <circle
+                                        cx="12"
+                                        cy="12"
+                                        r="3"
+                                        strokeWidth={1.5}
+                                        />
+                                    </svg>
+                                </button>
                             </div>
                         </FormField>
                         { error && 

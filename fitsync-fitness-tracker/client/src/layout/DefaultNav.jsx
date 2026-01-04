@@ -21,11 +21,11 @@ export default function DefaultNav({ links, queryEnabled = true }) {
       <header className="relative z-40 border-b">
         <div className="max-w-screen flex items-center px-4 py-4">
         <div className="flex-shrink-0">
-          <img src={logo} alt="Logo" className="h-32" />
+          <img src={logo} alt="Logo" className="h-30" />
         </div>
 
         {/* Nav links */}
-        <nav className="hidden lg:flex mt-auto gap-6 min-w-min">
+        <nav className="hidden lg:flex mt-[40px] ml-auto gap-6 min-w-min">
           {links.map((link) => (
             <Link
             key={link.path}
@@ -38,6 +38,17 @@ export default function DefaultNav({ links, queryEnabled = true }) {
             </Link>
           ))}
           {username && <LogoutButton />}
+          <div className="ml-auto mt-auto flex min-w-max">
+          {username ? (
+            <>
+              <ProfileBlock />
+            </>
+          ) : (
+            <Link className="hover:underline" to={"/auth/login"}>
+              Login
+            </Link>
+          )}
+        </div>
         </nav>
 
 
@@ -65,22 +76,8 @@ export default function DefaultNav({ links, queryEnabled = true }) {
             hamburgerOpen && 
               <HamburgerMenu links={links} setHamburgerOpen={setHamburgerOpen} username={username} />
           }
-
-        {/* Right-side actions */}
-        <div className="ml-auto mt-auto pl-[40px] flex mr-[50px] min-w-max">
-          {username ? (
-            <>
-              <ProfileBlock />
-            </>
-          ) : (
-            <Link className="border rounded-md p-3 mt-5" to={"/auth/login"}>
-              Login
-            </Link>
-          )}
-        </div>
         </div>
       </header>
-      <hr className='w-full'/>
       <main className='flex-1 min-h-[600px] w-full bg-gray-100'>
         <Outlet />
       </main>

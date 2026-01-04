@@ -38,7 +38,7 @@ export function useRegistrationForm({ onSuccessFunction }) {
   const [hasErrors, setHasErrors] = useState(false);
 
   // Flag to toggle password visibility
-  const [passwordType, setPasswordType] = useState("password");
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const registerMutation = useMutation({
     mutationFn: (formData) => register(formData),
@@ -49,6 +49,10 @@ export function useRegistrationForm({ onSuccessFunction }) {
     const { name, type, value, checked } = e.target;
     setFormField(name, type === "checkbox" ? checked : value);
     if (Object.keys(formErrors).includes(name)) delete formErrors[name];
+  };
+
+  const handlePasswordToggle = () => {
+    setPasswordVisible(!passwordVisible);
   };
 
   // Validates and submit the form then resets the form and errors
@@ -102,10 +106,10 @@ export function useRegistrationForm({ onSuccessFunction }) {
     ...fields,
     formErrors,
     hasErrors,
-    passwordType,
+    passwordVisible,
     serverErrorMessage: registerMutation.error?.response?.data?.message,
     mutateError: registerMutation.error,
-    setPasswordType,
+    handlePasswordToggle,
     handleChange,
     handleSubmit,
   };

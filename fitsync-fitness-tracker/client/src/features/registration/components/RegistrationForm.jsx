@@ -17,14 +17,14 @@ export default function RegistrationForm() {
         goal,
         username,
         password,
-        passwordType,
+        passwordVisible,
         email,
         promoConsent,
         agreeToTerms,
         formErrors,
         hasErrors,
         serverErrorMessage,
-        setPasswordType,
+        handlePasswordToggle,
         handleChange,
         handleSubmit,
     } = useRegistrationForm({ 
@@ -159,25 +159,49 @@ export default function RegistrationForm() {
                         </div>
                         <div className='flex flex-col col-span-4'> 
                             <FormField name="password" label="Password" formError={formErrors.password}>
-                                    <span className='flex flex-row gap-3'>    
-                                        <FormInput
-                                        name="password"
-                                        inputType={passwordType}
-                                        inputValue={password}
-                                        inputErrors={formErrors.password}
-                                        handleChange={handleChange}
-                                        placeholder="Password"
-                                ></FormInput>
-                            <button 
-                            type="button" 
-                            className={passwordType === "text" ?'border rounded-md p-1 hover:bg-gray-100' : 'border rounded-md p-1 bg-gray-100 hover:bg-gray-100 '}
-                            onClick={() => 
-                            passwordType === "password" ? 
-                            setPasswordType("text") : setPasswordType("password")}
-                            >
-                                👁
-                            </button>
-                                    </span>
+                                <span className='flex flex-row gap-3'>    
+                                    <FormInput
+                                    name="password"
+                                    inputType={passwordVisible ? "text" : "password"}
+                                    inputValue={password}
+                                    inputErrors={formErrors.password}
+                                    handleChange={handleChange}
+                                    placeholder="Password"
+                                    ></FormInput>
+                                    <button 
+                                    type="button" 
+                                    className={passwordVisible === true ? 'border rounded-md p-1 bg-gray-100 hover:bg-gray-100 ' : 'border rounded-md p-1 hover:bg-gray-100'}
+                                    onClick={handlePasswordToggle}
+                                    >
+                                        <svg
+                                        className="h-6 w-6"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        >
+                                            { passwordVisible === false ? 
+                                                <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={1}
+                                                d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z"
+                                                /> :
+                                                <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={1}
+                                                d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z M3 3l18 18"
+                                                />
+                                            }
+                                            <circle
+                                            cx="12"
+                                            cy="12"
+                                            r="3"
+                                            strokeWidth={1.5}
+                                            /> 
+                                        </svg>
+                                    </button>
+                                </span>
                             </FormField>
                         </div>
                         <div className='flex flex-col col-span-4'> 
