@@ -85,6 +85,7 @@ export default function useWorkouts() {
   return {
     createdWorkout,
     workoutName: createdWorkout.workoutName,
+    workoutDuration: createdWorkout.workoutDuration,
     UNIT_OPTIONS,
     handleFieldChange,
     handleExerciseInformationChange,

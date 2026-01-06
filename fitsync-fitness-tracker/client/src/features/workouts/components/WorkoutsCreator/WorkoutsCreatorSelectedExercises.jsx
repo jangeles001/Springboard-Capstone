@@ -26,7 +26,8 @@ export function WorkoutsCreatorSelectedExercises() {
       {/* Empty state */}
       {!createdWorkout?.exercises?.length && (
         <p className="text-center text-gray-500 py-12">
-          Click on an exercise to add it to this window
+          Click on an exercise to add it to this window <br></br>
+          (Double click exercise name once added to remove)
         </p>
       )}
 

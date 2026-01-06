@@ -18,30 +18,43 @@ export async function updateOneWorkoutLogEntryByUUID(workoutUUID, logId) {
 export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
   const { start, end, type } = range;
 
-  // Determine group _id by range
   let groupId;
+  let label;
+
   switch (type) {
     case "daily":
       groupId = {
         day: { $dateToString: { format: "%Y-%m-%d", date: "$executedAt" } },
       };
+      label = "$_id.day";
       break;
+
     case "weekly":
       groupId = {
         isoWeek: { $isoWeek: "$executedAt" },
         year: { $isoWeekYear: "$executedAt" },
       };
+      label = {
+        $concat: [
+          { $toString: "$_id.isoWeek" },
+          "-",
+          { $toString: "$_id.year" },
+        ],
+      };
       break;
+
     case "monthly":
       groupId = {
         month: { $dateToString: { format: "%Y-%m", date: "$executedAt" } },
       };
+      label = "$_id.month";
       break;
+
     default:
       throw new Error(`Unsupported range type: ${type}`);
   }
 
-  const workoutLogs = await WorkoutLog.aggregate([
+  return WorkoutLog.aggregate([
     {
       $match: {
         userPublicId,
@@ -49,46 +62,75 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
         isDeleted: false,
       },
     },
-    { $unwind: "$exercisesSnapshot" }, // each exercise is counted individually
+
+    // 🔹 Compute per-workout totals FIRST
+    {
+      $addFields: {
+        workoutVolume: {
+          $sum: {
+            $map: {
+              input: "$exercisesSnapshot",
+              as: "ex",
+              in: {
+                $multiply: [
+                  { $ifNull: ["$$ex.reps", 0] },
+                  { $ifNull: ["$$ex.weight", 0] },
+                ],
+              },
+            },
+          },
+        },
+        workoutReps: {
+          $sum: {
+            $map: {
+              input: "$exercisesSnapshot",
+              as: "ex",
+              in: { $ifNull: ["$$ex.reps", 0] },
+            },
+          },
+        },
+        workoutDuration: {
+          $sum: {
+            $map: {
+              input: "$exercisesSnapshot",
+              as: "ex",
+              in: { $ifNull: ["$$ex.duration", 0] },
+            },
+          },
+        },
+      },
+    },
+
+    // 🔹 Group workouts into time buckets
     {
       $group: {
         _id: groupId,
-        totalVolume: {
-          $sum: {
-            $multiply: [
-              { $ifNull: ["$exercisesSnapshot.reps", 0] },
-              { $ifNull: ["$exercisesSnapshot.weight", 0] },
-            ],
-          },
-        },
-        totalDuration: {
-          $sum: { $ifNull: ["$exercisesSnapshot.duration", 0] },
-        },
-        totalReps: { $sum: { $ifNull: ["$exercisesSnapshot.reps", 0] } },
+        workoutCount: { $sum: 1 },
+        totalVolume: { $sum: "$workoutVolume" },
+        totalReps: { $sum: "$workoutReps" },
+        totalDuration: { $sum: "$workoutDuration" },
       },
     },
+
+    // 🔹 Shape for charts
     {
       $project: {
-        label:
-          type === "daily"
-            ? "$_id.day"
-            : type === "monthly"
-            ? "$_id.month"
-            : {
-                $concat: [
-                  { $toString: "$_id.isoWeek" },
-                  "-",
-                  { $toString: "$_id.year" },
-                ],
-              },
-        totalVolume: 1,
-        totalDuration: 1,
-        totalReps: 1,
         _id: 0,
+        label,
+        workoutCount: 1,
+        totalVolume: 1,
+        totalReps: 1,
+        totalDuration: 1,
+        avgWorkoutVolume: {
+          $cond: [
+            { $eq: ["$workoutCount", 0] },
+            0,
+            { $divide: ["$totalVolume", "$workoutCount"] },
+          ],
+        },
       },
     },
+
     { $sort: { label: 1 } },
   ]);
-
-  return { workoutLogs };
 }

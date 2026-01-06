@@ -260,7 +260,7 @@ export async function deleteMeal(publicId, mealId) {
   return;
 }
 
-export async function generateUserWorkoutsReport(userUUID, range) {
+export async function generateUserWorkoutsReport(userUUID, range="all") {
   const user = await userRepo.findOneUserByUUID(userUUID);
   if (!user) throw new NotFoundError("User");
 
@@ -286,7 +286,6 @@ export async function generateUserWorkoutsReport(userUUID, range) {
       daily,
       weekly,
       monthly,
-      nutritionGoals: user.nutritionGoals,
     };
   }
 

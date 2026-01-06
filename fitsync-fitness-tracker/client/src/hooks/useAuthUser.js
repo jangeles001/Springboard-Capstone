@@ -6,6 +6,7 @@ export function useAuthUser(enabled = false) {
     queryKey: ["authUser"],
     queryFn: fetchAuthUser,
     enabled,
+    staleTime: 5 * 60 * 1000,
     retry: false, // avoid automatic retries if token is invalid
     refetchOnWindowFocus: false, // prevents refetch on focus
   });

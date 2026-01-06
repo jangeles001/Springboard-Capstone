@@ -10,10 +10,10 @@ export function useLogout({ onSuccess }) {
     try {
       const logoutMessage = await logout();
       resetUser();
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
       // Fires success callback if provided. Made generic to allow custom behavior on logout in the future.
       if (onSuccess) onSuccess();
-    } catch (error) {
+    } catch {
       return null;
     }
   };

@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const initialWorkoutData = {
   workoutName: "",
-  workoutDuration: 0,
+  workoutDuration: "",
   exercises: [],
 };
 

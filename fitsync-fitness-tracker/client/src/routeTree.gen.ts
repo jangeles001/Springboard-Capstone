@@ -26,7 +26,6 @@ import { Route as DashboardWorkoutsRouteImport } from './routes/dashboard/workou
 import { Route as DashboardWorkoutCreatorRouteImport } from './routes/dashboard/workoutCreator'
 import { Route as DashboardMealsRouteImport } from './routes/dashboard/meals'
 import { Route as DashboardMealCreatorRouteImport } from './routes/dashboard/mealCreator'
-import { Route as DashboardDashRouteImport } from './routes/dashboard/dash'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as DashboardMealsMealIdRouteImport } from './routes/dashboard/meals.$mealId'
@@ -115,11 +114,6 @@ const DashboardMealCreatorRoute = DashboardMealCreatorRouteImport.update({
   path: '/mealCreator',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardDashRoute = DashboardDashRouteImport.update({
-  id: '/dash',
-  path: '/dash',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -144,7 +138,6 @@ export interface FileRoutesByFullPath {
   '/legal': typeof LegalRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/dashboard/dash': typeof DashboardDashRoute
   '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
@@ -162,7 +155,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/dashboard/dash': typeof DashboardDashRoute
   '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
@@ -186,7 +178,6 @@ export interface FileRoutesById {
   '/__not-found': typeof _notFoundRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/dashboard/dash': typeof DashboardDashRoute
   '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
@@ -210,7 +201,6 @@ export interface FileRouteTypes {
     | '/legal'
     | '/auth/login'
     | '/auth/signup'
-    | '/dashboard/dash'
     | '/dashboard/mealCreator'
     | '/dashboard/meals'
     | '/dashboard/workoutCreator'
@@ -228,7 +218,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/auth/signup'
-    | '/dashboard/dash'
     | '/dashboard/mealCreator'
     | '/dashboard/meals'
     | '/dashboard/workoutCreator'
@@ -251,7 +240,6 @@ export interface FileRouteTypes {
     | '/__not-found'
     | '/auth/login'
     | '/auth/signup'
-    | '/dashboard/dash'
     | '/dashboard/mealCreator'
     | '/dashboard/meals'
     | '/dashboard/workoutCreator'
@@ -396,13 +384,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardMealCreatorRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/dashboard/dash': {
-      id: '/dashboard/dash'
-      path: '/dash'
-      fullPath: '/dashboard/dash'
-      preLoaderRoute: typeof DashboardDashRouteImport
-      parentRoute: typeof DashboardRouteRoute
-    }
     '/auth/signup': {
       id: '/auth/signup'
       path: '/signup'
@@ -456,7 +437,6 @@ const DashboardMealsRouteWithChildren = DashboardMealsRoute._addFileChildren(
 )
 
 interface DashboardRouteRouteChildren {
-  DashboardDashRoute: typeof DashboardDashRoute
   DashboardMealCreatorRoute: typeof DashboardMealCreatorRoute
   DashboardMealsRoute: typeof DashboardMealsRouteWithChildren
   DashboardWorkoutCreatorRoute: typeof DashboardWorkoutCreatorRoute
@@ -465,7 +445,6 @@ interface DashboardRouteRouteChildren {
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-  DashboardDashRoute: DashboardDashRoute,
   DashboardMealCreatorRoute: DashboardMealCreatorRoute,
   DashboardMealsRoute: DashboardMealsRouteWithChildren,
   DashboardWorkoutCreatorRoute: DashboardWorkoutCreatorRoute,

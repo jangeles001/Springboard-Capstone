@@ -5,37 +5,42 @@ import { MacroChart } from "./MacroChart";
 // import { CaloriesChart } from "./CaloriesChart";
 
 export function DashboardDisplayBody(){
-    const { data, isLoading, isError, error } = useDashboardDisplayContext();
+    const { activeView, activeQuery, workoutQuery, nutritionQuery, } = useDashboardDisplayContext();
 
-      if(isLoading) return <Loading  type="skeleton" />
-      if(isError) return <>{console.log(error)}</>
+      if(activeQuery.isLoading) return <Loading  type="skeleton" />
+      if(activeQuery.isError) return <>{console.log(activeQuery.error)}</>
 
-      console.log(data);
+      console.log(workoutQuery);
 
   return (
     <div className="flex justify-center items-center">
       <div className="w-full max-w-6xl px-5">
-        <GraphCarousel interval={15000}>
-            <MacroChart
-            title="Daily Macros"
-            logs={data.data.daily.mealLogs}
-            nutritionGoals={data.data.nutritionGoals}
-            periodLength={1}
-            type="bar"
-            />
-            <MacroChart
-            title="Weekly Macros"
-            logs={data.data.weekly.mealLogs}
-            nutritionGoals={data.data.nutritionGoals}
-            periodLength={7}
-            />
-            <MacroChart
-            title="Monthly Macros"
-            logs={data.data.monthly.mealLogs}
-            nutritionGoals={data.data.nutritionGoals}
-            periodLength={30}
-            />
-        </GraphCarousel>
+          { activeView === "nutrition" ? (
+            <GraphCarousel interval={15000}>
+              <MacroChart
+              title="Daily Macros"
+              logs={activeQuery.data.data.daily.mealLogs}
+              nutritionGoals={activeQuery.data.data.nutritionGoals}
+              periodLength={1}
+              type="bar"
+              />
+              <MacroChart
+              title="Weekly Macros"
+              logs={activeQuery.data.data.weekly.mealLogs}
+              nutritionGoals={activeQuery.data.data.nutritionGoals}
+              periodLength={7}
+              />
+              <MacroChart
+              title="Monthly Macros"
+              logs={activeQuery.data.data.monthly.mealLogs}
+              nutritionGoals={activeQuery.data.data.nutritionGoals}
+              periodLength={30}
+              />
+            </GraphCarousel>) :
+            <GraphCarousel interval={15000}>
+
+            </GraphCarousel>
+          }
       </div>
     </div>
   );

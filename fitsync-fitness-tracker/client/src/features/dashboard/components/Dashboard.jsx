@@ -1,6 +1,6 @@
 import { DashboardDisplay } from "./DashboardDisplay/index"
 
-export function Dashboard(){
+export default function Dashboard(){
     return (
         <DashboardDisplay>
             <DashboardDisplay.Header />

@@ -3,14 +3,14 @@ import { workoutExerciseSchema } from "./WorkoutModel.js";
 
 const workoutLogSchema = new mongoose.Schema(
   {
-    userPublicId: {
+    creatorPublicId: {
       type: String,
       required: true,
       index: true,
     },
 
     // Reference to a saved meal
-    workoutUUID: {
+    sourceWorkoutUUID: {
       type: String,
     },
 
@@ -20,15 +20,14 @@ const workoutLogSchema = new mongoose.Schema(
       required: true,
     },
 
-    exercisesSnapshot: {
-      type: [workoutExerciseSchema],
+    workoutDuration: {
+      type: Number,
       required: true,
     },
 
-    reps: {
-      type: Number,
-      default: 1,
-      min: 0.25,
+    exercisesSnapshot: {
+      type: [workoutExerciseSchema],
+      required: true,
     },
 
     executedAt: {

@@ -41,13 +41,12 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
     const status = error.response?.status;
-    const isAuthMeRequest = originalRequest.url?.endsWith("/auth/me");
     const isRefreshRequest = originalRequest.url?.endsWith("/auth/refresh");
 
     /**
      * These requests will NEVER get retreied
      */
-    if (isAuthMeRequest || isRefreshRequest) {
+    if (isRefreshRequest) {
       return Promise.reject(error);
     }
 

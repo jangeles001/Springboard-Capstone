@@ -95,7 +95,8 @@ export async function deleteMealController(req, res) {
 export async function generateUserWorkoutsReportController(req, res) {
   try {
     const userUUID = req.user.sub;
-    const reportData = await userService.generateUserWorkoutReport(userUUID);
+    const range = req.query.range;
+    const reportData = await userService.generateUserWorkoutsReport(userUUID, range);
     return res.generateSuccessResponse(reportData, "Reports generated!", 201);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);

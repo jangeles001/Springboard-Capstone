@@ -1,7 +1,17 @@
 import * as workoutRepo from "../repositories/workoutRepo.js";
+import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
 
 export async function createWorkout(workoutData) {
   const newWorkout = await workoutRepo.createWorkout(workoutData);
+  const workoutLogData = {
+    creatorPublicId: newWorkout.creatorPublicId,
+    sourceWorkoutUUID: newWorkout.uuid,
+    workoutNameSnapshot: newWorkout.workoutName,
+    workoutDuration: newWorkout.workoutDuration,
+    exercisesSnapshot: newWorkout.exercises,
+    executedAt: new Date(),
+  }
+  await workoutLogRepo.createOneWorkoutLogEntry(workoutLogData);
   return newWorkout;
 }
 
