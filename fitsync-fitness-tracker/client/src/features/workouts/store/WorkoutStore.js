@@ -68,7 +68,6 @@ const useWorkoutStore = create((set, get) => ({
 
       for (const [field, rules] of Object.entries(validators)) {
         for (const validate of rules) {
-          console.log(createdWorkout[field]);
           const error = validate(createdWorkout[field]);
           if (error) {
             formErrors[field] = [...(formErrors[field] || []), error];

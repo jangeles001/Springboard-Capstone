@@ -14,7 +14,6 @@ export function useWorkoutsList({ limit }) {
     All: 1,
   });
   const [active, setActive] = useState("Personal");
-  const activePage = pages[active];
 
   useEffect(() => {
     const nextTab = active === "Personal" ? "All" : "Personal";
@@ -68,7 +67,6 @@ export function useWorkoutsList({ limit }) {
   };
 
   const handleNextPage = () => {
-    console.log("NEXT CLICKED", active, pages[active]);
     setPages((state) => ({
       ...state,
       [active]: state[active] + 1,

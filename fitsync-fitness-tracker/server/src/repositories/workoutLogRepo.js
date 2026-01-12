@@ -29,19 +29,24 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
       label = "$_id.day";
       break;
 
-    case "weekly":
-      groupId = {
-        isoWeek: { $isoWeek: "$executedAt" },
-        year: { $isoWeekYear: "$executedAt" },
-      };
-      label = {
-        $concat: [
-          { $toString: "$_id.isoWeek" },
-          "-",
-          { $toString: "$_id.year" },
-        ],
-      };
-      break;
+      case "weekly":
+        groupId = {
+          weekStart: {
+            $dateTrunc: {
+              date: "$executedAt",
+              unit: "week",
+              binSize: 1,
+              timezone: "UTC",
+            },
+          },
+        };
+        label = {
+          $dateToString: {
+            format: "%Y-'W'%V",
+            date: "$_id.weekStart",
+          },
+        };
+        break;
 
     case "monthly":
       groupId = {
@@ -57,7 +62,7 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
   return WorkoutLog.aggregate([
     {
       $match: {
-        userPublicId,
+        creatorPublicId: userPublicId,
         executedAt: { $gte: start, $lt: end },
         isDeleted: false,
       },
@@ -89,15 +94,7 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
             },
           },
         },
-        workoutDuration: {
-          $sum: {
-            $map: {
-              input: "$exercisesSnapshot",
-              as: "ex",
-              in: { $ifNull: ["$$ex.duration", 0] },
-            },
-          },
-        },
+        workoutDuration: "$workoutDuration",
       },
     },
 

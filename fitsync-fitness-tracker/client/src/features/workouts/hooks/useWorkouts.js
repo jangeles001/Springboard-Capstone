@@ -28,8 +28,7 @@ export default function useWorkouts() {
     mutationFn: (workout) => {
       return api.post(`api/v1/workouts/create`, workout);
     },
-    onSuccess: (response) => {
-      console.log(response.data.data);
+    onSuccess: () => {
       resetCreatedWorkout();
     },
     onError: (error) => {

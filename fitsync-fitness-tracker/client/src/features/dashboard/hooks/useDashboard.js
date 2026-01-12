@@ -38,11 +38,15 @@ export function useDashboard(range) {
   ? nutritionQuery
   : workoutQuery;
 
+  const handleActiveChange = (buttonValue) => {
+    setActiveView(buttonValue);
+  };
+
   return {
     nutritionQuery,
     workoutQuery,
     activeQuery,
     activeView,
-    setActiveView,
+    handleActiveChange,
   };
 }

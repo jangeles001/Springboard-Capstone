@@ -5,12 +5,10 @@ import { MacroChart } from "./MacroChart";
 // import { CaloriesChart } from "./CaloriesChart";
 
 export function DashboardDisplayBody(){
-    const { activeView, activeQuery, workoutQuery, nutritionQuery, } = useDashboardDisplayContext();
+    const { activeView, activeQuery } = useDashboardDisplayContext();
 
       if(activeQuery.isLoading) return <Loading  type="skeleton" />
       if(activeQuery.isError) return <>{console.log(activeQuery.error)}</>
-
-      console.log(workoutQuery);
 
   return (
     <div className="flex justify-center items-center">

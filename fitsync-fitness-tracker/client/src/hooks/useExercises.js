@@ -58,9 +58,7 @@ export function useExercises(initialUrl = BASE_URL) {
   }, [response, createdWorkout]);
 
   const handleClick = (exercise) => {
-    console.log(exercise);
     addExerciseToCreatedWorkout(exercise);
-    console.log(createdWorkout);
   };
 
   // Loads exercise on hook mount and removes any previous createdWorkout data
