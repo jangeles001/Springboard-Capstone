@@ -2,7 +2,11 @@ import { useDashboardDisplayContext } from "../../hooks/useDashboardContext";
 import Loading from "../../../../components/Loading";
 import GraphCarousel from "./GraphCarousel";
 import { MacroChart } from "./MacroChart";
-// import { CaloriesChart } from "./CaloriesChart";
+import { MetricChart } from "../MetricChart";
+import { buildIntensityComboChart } from "../../utils/buildIntensityChart";
+import { buildTotalVolumeChart } from "../../utils/buildTotalVolumeChart";
+import { buildWorkoutFrequencyChart } from "../../utils/buildWorkoutFrequencyChart"
+import { baseOptions, comboOptions } from "../../utils/metricChartOptions"
 
 export function DashboardDisplayBody(){
     const { activeView, activeQuery } = useDashboardDisplayContext();
@@ -12,7 +16,7 @@ export function DashboardDisplayBody(){
 
   return (
     <div className="flex justify-center items-center">
-      <div className="w-full max-w-6xl px-5">
+      <div className="w-full max-w-6xl mt-[50px]">
           { activeView === "nutrition" ? (
             <GraphCarousel interval={15000}>
               <MacroChart
@@ -36,7 +40,21 @@ export function DashboardDisplayBody(){
               />
             </GraphCarousel>) :
             <GraphCarousel interval={15000}>
-
+              <MetricChart
+              type="bar"
+              data={buildWorkoutFrequencyChart(activeQuery.data.data.daily)}
+              options={baseOptions}
+              />
+              <MetricChart
+              type="line"
+              data={buildTotalVolumeChart(activeQuery.data.data.weekly)}
+              options={baseOptions}
+              />
+              <MetricChart
+              type="combo"
+              data={buildIntensityComboChart(activeQuery.data.data.weekly)}
+              options={comboOptions}
+              />
             </GraphCarousel>
           }
       </div>

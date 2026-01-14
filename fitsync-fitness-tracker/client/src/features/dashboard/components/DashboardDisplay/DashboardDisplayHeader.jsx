@@ -1,29 +1,27 @@
 import { useDashboardDisplayContext } from "../../hooks/useDashboardContext"
 
 export function DashboardDisplayHeader(){
-    const { activeView, handleActiveChange, workoutQuery, nutritionQuery } = useDashboardDisplayContext
-
-    console.log(workoutQuery, nutritionQuery)
+    const { activeView, handleActiveChange, workoutQuery, nutritionQuery } = useDashboardDisplayContext();
 
     return (
-        <div className="flex flex-col justify-center">
-            <div className="flex flex-row ml-auto mt-5 mr-5">
+        <div className="flex flex-col justify-center w-full bg-blue-500">
+            <div className="flex flex-row ml-auto mt-5 mr-10">
             <button 
-            className={activeView === "nutrition" ? `border p-3 bg-gray-500` : `border p-3 bg-gray-200 hover:opacity-90 transition`} 
+            className={activeView === "nutrition" ? `active-view` : `inactive-view`} 
             onClick={() => handleActiveChange("nutrition")}
-            disabled={true}
+            disabled={nutritionQuery.isLoading}
             >
                 Nutrition Insights
             </button>
             <button 
-            className={activeView === "workouts" ? `border p-3 bg-gray-500` : `border p-3 bg-gray-200 hover:opacity-90 transition`}
+            className={activeView === "workouts" ? `active-view` : 'inactive-view'}
             onClick={() => handleActiveChange("workouts")}
-            disabled={true}
+            disabled={workoutQuery.isLoading}
             >
                 Workout Insights
             </button>
            </div>
-            <h2 className="ml-[50px] font-bold text-xl p-5">Progress Insights</h2>
+            <h2 className="ml-[100px] font-bold text-2xl text-white p-5">Progress Insights</h2>
         </div>
     )
 }

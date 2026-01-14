@@ -1,3 +1,4 @@
+import { api } from "./api"
 const API_KEY = import.meta.env.VITE_USDA_API_KEY;
 const BASE_URL = "https://api.nal.usda.gov/fdc/v1";
 
@@ -20,8 +21,8 @@ function buildParams({ query, page = 1, pageSize = 15 }) {
 export default async function fetchIngredients(query, page) {
   const url = `${BASE_URL}/foods/search?${buildParams({ query, page })}`;
 
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch ingredients");
+  const res = await api.get(url);
+  if (!res) throw new Error("Failed to fetch ingredients");
 
   const json = await res.json();
 

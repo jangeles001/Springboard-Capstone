@@ -1,85 +1,82 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import fetchIngredients from "../../../services/fetchIngredients";
+import { useState, useRef, useMemo } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query"
+import fetchIngredientSearch from "../../../services/fetchIngredients";
 import { shouldLoadMore } from "../../../utils/shouldLoadMore";
 import { useMealFormDataIngredients } from "../store/MealsFormStore";
 
 export default function useSearch(initialQuery = "", delay = 700) {
   const [query, setQuery] = useState(initialQuery);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [results, setResults] = useState([]);
-  const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
-  const [error, setError] = useState(null);
-  const debounceRef = useRef(null);
   const ingredients = useMealFormDataIngredients();
+  
   const ingredientIds = useMemo(
     () => ingredients.map((item) => item.id),
     [ingredients]
   );
-  useEffect(() => {
-    if (!query) {
-      setResults([]);
-      setCurrentPage(0);
-      return;
-    }
 
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+  const {
+      data,
+      fetchNextPage,
+      hasNextPage,
+      isFetching,
+      isFetchingNextPage,
+      status,
+      error,
+  } = useInfiniteQuery({
+      queryKey: ["ingredients", query],
+      queryFn: ({ pageParam = 0 }) =>
+        fetchIngredientSearch({ query, pageParam }),
+      enabled: !!query,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.pageNumber < lastPage.totalPages - 1) {
+          return lastPage.pageNumber + 1;
+        }
+        return undefined;
+      },
+      staleTime: 5 * 60 * 1000,
+  });
 
-    debounceRef.current = setTimeout(async () => {
-      setStatus("loading");
-      setError(null);
-      try {
-        const { data, pageNumber, totalPages } = await fetchIngredients(query);
-        const filteredData = data.filter((item) => {
-          return !ingredientIds.includes(item.fdcId);
-        });
-        setResults(filteredData);
-        setCurrentPage(pageNumber);
-        setTotalPages(totalPages);
-        setStatus("success");
-      } catch (error) {
-        setError(error);
-        setStatus("error");
-      }
-    }, delay);
+  if (debounceRef.current) {
+    clearTimeout(debounceRef.current);
+  }
 
-    return () => clearTimeout(debounceRef.current);
-  }, [query, delay, ingredientIds]);
+  const debounceRef = useRef(null)
 
   const handleIngredientSearchChange = (e) => {
-    const currentQuery = e.target.value;
-    setQuery(currentQuery);
-  };
+  const value = e.target.value;
+
+  if (debounceRef.current) {
+    clearTimeout(debounceRef.current);
+  }
+
+  debounceRef.current = setTimeout(() => {
+    setQuery(value);
+  }, delay);
+};
+
+  const results = useMemo(() => {
+  if (!data) return [];
+
+  return data.pages
+    .flatMap((page) => page.data)
+    .filter((item) => !ingredientIds.includes(item.fdcId));
+}, [data, ingredientIds]);
 
   // Handles scroll load
-  const handleScroll = async (e) => {
-    if (status === "loading") {
-      return;
-    }
+const handleScroll = (e) => {
+  if (!hasNextPage || isFetchingNextPage) return;
 
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
-    if (
-      shouldLoadMore(scrollTop, scrollHeight, clientHeight) &&
-      totalPages !== currentPage
-    ) {
-      setStatus("loading");
-      const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
-      const { data } = await fetchIngredients(query, nextPage);
-      setResults((prevState) => [...prevState, ...data]);
-      setStatus("success");
-    }
-  };
+  const { scrollTop, scrollHeight, clientHeight } = e.target;
+
+  if (shouldLoadMore(scrollTop, scrollHeight, clientHeight)) {
+    fetchNextPage();
+  }
+};
 
   return {
-    query,
+    data,
     setQuery,
     handleIngredientSearchChange,
     handleScroll,
     results,
-    status,
-    error,
   };
 }
