@@ -1,8 +1,11 @@
 export const preventScrollAndArrows = {
   onKeyDown: (e) => {
+    const highlightedText = window.getSelection().toString().trim();
+
     if (
-      ["ArrowUp", "ArrowDown"].includes(e.key) ||
-      (e.target.value.length === 3 && e.key !== "Backspace")
+      !highlightedText &&
+      (["ArrowUp", "ArrowDown"].includes(e.key) ||
+        (e.target.value.length === 3 && e.key !== "Backspace"))
     ) {
       e.preventDefault();
     }

@@ -12,16 +12,16 @@ export function FormInput({ name, inputType = "text", inputValue, inputErrors,  
 
 
     return (
-    <input    
-        className={`form-input ${inputErrors && !inputValue && 'form-input-error'} ${styling}`}
-        type={inputType}
-        name={name}
-        value={inputValue}
-        onChange={handleChange} 
-        placeholder={placeholder}
-        {...handlers} // NOTE: Prop handlers override any handlers passed via handlers object.
-        {...props}
-        >
-        </input>
+      <input    
+      className={`form-input ${inputErrors && !inputValue && 'form-input-error'} ${styling}`}
+      type={inputType}
+      name={name}
+      value={inputValue}
+      onChange={handleChange} 
+      placeholder={placeholder}
+      {...handlers} // NOTE: Prop handlers override any handlers passed via handlers object.
+      {...props}
+      >
+      </input>
     )
 }

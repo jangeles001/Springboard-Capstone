@@ -14,6 +14,8 @@ export function DashboardDisplayBody(){
       if(activeQuery.isLoading) return <Loading  type="skeleton" />
       if(activeQuery.isError) return <>{console.log(activeQuery.error)}</>
 
+      console.log(activeQuery)
+
   return (
     <div className="flex justify-center items-center">
       <div className="w-full max-w-6xl mt-[50px]">
