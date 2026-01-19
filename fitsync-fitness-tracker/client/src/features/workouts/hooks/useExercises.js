@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import fetchExercises from "../services/fetchExercises";
+import fetchExercises from "../../../services/fetchExercises";
 import {
   useWorkoutActions,
   useCreatedWorkout,
-} from "../features/workouts/store/WorkoutStore";
+} from "../store/WorkoutStore";
 
 const BASE_URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
 
@@ -58,6 +58,7 @@ export function useExercises(initialUrl = BASE_URL) {
   }, [response, createdWorkout]);
 
   const handleClick = (exercise) => {
+    console.log(exercise);
     addExerciseToCreatedWorkout(exercise);
   };
 

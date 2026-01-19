@@ -14,6 +14,12 @@ export const workoutExerciseSchema = new mongoose.Schema(
       trim: true,
     },
     exerciseName: { type: String, required: true },
+
+    muscles: {
+      type: [String],
+      default: ["Unknown"],
+    },
+
     description: { type: String, required: true },
     difficultyAtCreation: { type: Number, default: 5, required: true }, // snapshot of difficulty at workout creation
     reps: {

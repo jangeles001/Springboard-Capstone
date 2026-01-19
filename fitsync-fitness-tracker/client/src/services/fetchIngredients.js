@@ -20,7 +20,7 @@ function buildParams({ query, page = 1, pageSize = 15 }) {
 
 export default async function fetchIngredients(query, page) {
   const url = `${BASE_URL}/foods/search?${buildParams({ query, page })}`;
-
+  
   const res = await api.get(url);
   if (!res) throw new Error("Failed to fetch ingredients");
 

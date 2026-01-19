@@ -64,12 +64,16 @@ export default function useWorkouts() {
       return {
         exerciseId: exercise.id,
         exerciseName: exercise.translations?.[0]?.name,
-        description: exercise.translations?.[0]?.description,
+        muscles: exercise.muscles?.map((muscle) => muscle.name_en || muscle.name) || [""],
+        description: exercise.translations?.[0]?.description || "No Description Provided",
         reps: Number(exercise.reps) || 0,
         weight: Number(exercise.weight) || 0,
         duration: Number(exercise.duration) || 0,
       };
     });
+
+    console.log(normalizedeExercises)
+
     if (createdWorkout) {
       const workoutData = {
         creatorPublicId: publicId,

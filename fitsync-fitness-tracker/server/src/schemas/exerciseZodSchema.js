@@ -9,6 +9,10 @@ export const exerciseZodSchema = z.object({
     invalid_type_error: "The exercise name must be a string!",
     required_error: "The name of the exercise is required!",
   }),
+  muscles: z.array({
+    invalid_type_error: "Muscles must be an array of strings!",
+    required_error: "Muscles array is needed for AI functionality!" 
+  }),
   description: z.string({
     invalid_type_error: "The description must be a string!",
     required_error: "A exercise description is required!",
