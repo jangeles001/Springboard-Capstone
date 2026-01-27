@@ -1,9 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/__not-found')({
-  component: NotFoundPage,
-})
-
 export default function NotFoundPage() {
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">

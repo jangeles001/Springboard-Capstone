@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import {
   useFormDataPassword,
@@ -18,6 +18,8 @@ export function useLoginForm({ onSuccessFunction }) {
   // Login store state slices
   const formDataEmail = useFormDataEmail();
   const formDataPassword = useFormDataPassword();
+  const recaptchaRef = useRef(null);
+  const [captchaValue, setCaptchaValue] = useState(null);
   const formErrors = useFormErrors();
 
   // Login store actions slice
@@ -32,7 +34,7 @@ export function useLoginForm({ onSuccessFunction }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormField(name, value);
-    if(formErrors)
+    if (formErrors)
       if (Object.keys(formErrors).includes(name)) delete formErrors[name];
   };
 
@@ -47,6 +49,8 @@ export function useLoginForm({ onSuccessFunction }) {
     e.preventDefault();
     setHasErrors(false);
 
+    if (!recaptchaRef.current) return;
+
     // Runs validation logic from the store
     const { isValid } = validateForm();
 
@@ -54,13 +58,15 @@ export function useLoginForm({ onSuccessFunction }) {
       setHasErrors(true);
       return;
     }
-    loginMutation.mutate( // Calls query mutation function with the data from the login form
+    loginMutation.mutate(
+      // Calls query mutation function with the data from the login form
       {
         email: formDataEmail,
         password: formDataPassword,
       },
       {
         onSuccess: () => {
+          recaptchaRef.current?.reset();
           resetForm();
           onSuccessFunction();
         },
@@ -73,7 +79,7 @@ export function useLoginForm({ onSuccessFunction }) {
           }
           setHasErrors(true);
         },
-      }
+      },
     );
   };
 
@@ -81,6 +87,8 @@ export function useLoginForm({ onSuccessFunction }) {
     formDataEmail,
     formDataPassword,
     passwordVisible,
+    recaptchaRef,
+    setCaptchaValue,
     formErrors,
     error: loginMutation.error,
     isLoading: loginMutation.isLoading,

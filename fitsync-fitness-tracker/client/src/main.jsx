@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import NotFoundPage from './routes/__not-found'
+import NotFoundPage from '../src/components/__not-found'
 import "./styles/__root.css"
 
 // Import generated route tree

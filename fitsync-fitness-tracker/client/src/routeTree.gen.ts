@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as _notFoundRouteImport } from './routes/__not-found'
 import { Route as LegalRouteRouteImport } from './routes/legal/route'
 import { Route as LandingRouteRouteImport } from './routes/landing/route'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
@@ -30,10 +29,6 @@ import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as DashboardMealsMealIdRouteImport } from './routes/dashboard/meals.$mealId'
 
-const _notFoundRoute = _notFoundRouteImport.update({
-  id: '/__not-found',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LegalRouteRoute = LegalRouteRouteImport.update({
   id: '/legal',
   path: '/legal',
@@ -175,7 +170,6 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/landing': typeof LandingRouteRouteWithChildren
   '/legal': typeof LegalRouteRouteWithChildren
-  '/__not-found': typeof _notFoundRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
@@ -237,7 +231,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/legal'
-    | '/__not-found'
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/mealCreator'
@@ -260,18 +253,10 @@ export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   LandingRouteRoute: typeof LandingRouteRouteWithChildren
   LegalRouteRoute: typeof LegalRouteRouteWithChildren
-  _notFoundRoute: typeof _notFoundRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/__not-found': {
-      id: '/__not-found'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof _notFoundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/legal': {
       id: '/legal'
       path: '/legal'
@@ -492,7 +477,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   LandingRouteRoute: LandingRouteRouteWithChildren,
   LegalRouteRoute: LegalRouteRouteWithChildren,
-  _notFoundRoute: _notFoundRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
