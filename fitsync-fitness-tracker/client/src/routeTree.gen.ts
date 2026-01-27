@@ -22,7 +22,7 @@ import { Route as LegalTermsRouteImport } from './routes/legal/terms'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as LandingAboutRouteImport } from './routes/landing/about'
 import { Route as DashboardWorkoutsRouteImport } from './routes/dashboard/workouts'
-import { Route as DashboardWorkoutCreatorRouteImport } from './routes/dashboard/workoutCreator'
+import { Route as DashboardWorkoutBuilderRouteImport } from './routes/dashboard/workoutBuilder'
 import { Route as DashboardMealsRouteImport } from './routes/dashboard/meals'
 import { Route as DashboardMealCreatorRouteImport } from './routes/dashboard/mealCreator'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
@@ -94,9 +94,9 @@ const DashboardWorkoutsRoute = DashboardWorkoutsRouteImport.update({
   path: '/workouts',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardWorkoutCreatorRoute = DashboardWorkoutCreatorRouteImport.update({
-  id: '/workoutCreator',
-  path: '/workoutCreator',
+const DashboardWorkoutBuilderRoute = DashboardWorkoutBuilderRouteImport.update({
+  id: '/workoutBuilder',
+  path: '/workoutBuilder',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardMealsRoute = DashboardMealsRouteImport.update({
@@ -135,7 +135,7 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
-  '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
+  '/dashboard/workoutBuilder': typeof DashboardWorkoutBuilderRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -152,7 +152,7 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
-  '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
+  '/dashboard/workoutBuilder': typeof DashboardWorkoutBuilderRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -174,7 +174,7 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
-  '/dashboard/workoutCreator': typeof DashboardWorkoutCreatorRoute
+  '/dashboard/workoutBuilder': typeof DashboardWorkoutBuilderRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -197,7 +197,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/dashboard/mealCreator'
     | '/dashboard/meals'
-    | '/dashboard/workoutCreator'
+    | '/dashboard/workoutBuilder'
     | '/dashboard/workouts'
     | '/landing/about'
     | '/legal/privacy'
@@ -214,7 +214,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/dashboard/mealCreator'
     | '/dashboard/meals'
-    | '/dashboard/workoutCreator'
+    | '/dashboard/workoutBuilder'
     | '/dashboard/workouts'
     | '/landing/about'
     | '/legal/privacy'
@@ -235,7 +235,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/dashboard/mealCreator'
     | '/dashboard/meals'
-    | '/dashboard/workoutCreator'
+    | '/dashboard/workoutBuilder'
     | '/dashboard/workouts'
     | '/landing/about'
     | '/legal/privacy'
@@ -348,11 +348,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardWorkoutsRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/dashboard/workoutCreator': {
-      id: '/dashboard/workoutCreator'
-      path: '/workoutCreator'
-      fullPath: '/dashboard/workoutCreator'
-      preLoaderRoute: typeof DashboardWorkoutCreatorRouteImport
+    '/dashboard/workoutBuilder': {
+      id: '/dashboard/workoutBuilder'
+      path: '/workoutBuilder'
+      fullPath: '/dashboard/workoutBuilder'
+      preLoaderRoute: typeof DashboardWorkoutBuilderRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/meals': {
@@ -424,7 +424,7 @@ const DashboardMealsRouteWithChildren = DashboardMealsRoute._addFileChildren(
 interface DashboardRouteRouteChildren {
   DashboardMealCreatorRoute: typeof DashboardMealCreatorRoute
   DashboardMealsRoute: typeof DashboardMealsRouteWithChildren
-  DashboardWorkoutCreatorRoute: typeof DashboardWorkoutCreatorRoute
+  DashboardWorkoutBuilderRoute: typeof DashboardWorkoutBuilderRoute
   DashboardWorkoutsRoute: typeof DashboardWorkoutsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -432,7 +432,7 @@ interface DashboardRouteRouteChildren {
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardMealCreatorRoute: DashboardMealCreatorRoute,
   DashboardMealsRoute: DashboardMealsRouteWithChildren,
-  DashboardWorkoutCreatorRoute: DashboardWorkoutCreatorRoute,
+  DashboardWorkoutBuilderRoute: DashboardWorkoutBuilderRoute,
   DashboardWorkoutsRoute: DashboardWorkoutsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }

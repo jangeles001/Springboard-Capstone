@@ -1,13 +1,15 @@
 import { useEffect, useEffectEvent, useState, useRef } from 'react'
 
 export default function Carousel({ items, interval = 3000 }){
-
+    // Local State. Kept inside the component instead of a hook since it's specific to this component
+    // and will not be reused elsewhere.
     const [ activeIndex, setActiveIndex ] = useState(1);
     const [ isTransitioning, setIsTransitioning ] = useState(false);
     const timerID = useRef(null);
 
     const totalSlides = items.length;
 
+    // Timer functions
     const clearTimer = () => {
         if(timerID.current) {
             clearInterval(timerID.current)
@@ -22,6 +24,7 @@ export default function Carousel({ items, interval = 3000 }){
         }, interval)
     }
 
+    // Reset timer on interval change
      const reset = useEffectEvent(() => {
         resetTimer();
     })
@@ -33,7 +36,7 @@ export default function Carousel({ items, interval = 3000 }){
 
     }, [interval]);
 
-
+    // Slide navigation functions
     const nextSlide = (reset = true) => {
         if (isTransitioning) return;
         setIsTransitioning(true);

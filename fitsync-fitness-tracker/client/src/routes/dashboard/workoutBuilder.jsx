@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { WorkoutsCreatorForm } from '../../features/workouts/components/WorkoutsCreatorForm'
+import { WorkoutsBuilderForm } from '../../features/workouts/components/WorkoutsBuilderForm'
 import { useExercises } from '../../features/workouts/hooks/useExercises';
-import ExerciseList from '../../features/workouts/components/WorkoutsCreator/ExerciseList'
+import ExerciseList from '../../features/workouts/components/WorkoutsBuilder/ExerciseList'
 
-export const Route = createFileRoute('/dashboard/workoutCreator')({
+export const Route = createFileRoute('/dashboard/workoutBuilder')({
   component: RouteComponent,
 })
 
@@ -15,7 +15,7 @@ function RouteComponent() {
   return (
       <div className='  flex flex-col lg:flex-row w-full max-w-7xl mx-auto gap-8 px-6 py-10'>
         <div className="flex-1 lg:flex-[1.2]">
-          <WorkoutsCreatorForm />
+          <WorkoutsBuilderForm />
         </div>
         <div className="flex-1 lg:flex-[1.8]">
           <ExerciseList />

@@ -3,25 +3,49 @@ import { useDashboardDisplayContext } from "../../hooks/useDashboardContext"
 export function DashboardDisplayHeader(){
     const { activeView, handleActiveChange, workoutQuery, nutritionQuery } = useDashboardDisplayContext();
 
-    return (
-        <div className="flex flex-col justify-center w-full bg-blue-500">
-            <div className="flex flex-row ml-auto mt-5 mr-10">
-            <button 
-            className={activeView === "nutrition" ? `active-view` : `inactive-view`} 
-            onClick={() => handleActiveChange("nutrition")}
-            disabled={nutritionQuery.isLoading}
-            >
-                Nutrition Insights
-            </button>
-            <button 
-            className={activeView === "workouts" ? `active-view` : 'inactive-view'}
-            onClick={() => handleActiveChange("workouts")}
-            disabled={workoutQuery.isLoading}
-            >
-                Workout Insights
-            </button>
-           </div>
-            <h2 className="ml-[100px] font-bold text-2xl text-white p-5">Progress Insights</h2>
+  return (
+    <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm border">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+        {/* Title */}
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Progress Insights
+          </h1>
+          <p className="text-sm text-gray-500">
+            Track nutrition and training trends over time
+          </p>
         </div>
-    )
+
+        {/* Toggle Buttons between Nutrition and Workouts */}
+        <div className="flex gap-2">
+          <button
+            disabled={nutritionQuery.isLoading}
+            onClick={() => handleActiveChange("nutrition")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition
+              ${
+                activeView === "nutrition"
+                  ? "bg-blue-600 text-white shadow"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+              }`}
+          >
+            Nutrition
+          </button>
+
+          <button
+            disabled={workoutQuery.isLoading}
+            onClick={() => handleActiveChange("workouts")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition
+              ${
+                activeView === "workouts"
+                  ? "bg-blue-600 text-white shadow"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+              }`}
+          >
+            Workouts
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

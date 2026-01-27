@@ -25,7 +25,7 @@ function dashboard() {
 
   const navLinks = [
     { label: "Dashboard", path: "/dashboard/" },
-    { label: "Workout Creator", path: "/dashboard/workoutCreator" },
+    { label: "Workout Builder", path: "/dashboard/workoutBuilder" },
     { label: "Workouts", path: "/dashboard/workouts"},
     { label: "Record a Meal", path: "/dashboard/mealCreator"},
     { label: "Meals", path: "/dashboard/meals"},

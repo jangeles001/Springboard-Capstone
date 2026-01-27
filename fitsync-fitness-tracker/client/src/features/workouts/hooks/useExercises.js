@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import fetchExercises from "../../../services/fetchExercises";
 import {
   useWorkoutActions,
@@ -8,35 +9,40 @@ import {
 const BASE_URL = "https://wger.de/api/v2/exerciseinfo/?limit=20&offset=0";
 
 export function useExercises(initialUrl = BASE_URL) {
+  // Local State
+  const [url, setUrl] = useState(initialUrl);
+
   // Store State
   const createdWorkout = useCreatedWorkout();
-
   // Store Actions
   const { resetCreatedWorkout, addExerciseToCreatedWorkout } =
     useWorkoutActions();
 
-  // Local state
-  const [response, setResponse] = useState([]);
-  const [prevLink, setPrevLink] = useState(null);
-  const [nextLink, setNextLink] = useState(null);
-  const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
-  const [error, setError] = useState(null);
+  const fetchExercisesQuery = useQuery({
+    queryKey: ["exercises", url],
+    queryFn: () => fetchExercises(url),
+    keepPreviousData: true,
+  });
 
-  // Sets response state based on results from API
-  const loadData = useCallback(async (url) => {
-    setStatus("loading");
-    setError(null);
-    try {
-      const { results, prev, next } = await fetchExercises(url);
-      setResponse(results);
-      setPrevLink(prev);
-      setNextLink(next);
-      setStatus("success");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (error) {
-      setError(error);
-      setStatus("error");
-    }
+  // Filters out selected workouts from the current retreived workouts list being displayed
+  const filteredResults = useMemo(() => {
+    // If no exercises have been added yet, return all results
+    if (!createdWorkout?.exercises) return fetchExercisesQuery.data?.results || [];
+    
+    // Create a set of selected exercise IDs for efficient lookup
+    const selectedIds = new Set(createdWorkout?.exercises?.map((e) => e.id));
+
+    // Filter out exercises that are already selected
+    return ( 
+      fetchExercisesQuery.data?.results?.filter((ex) => 
+        !selectedIds.has(ex.id)) || []
+    ) 
+  }, [fetchExercisesQuery.data, createdWorkout]);
+
+  // Loads exercise data from wger api using the provided url
+  const loadData = useCallback(async (newUrl) => {
+    setUrl(newUrl);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   // Fetches exercise data from wger api using the url passed in
@@ -45,35 +51,29 @@ export function useExercises(initialUrl = BASE_URL) {
       const url = categoryId
         ? `https://wger.de/api/v2/exerciseinfo/?category=${categoryId}&language=2`
         : BASE_URL;
-      await loadData(url);
+      setUrl(url);
     },
-    [loadData]
+    []
   );
 
-  // Filters out selected workouts from the current retreived workouts list being displayed
-  const filteredResults = useMemo(() => {
-    if (!createdWorkout?.exercises) return response;
-    const selectedIds = new Set(createdWorkout?.exercises?.map((e) => e.id));
-    return response.filter((ex) => !selectedIds.has(ex.id));
-  }, [response, createdWorkout]);
-
+  // Handles when an exercise is clicked to add to created workout
   const handleClick = (exercise) => {
-    console.log(exercise);
     addExerciseToCreatedWorkout(exercise);
   };
 
-  // Loads exercise on hook mount and removes any previous createdWorkout data
+  // Reset created workout when component using this hook unmounts
   useEffect(() => {
-    loadData(initialUrl);
-    resetCreatedWorkout();
-  }, [initialUrl, loadData, resetCreatedWorkout]);
+    return () => {
+      resetCreatedWorkout();
+    };
+  }, [resetCreatedWorkout]);
 
   return {
     response: filteredResults,
-    nextLink,
-    prevLink,
-    status,
-    error,
+    nextLink: fetchExercisesQuery.data?.next,
+    prevLink: fetchExercisesQuery.data?.previous,
+    status: fetchExercisesQuery.status,
+    error: fetchExercisesQuery.error,
     loadData,
     loadByCategory,
     handleClick,
