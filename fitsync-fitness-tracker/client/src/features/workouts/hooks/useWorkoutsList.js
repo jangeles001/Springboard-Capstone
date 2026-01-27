@@ -83,8 +83,8 @@ export function useWorkoutsList({ limit }) {
   return {
     ...query,
     page: pages[active],
-    active,
     publicId,
+    active,
     handleWorkoutClick,
     handleExerciseClick,
     handleActiveChange,

@@ -1,14 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { WorkoutsListDisplay } from "../../features/workouts/components/WorkoutsListDisplay"
-import { WorkoutsList } from '../../features/workouts/components/WorkoutsList'
+import { useWorkoutsList } from '../../features/workouts/hooks/useWorkoutsList'
+import { WorkoutCard } from '../../features/workouts/components/WorkoutCard'
+import { CollectionPage } from '../../components/CollectionPage/CollectionPage'
 
 
 export const Route = createFileRoute('/dashboard/workouts')({
-  component: RouteComponent,
+  component: () => {
+    return <CollectionPage
+    hook={useWorkoutsList}
+    CardComponent={WorkoutCard}
+    titlePersonal="Your Workouts"
+    titleAll="All Workouts"
+    emptyText="No workouts created yet."
+    dataKey="workouts"
+    />
+  },
 })
-
-function RouteComponent() {
-  return (
-      <WorkoutsListDisplay withRemoveButton={true} />
-  )
-}

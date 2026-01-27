@@ -69,7 +69,7 @@ export function useMealsList({ limit }) {
     }));
   };
 
-  const handlePrevioustPage = () => {
+  const handlePreviousPage = () => {
     setPages((state) => ({
       ...state,
       [active]: Math.max(1, state[active] - 1),
@@ -85,6 +85,8 @@ export function useMealsList({ limit }) {
     handleActiveChange,
     mealClick: handleMealClick,
     deleteMeal: handleDeleteMeal,
+    handleNextPage,
+    handlePreviousPage,
     isRemoving: deleteMealMutation.isLoading,
   };
 }
