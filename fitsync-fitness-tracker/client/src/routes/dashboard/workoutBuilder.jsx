@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { WorkoutsBuilderForm } from '../../features/workouts/components/WorkoutsBuilderForm'
 import { useExercises } from '../../features/workouts/hooks/useExercises';
-import ExerciseList from '../../features/workouts/components/WorkoutsBuilder/ExerciseList'
+import ExerciseLibrary from '../../features/workouts/components/WorkoutsBuilder/ExerciseLibrary'
 
 export const Route = createFileRoute('/dashboard/workoutBuilder')({
   component: RouteComponent,
@@ -18,7 +18,7 @@ function RouteComponent() {
           <WorkoutsBuilderForm />
         </div>
         <div className="flex-1 lg:flex-[1.8]">
-          <ExerciseList />
+          <ExerciseLibrary />
         </div>
       </div>
   ) 

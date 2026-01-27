@@ -1,4 +1,4 @@
-import { FormField } from '../../../../components/formField';
+import { FormField } from '../../../../components/FormField';
 import { useMealsFormContext } from '../../hooks/useMealsFormContext'
 
 export function MealsFormDescription() {
@@ -8,7 +8,8 @@ export function MealsFormDescription() {
         <div className="flex flex-col">
             <FormField name="mealDescription" label="Meal Description" formError={formErrors.mealDescription}>
                 <textarea
-                className={` ${formErrors.mealDescription ? 'form-input-error' : 'form-input'} flex border rounded max-w-[575px] min-h-[100px] pl-3 resize-none`}
+                className={` ${formErrors.mealDescription ? 'form-input-error' : 'form-input'} 
+                flex border rounded resize-none min-h-[120px] w-full`}
                 type='text'
                 name='mealDescription'
                 value={mealDescription}

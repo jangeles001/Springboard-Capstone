@@ -2,7 +2,7 @@ import { useExercises } from "../../hooks/useExercises";
 import CategoryDropdown  from '../../../../components/CategoryDropdown'
 import Loading from "../../../../components/Loading";
 
-export default function ExerciseList() {
+export default function ExerciseLibrary() {
 
     const { 
         response,

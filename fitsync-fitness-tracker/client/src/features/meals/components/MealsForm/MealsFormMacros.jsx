@@ -4,18 +4,23 @@ export function MealsFormMacros() {
     const { mealMacros } = useMealsFormContext();
 
     return (
-        <div className="flex flex-col">
-            <label htmlFor="macros" className="form-label">Macros</label>
-            <span className="flex flex-row justify-center gap-10">
-                {Object?.entries(mealMacros || {})?.map(([key, value]) => (
-                    <div 
-                    className="flex flex-row" 
+        <div>
+            <h3 className="mb-2 text-sm font-semibold text-gray-700">
+                Estimated Macros
+            </h3>
+            <div className="flex flex-wrap gap-3">
+                {Object.entries(mealMacros || {}).map(([key, value]) => (
+                    <span
                     key={key}
+                    className="
+                    rounded-full bg-blue-50 px-4 py-1
+                    text-sm font-medium text-blue-400
+                    "
                     >
-                        <p>{key.toUpperCase()}: {value}</p>
-                    </div>
+                        {key.toUpperCase()}: {value}
+                    </span>
                 ))}
-            </span>
+            </div>
         </div>
     )
 }

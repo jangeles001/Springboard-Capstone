@@ -24,7 +24,7 @@ import { Route as LandingAboutRouteImport } from './routes/landing/about'
 import { Route as DashboardWorkoutsRouteImport } from './routes/dashboard/workouts'
 import { Route as DashboardWorkoutBuilderRouteImport } from './routes/dashboard/workoutBuilder'
 import { Route as DashboardMealsRouteImport } from './routes/dashboard/meals'
-import { Route as DashboardMealCreatorRouteImport } from './routes/dashboard/mealCreator'
+import { Route as DashboardMealBuilderRouteImport } from './routes/dashboard/mealBuilder'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as DashboardMealsMealIdRouteImport } from './routes/dashboard/meals.$mealId'
@@ -104,9 +104,9 @@ const DashboardMealsRoute = DashboardMealsRouteImport.update({
   path: '/meals',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardMealCreatorRoute = DashboardMealCreatorRouteImport.update({
-  id: '/mealCreator',
-  path: '/mealCreator',
+const DashboardMealBuilderRoute = DashboardMealBuilderRouteImport.update({
+  id: '/mealBuilder',
+  path: '/mealBuilder',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
@@ -133,7 +133,7 @@ export interface FileRoutesByFullPath {
   '/legal': typeof LegalRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
+  '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutBuilder': typeof DashboardWorkoutBuilderRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
@@ -150,7 +150,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
+  '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutBuilder': typeof DashboardWorkoutBuilderRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
@@ -172,7 +172,7 @@ export interface FileRoutesById {
   '/legal': typeof LegalRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/dashboard/mealCreator': typeof DashboardMealCreatorRoute
+  '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutBuilder': typeof DashboardWorkoutBuilderRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
@@ -195,7 +195,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/auth/login'
     | '/auth/signup'
-    | '/dashboard/mealCreator'
+    | '/dashboard/mealBuilder'
     | '/dashboard/meals'
     | '/dashboard/workoutBuilder'
     | '/dashboard/workouts'
@@ -212,7 +212,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/auth/signup'
-    | '/dashboard/mealCreator'
+    | '/dashboard/mealBuilder'
     | '/dashboard/meals'
     | '/dashboard/workoutBuilder'
     | '/dashboard/workouts'
@@ -233,7 +233,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/auth/login'
     | '/auth/signup'
-    | '/dashboard/mealCreator'
+    | '/dashboard/mealBuilder'
     | '/dashboard/meals'
     | '/dashboard/workoutBuilder'
     | '/dashboard/workouts'
@@ -362,11 +362,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardMealsRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/dashboard/mealCreator': {
-      id: '/dashboard/mealCreator'
-      path: '/mealCreator'
-      fullPath: '/dashboard/mealCreator'
-      preLoaderRoute: typeof DashboardMealCreatorRouteImport
+    '/dashboard/mealBuilder': {
+      id: '/dashboard/mealBuilder'
+      path: '/mealBuilder'
+      fullPath: '/dashboard/mealBuilder'
+      preLoaderRoute: typeof DashboardMealBuilderRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/auth/signup': {
@@ -422,7 +422,7 @@ const DashboardMealsRouteWithChildren = DashboardMealsRoute._addFileChildren(
 )
 
 interface DashboardRouteRouteChildren {
-  DashboardMealCreatorRoute: typeof DashboardMealCreatorRoute
+  DashboardMealBuilderRoute: typeof DashboardMealBuilderRoute
   DashboardMealsRoute: typeof DashboardMealsRouteWithChildren
   DashboardWorkoutBuilderRoute: typeof DashboardWorkoutBuilderRoute
   DashboardWorkoutsRoute: typeof DashboardWorkoutsRoute
@@ -430,7 +430,7 @@ interface DashboardRouteRouteChildren {
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-  DashboardMealCreatorRoute: DashboardMealCreatorRoute,
+  DashboardMealBuilderRoute: DashboardMealBuilderRoute,
   DashboardMealsRoute: DashboardMealsRouteWithChildren,
   DashboardWorkoutBuilderRoute: DashboardWorkoutBuilderRoute,
   DashboardWorkoutsRoute: DashboardWorkoutsRoute,

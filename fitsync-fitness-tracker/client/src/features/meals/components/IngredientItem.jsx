@@ -1,5 +1,5 @@
-import { FormField } from "../../../components/formField";
-import { FormInput } from "../../../components/formInput";
+import { FormField } from "../../../components/FormField";
+import { FormInput } from "../../../components/FormInput";
 
 export default function IngredientItem({ item, getIngredientField, handleRemoveClick, handleIngredientQuantityChange, formErrors }){
     return (

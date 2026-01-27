@@ -6,9 +6,17 @@ export function MealsFormComposer({ children }){
     const form = useMealsForm();
     return (
         <MealsFormContext.Provider value={form}>
-            { form.message && <Notification visible={true} message={form.message} />}
-            <form className='flex flex-col bg-white m-20 border-2 rounded-xl p-10 gap-3 min-h-min min-w-[800px]' 
+            {form.message && (
+                <Notification visible message={form.message} />
+            )}
+
+            <form
             onSubmit={form.handleSubmit}
+            className="
+            flex flex-col gap-6
+            rounded-2xl border bg-white
+            p-6 shadow-sm
+            "
             >
                 {children}
             </form>

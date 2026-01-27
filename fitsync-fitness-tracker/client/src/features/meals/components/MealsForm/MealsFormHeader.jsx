@@ -1,22 +1,30 @@
 import { useMealsFormContext } from '../../hooks/useMealsFormContext'
-import { FormField } from '../../../../components/formField';
-import { FormInput } from '../../../../components/formInput';
+import { FormField } from '../../../../components/FormField';
+import { FormInput } from '../../../../components/FormInput';
 
 export function MealsFormHeader() {
     const { mealName, handleChange, formErrors } = useMealsFormContext();
 
     return (
-        <div className="flex flex-col">
-            <FormField name="mealName" label="Meal Name" formError={formErrors.mealName}>
+        <div className="border-b pb-6">
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">
+                Meal Details
+            </h2>
+
+            <FormField
+            name="mealName"
+            label="Meal Name"
+            formError={formErrors.mealName}
+            >
                 <FormInput
                 name="mealName"
                 type="text"
                 inputValue={mealName}
                 inputErrors={formErrors.mealName}
                 handleChange={handleChange}
-                placeholder="Enter a meal name..."
-                 />
-            </FormField >
+                placeholder="Chicken bowl, protein shake..."
+                />
+            </FormField>
         </div>
     );
 }

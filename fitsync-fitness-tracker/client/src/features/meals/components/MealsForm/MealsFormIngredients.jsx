@@ -11,7 +11,7 @@ export function MealsFormIngredients() {
                 <p className={`${formErrors.ingredients ? 'form-label-error' : 'form-label'}`}>Selected Ingredients</p>
                 <p className="text-gray-400">(Double-click on the ingredient name to remove)</p>
             </span>
-            <div className="min-h-[100px]">
+            <div className="min-h-[100px] rounded-xl border bg-gray-50 p-4">
                 {ingredients?.map((item) => {
                     return (
                         <IngredientItem 
