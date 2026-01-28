@@ -1,35 +1,8 @@
-export function CollectionPageHeader({
-  active,
-  onChange,
-  isLoading,
-  titlePersonal,
-  titleAll,
-}) {
+export function DisplayPageHeader({ data }) {
   return (
     <div className="mb-8 rounded-2xl border bg-white p-6 shadow-sm">
-
-      <div className="flex justify-end gap-2 mb-4">
-        {["Personal", "All"].map((type) => (
-          <button
-            key={type}
-            disabled={isLoading}
-            onClick={() => onChange(type)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition
-              ${
-                active === type
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-              }`}
-          >
-            {type}
-          </button>
-        ))}
-      </div>
-
-      <h1 className="text-2xl font-semibold text-gray-900">
-        {active === "Personal" ? titlePersonal : titleAll}
-      </h1>
-
+      <h1 className="text-4xl font-bold text-gray-800">{data?.data.mealName || "Untitled"}</h1>
+      <p className="mt-2 text-gray-600">{data?.data?.description || "No description available."}</p>
     </div>
   );
 }

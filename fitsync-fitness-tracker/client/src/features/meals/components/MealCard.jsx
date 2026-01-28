@@ -1,12 +1,7 @@
 import Ingredient from "./ingredient";
 import ThemedButton from "../../../components/ThemedButton";
 
-export function MealCard({
-  item: meal,
-  onClick,
-  onDelete,
-  publicId,
-}) {
+export function MealCard({ item: meal, onClick, onDelete, publicId}) {
   return (
     <div className="flex flex-col min-w-md bg-white rounded-2xl shadow-md p-6 border border-gray-200 transition hover:shadow-lg">
       {/* Title */}

@@ -27,6 +27,7 @@ import { Route as DashboardMealsRouteImport } from './routes/dashboard/meals'
 import { Route as DashboardMealBuilderRouteImport } from './routes/dashboard/mealBuilder'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as DashboardMealsIndexRouteImport } from './routes/dashboard/meals.index'
 import { Route as DashboardMealsMealIdRouteImport } from './routes/dashboard/meals.$mealId'
 
 const LegalRouteRoute = LegalRouteRouteImport.update({
@@ -119,6 +120,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const DashboardMealsIndexRoute = DashboardMealsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardMealsRoute,
+} as any)
 const DashboardMealsMealIdRoute = DashboardMealsMealIdRouteImport.update({
   id: '/$mealId',
   path: '/$mealId',
@@ -145,13 +151,13 @@ export interface FileRoutesByFullPath {
   '/landing/': typeof LandingIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
+  '/dashboard/meals/': typeof DashboardMealsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
-  '/dashboard/meals': typeof DashboardMealsRouteWithChildren
   '/dashboard/workoutBuilder': typeof DashboardWorkoutBuilderRoute
   '/dashboard/workouts': typeof DashboardWorkoutsRoute
   '/landing/about': typeof LandingAboutRoute
@@ -162,6 +168,7 @@ export interface FileRoutesByTo {
   '/landing': typeof LandingIndexRoute
   '/legal': typeof LegalIndexRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
+  '/dashboard/meals': typeof DashboardMealsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -184,6 +191,7 @@ export interface FileRoutesById {
   '/landing/': typeof LandingIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
+  '/dashboard/meals/': typeof DashboardMealsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -207,13 +215,13 @@ export interface FileRouteTypes {
     | '/landing/'
     | '/legal/'
     | '/dashboard/meals/$mealId'
+    | '/dashboard/meals/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/mealBuilder'
-    | '/dashboard/meals'
     | '/dashboard/workoutBuilder'
     | '/dashboard/workouts'
     | '/landing/about'
@@ -224,6 +232,7 @@ export interface FileRouteTypes {
     | '/landing'
     | '/legal'
     | '/dashboard/meals/$mealId'
+    | '/dashboard/meals'
   id:
     | '__root__'
     | '/'
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/landing/'
     | '/legal/'
     | '/dashboard/meals/$mealId'
+    | '/dashboard/meals/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -383,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/dashboard/meals/': {
+      id: '/dashboard/meals/'
+      path: '/'
+      fullPath: '/dashboard/meals/'
+      preLoaderRoute: typeof DashboardMealsIndexRouteImport
+      parentRoute: typeof DashboardMealsRoute
+    }
     '/dashboard/meals/$mealId': {
       id: '/dashboard/meals/$mealId'
       path: '/$mealId'
@@ -411,10 +428,12 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface DashboardMealsRouteChildren {
   DashboardMealsMealIdRoute: typeof DashboardMealsMealIdRoute
+  DashboardMealsIndexRoute: typeof DashboardMealsIndexRoute
 }
 
 const DashboardMealsRouteChildren: DashboardMealsRouteChildren = {
   DashboardMealsMealIdRoute: DashboardMealsMealIdRoute,
+  DashboardMealsIndexRoute: DashboardMealsIndexRoute,
 }
 
 const DashboardMealsRouteWithChildren = DashboardMealsRoute._addFileChildren(

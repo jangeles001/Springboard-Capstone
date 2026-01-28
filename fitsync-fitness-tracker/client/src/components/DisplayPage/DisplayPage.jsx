@@ -1,18 +1,19 @@
 import { DisplayPageHeader } from "./DisplayPageHeader";
-import { DisplayPageGrid } from "./DisplayPageGrid";
+import { DisplayPageBody } from "./DisplayPageBody";
 import { DisplayPageFooter } from "./DisplayPageFooter";
 
-export function DisplayPage({ data, CardComponent }) { 
+export function DisplayPage({ hook, CardComponent, ResourceId }) { 
+  const { data, isLoading, isError, error, handleDelete, publicId } = hook(ResourceId);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
 
       <DisplayPageHeader
-        title={data}
+        data={data}
         onDelete={handleDelete}
       />
 
-      <DisplayPageGrid
+      <DisplayPageBody
         isLoading={isLoading}
         isError={isError}
         error={error}

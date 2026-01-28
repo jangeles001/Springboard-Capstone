@@ -1,6 +1,7 @@
 import { CollectionPageHeader } from "./CollectionPageHeader";
 import { CollectionPageGrid } from "./CollectionPageGrid";
 import { CollectionPageFooter } from "./CollectionPageFooter";
+import { useRouter } from "@tanstack/react-router";
 
 export function CollectionPage({
   hook,
@@ -19,6 +20,9 @@ export function CollectionPage({
     isError,
     error,
   } = hook({ limit: 12 });
+
+  const router = useRouter();
+  console.log("Current route:", router.state.location.pathname);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
