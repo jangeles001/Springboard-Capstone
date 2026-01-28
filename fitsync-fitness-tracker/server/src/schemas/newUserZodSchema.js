@@ -36,4 +36,8 @@ export const newUserZodSchema = z.object({
     required_error: "You must agree to the terms or service!",
     invalid_type_error: "Must be true or false!",
   }),
+  reCaptchaToken: z.string({
+    required_error: "Please complete the reCAPTCHA verification.",
+    invalid_type_error: "Token must be a string!",
+  }),
 });

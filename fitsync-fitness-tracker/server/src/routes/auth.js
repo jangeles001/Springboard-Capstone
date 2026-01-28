@@ -2,6 +2,7 @@ import express from "express";
 import validate from "../validators/authValidator.js";
 import requireAuth from "../middleware/authMiddleware.js";
 import { newUserZodSchema } from "../schemas/newUserZodSchema.js";
+import { verifyRecaptcha } from "../middleware/recaptchaMiddleware.js";
 import {
   createUser,
   login,
@@ -18,8 +19,13 @@ router
   .post("/register", validate(newUserZodSchema.strict()), createUser)
   .post(
     "/login",
-    validate(newUserZodSchema.pick({ email: true, password: true }).strict()),
-    login
+    validate(
+      newUserZodSchema
+        .pick({ email: true, password: true, reCaptchaToken: true })
+        .strict(),
+    ),
+    verifyRecaptcha,
+    login,
   )
   .get("/logout", logout)
   .get("/refresh", refreshSessionTokens)

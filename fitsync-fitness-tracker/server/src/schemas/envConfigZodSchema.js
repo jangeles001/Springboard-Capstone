@@ -16,4 +16,5 @@ export const envConfigZodSchema = z.object({
     .string()
     .startsWith("redis", "Redis url should start with redis:"),
   NODE_ENV: z.enum(["production", "test"]).default("test"),
+  RECAPTCHA_SECRET_KEY: z.string(),
 });

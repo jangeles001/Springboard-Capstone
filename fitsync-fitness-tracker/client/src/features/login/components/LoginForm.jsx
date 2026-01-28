@@ -12,6 +12,7 @@ export default function LoginForm() {
         formDataPassword,
         passwordVisible,
         recaptchaRef,
+        setCaptchaValue,
         formErrors,
         error,
         isLoading,
@@ -87,10 +88,10 @@ export default function LoginForm() {
                             </div>
                         </FormField>
                         { error && 
-                        !error.response.data.details &&
-                        <p className='text-red-700 text-sm mt-5 ml-11'>
-                            {error.response.data.message}
-                        </p>
+                            !error.response.data.details &&
+                                <p className='text-red-700 text-sm mt-5 ml-11'>
+                                    {error.response.data.message}
+                                </p>
                         }
                     </div>
                     <ReCAPTCHA

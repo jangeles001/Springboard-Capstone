@@ -48,21 +48,31 @@ export function useLoginForm({ onSuccessFunction }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setHasErrors(false);
-
-    if (!recaptchaRef.current) return;
+    console.log(captchaValue);
 
     // Runs validation logic from the store
-    const { isValid } = validateForm();
+    const { isValid } = await validateForm();
 
     if (!isValid) {
       setHasErrors(true);
       return;
     }
+
+    if (!captchaValue) {
+      setFormErrors((prev) => ({
+        ...prev,
+        reCaptchaError: "Please complete the reCAPTCHA verification.",
+      }));
+      setHasErrors(true);
+      return;
+    }
+
     loginMutation.mutate(
       // Calls query mutation function with the data from the login form
       {
         email: formDataEmail,
         password: formDataPassword,
+        reCaptchaToken: captchaValue,
       },
       {
         onSuccess: () => {
