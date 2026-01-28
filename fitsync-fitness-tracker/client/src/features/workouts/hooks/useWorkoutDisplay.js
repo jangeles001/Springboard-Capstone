@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
-import { fetchMealById } from "../services/fetchMealById";
+import { fetchWorkoutById } from "../services/fetchWorkoutById";
 
-export function useMealDisplay(mealId) {
+export function useWorkoutDisplay(workoutId) {
   const publicId = usePublicId();
   const query = useQuery({
-    queryKey: ["meal", mealId],
-    queryFn: fetchMealById(mealId),
+    queryKey: ["workout", workoutId],
+    queryFn: fetchWorkoutById(workoutId),
   });
 
   const [isCreator, setIsCreator] = useState(false);

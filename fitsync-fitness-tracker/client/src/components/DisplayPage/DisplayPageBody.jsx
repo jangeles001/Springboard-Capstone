@@ -6,13 +6,14 @@ export function DisplayPageBody({
   isError,
   error,
   data,
-  publicId
+  publicId,
+  CardComponent
 }) {
     if (isLoading) return <Loading type="content-only" />;
     if (isError) return (console.error(error) || <p>Error loading data.</p>);
 
 
     return (
-        <MealDisplayCard data={data} publicId={publicId} />
+        <CardComponent data={data} publicId={publicId} />
     );
 }

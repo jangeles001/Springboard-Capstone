@@ -1,5 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { useCreatedWorkout, useFormErrors, useWorkoutActions } from "../store/WorkoutStore";
+import {
+  useCreatedWorkout,
+  useFormErrors,
+  useWorkoutActions,
+} from "../store/WorkoutStore";
 import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
 
@@ -15,7 +19,7 @@ export default function useWorkouts() {
     setExerciseInformation,
     removeFromCreatedWorkout,
     resetCreatedWorkout,
-    validateCreatedWorkout
+    validateCreatedWorkout,
   } = useWorkoutActions();
 
   // Local State
@@ -55,24 +59,25 @@ export default function useWorkouts() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(!createdWorkout.exercises) return; 
-      
+    if (!createdWorkout.exercises) return;
+
     const { isValid } = validateCreatedWorkout();
-    if(!isValid) return;
+    if (!isValid) return;
 
     const normalizedeExercises = createdWorkout.exercises.map((exercise) => {
       return {
         exerciseId: exercise.id,
         exerciseName: exercise.translations?.[0]?.name,
-        muscles: exercise.muscles?.map((muscle) => muscle.name_en || muscle.name) || [""],
-        description: exercise.translations?.[0]?.description || "No Description Provided",
+        muscles: exercise.muscles?.map(
+          (muscle) => muscle.name_en || muscle.name,
+        ) || [""],
+        description:
+          exercise.translations?.[0]?.description || "No Description Provided",
         reps: Number(exercise.reps) || 0,
         weight: Number(exercise.weight) || 0,
         duration: Number(exercise.duration) || 0,
       };
     });
-
-    console.log(normalizedeExercises)
 
     if (createdWorkout) {
       const workoutData = {

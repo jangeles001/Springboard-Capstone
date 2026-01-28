@@ -9,7 +9,6 @@ export const Route = createFileRoute('/dashboard/meals/$mealId')({
 
 function MealDisplayRoute() {
     const { mealId } = useParams({ from: Route.id });
-    console.log(mealId)
     return (
         <DisplayPage
         hook={useMealId}

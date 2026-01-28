@@ -52,9 +52,8 @@ export function useMealsList({ limit }) {
   });
 
   const handleMealClick = (mealId) => {
-    console.log(mealId);
-    return navigate({ 
-      to: '/dashboard/meals/$mealId',
+    return navigate({
+      to: "/dashboard/meals/$mealId",
       params: { mealId: mealId },
     });
   };
@@ -88,7 +87,7 @@ export function useMealsList({ limit }) {
     active,
     handleMealClick,
     handleActiveChange,
-    mealClick: handleMealClick,
+    onClick: handleMealClick,
     deleteMeal: handleDeleteMeal,
     handleNextPage,
     handlePreviousPage,

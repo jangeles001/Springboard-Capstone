@@ -4,10 +4,12 @@ import { fetchCreatedWorkouts } from "../services/fetchCreatedWorkouts";
 import { fetchAllWorkouts } from "../services/fetchAllWorkouts";
 import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
+import { useNavigate } from "@tanstack/react-router";
 
 export function useWorkoutsList({ limit }) {
   const queryClient = useQueryClient();
   const publicId = usePublicId();
+  const navigate = useNavigate;
 
   const [pages, setPages] = useState({
     Personal: 1,
@@ -49,8 +51,10 @@ export function useWorkoutsList({ limit }) {
   });
 
   const handleWorkoutClick = (workoutId) => {
-    console.log(workoutId);
-    // redirect to workout page
+    return navigate({
+      to: "/dashboard/workouts/$workoutId",
+      params: { workoutId: workoutId },
+    });
   };
 
   const handleExerciseClick = (exerciseId) => {
@@ -90,7 +94,7 @@ export function useWorkoutsList({ limit }) {
     handleActiveChange,
     handlePreviousPage,
     handleNextPage,
-    workoutClick: handleWorkoutClick,
+    onClick: handleWorkoutClick,
     deleteWorkout: handleDeleteWorkout,
     isRemoving: deleteWorkoutMutation.isLoading,
   };

@@ -15,17 +15,14 @@ export function CollectionPage({
     publicId,
     isLoading,
     handleActiveChange,
-    mealClick,
+    onClick,
     data,
     isError,
     error,
   } = hook({ limit: 12 });
 
-  const router = useRouter();
-  console.log("Current route:", router.state.location.pathname);
-
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
+    <div className="mx-auto px-6 py-10">
 
       <CollectionPageHeader
         active={active}
@@ -43,7 +40,7 @@ export function CollectionPage({
         emptyText={emptyText}
         CardComponent={CardComponent}
         publicId={publicId}
-        onClick={mealClick}
+        onClick={onClick}
       />
 
       <CollectionPageFooter data={data} />

@@ -48,7 +48,6 @@ export function useLoginForm({ onSuccessFunction }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setHasErrors(false);
-    console.log(captchaValue);
 
     // Runs validation logic from the store
     const { isValid } = await validateForm();

@@ -11,10 +11,8 @@ import { baseOptions, comboOptions } from "../../utils/metricChartOptions"
 export function DashboardDisplayBody(){
     const { activeView, activeQuery } = useDashboardDisplayContext();
 
-      if(activeQuery.isLoading) return <Loading  type="skeleton" />
-      if(activeQuery.isError) return <>{console.log(activeQuery.error)}</>
-
-      console.log(activeQuery)
+    if(activeQuery.isLoading) return <Loading  type="skeleton" />
+    if(activeQuery.isError) return <>{console.log(activeQuery.error)}</>
 
   return (
     <div className="mb-10">

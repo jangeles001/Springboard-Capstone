@@ -3,7 +3,7 @@ import ThemedButton from "../../../components/ThemedButton";
 
 export function MealCard({ item: meal, onClick, onDelete, publicId}) {
   return (
-    <div className="flex flex-col min-w-md bg-white rounded-2xl shadow-md p-6 border border-gray-200 transition hover:shadow-lg">
+    <div className="flex flex-col min-w-md max-w-md bg-white rounded-2xl shadow-md p-6 border border-gray-200 transition hover:shadow-lg">
       {/* Title */}
       <h2
         className="text-xl font-semibold text-gray-800 hover:cursor-pointer"
