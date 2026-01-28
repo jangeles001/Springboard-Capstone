@@ -1,14 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { MealDisplayPage } from "../../features/meals/components/MealDisplay";
+import { DisplayPage } from "../../components/DisplayPage/DisplayPage";
 
 export const Route = createFileRoute('/dashboard/meals/$mealId')({
-    component: RouteComponent,
+    component: MealDisplayRoute,
 });
 
-function RouteComponent(){
+function MealDisplayRoute() {
+  const { mealId } = Route.useParams();
+
+  const { data, isLoading, isError, error } = useMeal(mealId);
+  const { mutate: deleteMeal } = useDeleteMeal();
+
     return (
-        <div className="bg-gray-200">
-            <MealDisplayPage />
-        </div>
-    )
+        <DisplayPage
+        data={data}
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        publicId={mealId}
+        onDelete={() => deleteMeal(mealId)}
+        CardComponent={MealDisplayCard}
+        />
+    );
 }

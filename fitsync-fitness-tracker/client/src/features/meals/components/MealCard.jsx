@@ -1,4 +1,4 @@
-import Ingredient from "./MealsList/ingredient";
+import Ingredient from "./ingredient";
 import ThemedButton from "../../../components/ThemedButton";
 
 export function MealCard({

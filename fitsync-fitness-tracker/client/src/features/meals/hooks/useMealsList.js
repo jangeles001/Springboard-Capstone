@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { fetchCreatedMeals } from "../services/fetchCreatedMeals";
 import { fetchAllMeals } from "../services/fetchAllMeals";
 import { api } from "../../../services/api";
@@ -7,6 +8,7 @@ import { usePublicId } from "../../../store/UserStore";
 
 export function useMealsList({ limit }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const publicId = usePublicId();
 
   const [pages, setPages] = useState({
@@ -51,7 +53,10 @@ export function useMealsList({ limit }) {
 
   const handleMealClick = (mealId) => {
     console.log(mealId);
-    // redirect to workout page
+    return navigate({ 
+      to: '/dashboard/meals/$mealId',
+      params: { mealId: mealId },
+    });
   };
 
   const handleDeleteMeal = (mealId) => {

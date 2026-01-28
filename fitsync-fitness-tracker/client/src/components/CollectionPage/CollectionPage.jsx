@@ -14,6 +14,7 @@ export function CollectionPage({
     publicId,
     isLoading,
     handleActiveChange,
+    mealClick,
     data,
     isError,
     error,
@@ -38,6 +39,7 @@ export function CollectionPage({
         emptyText={emptyText}
         CardComponent={CardComponent}
         publicId={publicId}
+        onClick={mealClick}
       />
 
       <CollectionPageFooter data={data} />
