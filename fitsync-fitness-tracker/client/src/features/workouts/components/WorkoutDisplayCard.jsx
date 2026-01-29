@@ -1,18 +1,21 @@
-export function WorkoutDisplayCard({ item }) {
+export function WorkoutDisplayCard({ data, publicId, onDelete }) {
+
+  console.log("WorkoutDisplayCard received data:", data);
+
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 border">
 
       <h2 className="text-3xl font-bold mb-2">
-        {item.workoutName}
+        {data?.data?.workoutName}
       </h2>
 
       <p className="text-gray-500 mb-6">
-        Duration: {item.workoutDuration} minutes
+        Duration: {data?.data?.workoutDuration} minutes
       </p>
 
       {/* Exercises */}
       <div className="space-y-4">
-        {item.exercises.map((exercise) => (
+        {data?.data?.exercises.map((exercise) => (
           <div
             key={exercise.exerciseId}
             className="border rounded-xl p-4"

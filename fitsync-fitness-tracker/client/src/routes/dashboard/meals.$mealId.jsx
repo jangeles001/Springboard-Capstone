@@ -14,6 +14,7 @@ function MealDisplayRoute() {
         hook={useMealId}
         CardComponent={MealDisplayCard}
         ResourceId={mealId}
+        type={"Meal"}
         />
     );
 }

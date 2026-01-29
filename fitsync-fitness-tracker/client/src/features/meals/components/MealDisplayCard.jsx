@@ -8,6 +8,15 @@ export function MealDisplayCard({ data, publicId, onDelete }) {
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+      
+      <h2 className="text-3xl font-bold mb-2">
+        {data?.data?.mealName}
+      </h2>
+
+      <p className="text-gray-500 mb-6">
+        Description: {data?.data?.description}
+      </p>
+
       {/* Ingredients */}
       <div className="mb-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-3">Ingredients</h3>

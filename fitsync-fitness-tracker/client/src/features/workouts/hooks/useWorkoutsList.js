@@ -9,7 +9,7 @@ import { useNavigate } from "@tanstack/react-router";
 export function useWorkoutsList({ limit }) {
   const queryClient = useQueryClient();
   const publicId = usePublicId();
-  const navigate = useNavigate;
+  const navigate = useNavigate();
 
   const [pages, setPages] = useState({
     Personal: 1,

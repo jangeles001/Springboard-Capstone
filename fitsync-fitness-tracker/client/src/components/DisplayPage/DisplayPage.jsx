@@ -2,15 +2,16 @@ import { DisplayPageHeader } from "./DisplayPageHeader";
 import { DisplayPageBody } from "./DisplayPageBody";
 import { DisplayPageFooter } from "./DisplayPageFooter";
 
-export function DisplayPage({ hook, CardComponent, ResourceId }) { 
+export function DisplayPage({ hook, CardComponent, ResourceId, type }) { 
   const { data, isLoading, isError, error, handleDelete, publicId } = hook(ResourceId);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
 
       <DisplayPageHeader
-        data={data}
+        type={type}
         onDelete={handleDelete}
+
       />
 
       <DisplayPageBody

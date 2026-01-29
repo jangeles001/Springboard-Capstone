@@ -1,4 +1,3 @@
-import { MealDisplayCard } from "../../features/meals/components/MealDisplayCard.jsx";
 import Loading from "../Loading.jsx";
 
 export function DisplayPageBody({

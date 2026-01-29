@@ -7,7 +7,8 @@ export function useWorkoutDisplay(workoutId) {
   const publicId = usePublicId();
   const query = useQuery({
     queryKey: ["workout", workoutId],
-    queryFn: fetchWorkoutById(workoutId),
+    queryFn: () => fetchWorkoutById(workoutId),
+    retry: false,
   });
 
   const [isCreator, setIsCreator] = useState(false);
