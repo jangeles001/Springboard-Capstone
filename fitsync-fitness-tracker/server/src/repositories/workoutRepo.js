@@ -27,7 +27,7 @@ export async function findAllWorkouts(offset, limit) {
 export async function findWorkoutsByCreatorPublicId(
   userPublicId,
   offset,
-  limit
+  limit,
 ) {
   const workouts = await Workout.find({ creatorPublicId: userPublicId })
     .skip(offset)
@@ -42,7 +42,11 @@ export async function findWorkoutsByCreatorPublicId(
   return { workouts, totalCount };
 }
 
-export async function findWorkoutByWorkoutId(workoutId) {
+export async function findOneWorkoutByUUID(workoutId) {
   const workout = await Workout.findOne({ uuid: workoutId });
   return workout.toJSON();
+}
+
+export async function duplicateOneWorkoutByUUID(workoutId) {
+  return;
 }

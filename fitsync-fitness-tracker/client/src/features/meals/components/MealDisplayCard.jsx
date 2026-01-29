@@ -7,14 +7,14 @@ export function MealDisplayCard({ data, publicId, onDelete }) {
   const isOwner = data?.data?.creatorPublicId === publicId;
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+    <div className="max-w-4xl min-w-min mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
       
       <h2 className="text-3xl font-bold mb-2">
         {data?.data?.mealName}
       </h2>
 
       <p className="text-gray-500 mb-6">
-        Description: {data?.data?.description}
+        Description: {data?.data?.mealDescription}
       </p>
 
       {/* Ingredients */}

@@ -115,7 +115,7 @@ export async function generateTokens(user) {
     JSON.stringify({
       userUUID: user.uuid,
       iat: Date.now(),
-    })
+    }),
   );
 
   return { accessToken, refreshToken };
@@ -136,7 +136,7 @@ export async function revokeRefreshToken(refreshToken) {
     await redisClient.setEx(
       `revoked:${refreshToken}`,
       Math.floor(timeRemaining / 1000),
-      "revoked"
+      "revoked",
     );
 
     await redisClient.del(`refreshToken:${refreshToken}`); // Deletes entry after token has been revoked
@@ -179,7 +179,7 @@ export async function getPrivateUserInformation(userUUID) {
 export async function updatePrivateUserInformation(userUUID, updatedFields) {
   const user = await userRepo.updateMultipleUserFieldsByUUID(
     userUUID,
-    updatedFields
+    updatedFields,
   );
 
   const updatedPrivateInformation = {
@@ -205,7 +205,7 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
     await workoutRepo.findWorkoutsByCreatorPublicId(
       userPublicId,
       offset,
-      pageSize
+      pageSize,
     );
 
   if (offset + pageSize < totalCount - 1) hasNextPage = true;
@@ -215,11 +215,22 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
   return { workouts, hasPreviousPage, hasNextPage };
 }
 
+export async function duplicateWorkout(publicId, workoutId) {
+  const user = await userRepo.findOneUserByPublicId(publicId);
+  if (!user) throw new NotFoundError("User");
+
+  const workout = await workoutRepo.findOneWorkoutByUUID(workoutId);
+  if (!workout) throw new NotFoundError("Workout");
+
+  await workoutRepo.duplicateOneWorkoutByUUID(workoutId);
+  return;
+}
+
 export async function deleteWorkout(publicId, workoutId) {
   const user = await userRepo.findOneUserByPublicId(publicId);
   if (!user) throw new NotFoundError("User");
 
-  const workout = await workoutRepo.findWorkoutByWorkoutId(workoutId);
+  const workout = await workoutRepo.findOneWorkoutByUUID(workoutId);
   if (!workout) throw new NotFoundError("Workout");
 
   if (workout.creatorPublicId !== user.publicId) throw new UnauthorizedError();
@@ -237,7 +248,7 @@ export async function getUserMeals(userPublicId, offset, pageSize) {
   const { meals, totalCount } = await mealRepo.findMealsByCreatorPublicId(
     userPublicId,
     offset,
-    pageSize
+    pageSize,
   );
 
   if (offset + pageSize < totalCount - 1) hasNextPage = true;
@@ -247,11 +258,22 @@ export async function getUserMeals(userPublicId, offset, pageSize) {
   return { meals, hasPreviousPage, hasNextPage };
 }
 
+export async function duplicateMeal(publicId, mealId) {
+  const user = await userRepo.findOneUserByPublicId(publicId);
+  if (!user) throw new NotFoundError("User");
+
+  const meal = await mealRepo.findOneMealByUUID(mealId);
+  if (!meal) throw new NotFoundError("Meal");
+
+  await mealRepo.duplicateOneMealByUUID(mealId);
+  return;
+}
+
 export async function deleteMeal(publicId, mealId) {
   const user = await userRepo.findOneUserByPublicId(publicId);
   if (!user) throw new NotFoundError("User");
 
-  const meal = await mealRepo.findMealByUUID(mealId);
+  const meal = await mealRepo.findOneMealByUUID(mealId);
   if (!meal) throw new NotFoundError("Meal");
 
   if (meal.creatorPublicId !== user.publicId) throw new UnauthorizedError();
@@ -260,7 +282,7 @@ export async function deleteMeal(publicId, mealId) {
   return;
 }
 
-export async function generateUserWorkoutsReport(userUUID, range="all") {
+export async function generateUserWorkoutsReport(userUUID, range = "all") {
   const user = await userRepo.findOneUserByUUID(userUUID);
   if (!user) throw new NotFoundError("User");
 
@@ -270,15 +292,15 @@ export async function generateUserWorkoutsReport(userUUID, range="all") {
     const [daily, weekly, monthly] = await Promise.all([
       workoutLogRepo.findAllWorkoutLogsByUserPublicId(
         user.publicId,
-        ranges.daily
+        ranges.daily,
       ),
       workoutLogRepo.findAllWorkoutLogsByUserPublicId(
         user.publicId,
-        ranges.weekly
+        ranges.weekly,
       ),
       workoutLogRepo.findAllWorkoutLogsByUserPublicId(
         user.publicId,
-        ranges.monthly
+        ranges.monthly,
       ),
     ]);
 
@@ -291,7 +313,7 @@ export async function generateUserWorkoutsReport(userUUID, range="all") {
 
   return await workoutLogRepo.findAllWorkoutLogsByUserPublicId(
     user.publicId,
-    ranges[range]
+    ranges[range],
   );
 }
 
@@ -320,7 +342,7 @@ export async function generateUserNutritionReport(userUUID, range) {
   // Single-range request
   const mealLogs = await mealLogRepo.findAllMealLogsByUserPublicId(
     user.publicId,
-    ranges[range]
+    ranges[range],
   );
 
   return { [range]: mealLogs, nutritionGoals: user.nutritionGoals };

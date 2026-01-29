@@ -10,15 +10,13 @@ export async function createWorkout(workoutData) {
     workoutDuration: newWorkout.workoutDuration,
     exercisesSnapshot: newWorkout.exercises,
     executedAt: new Date(),
-  }
+  };
   await workoutLogRepo.createOneWorkoutLogEntry(workoutLogData);
   return newWorkout;
 }
 
 export async function getWorkoutInformation(workoutId) {
-  const workoutInformation = await workoutRepo.findWorkoutByWorkoutId(
-    workoutId
-  );
+  const workoutInformation = await workoutRepo.findOneWorkoutByUUID(workoutId);
   return workoutInformation;
 }
 
@@ -27,7 +25,7 @@ export async function getAllWorkouts(offset = 0, pageSize = 10) {
   let hasPreviousPage = false;
   const { workouts, totalCount } = await workoutRepo.findAllWorkouts(
     offset,
-    pageSize
+    pageSize,
   );
 
   if (offset + pageSize < totalCount - 1) hasNextPage = true;

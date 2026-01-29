@@ -79,7 +79,7 @@ export default function DefaultNav({ links, queryEnabled = true }) {
           </nav>
         </div>
       </header>
-      <main className='flex-1 min-h-[600px] w-full bg-gray-100'>
+      <main className='flex-1 min-h-[1000px] w-full bg-gray-100'>
         <Outlet />
       </main>
       <footer className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-10"></footer>

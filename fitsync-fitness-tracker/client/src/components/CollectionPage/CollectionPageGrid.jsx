@@ -16,7 +16,8 @@ export function CollectionPageGrid({
 
     if (!items.length) {
         return (
-            <p className="mt-20 text-center text-gray-500">
+            
+            <p className="mt-25 text-center text-gray-500">
                 {emptyText}
             </p>
         );

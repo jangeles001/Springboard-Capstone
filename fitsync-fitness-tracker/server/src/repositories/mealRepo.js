@@ -30,7 +30,11 @@ export async function findMealsByCreatorPublicId(userPublicId, offset, limit) {
   return { meals, totalCount };
 }
 
-export async function findMealByUUID(mealUUID) {
+export async function findOneMealByUUID(mealUUID) {
   const meal = await Meal.findOne({ uuid: mealUUID });
   return meal.toJSON();
+}
+
+export async function duplicateOneMealByUUID(mealId) {
+  return;
 }

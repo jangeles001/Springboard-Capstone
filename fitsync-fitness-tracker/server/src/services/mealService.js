@@ -32,6 +32,6 @@ export async function getAllMeals(offset = 0, pageSize = 10) {
 }
 
 export async function getMeal(mealUUID) {
-  const meal = await mealRepo.findMealByUUID(mealUUID);
+  const meal = await mealRepo.findOneMealByUUID(mealUUID);
   return meal;
 }

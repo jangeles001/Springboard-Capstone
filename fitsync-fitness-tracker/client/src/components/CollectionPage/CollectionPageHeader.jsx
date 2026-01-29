@@ -6,9 +6,11 @@ export function CollectionPageHeader({
   titleAll,
 }) {
   return (
-    <div className="mb-8 rounded-2xl border bg-white p-6 shadow-sm">
-
-      <div className="flex justify-end gap-2 mb-4">
+    <div className="flex flex-row mb-15 rounded-2xl border bg-white p-6 shadow-sm">
+      <h1 className="text-2xl font-semibold text-gray-900">
+        {active === "Personal" ? titlePersonal : titleAll}
+      </h1>
+      <div className="flex justify-end gap-2 mt-5 mb-4 ml-auto">
         {["Personal", "All"].map((type) => (
           <button
             key={type}
@@ -25,11 +27,6 @@ export function CollectionPageHeader({
           </button>
         ))}
       </div>
-
-      <h1 className="text-2xl font-semibold text-gray-900">
-        {active === "Personal" ? titlePersonal : titleAll}
-      </h1>
-
     </div>
   );
 }

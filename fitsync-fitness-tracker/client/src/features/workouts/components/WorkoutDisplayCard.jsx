@@ -1,9 +1,9 @@
-export function WorkoutDisplayCard({ data, publicId, onDelete }) {
+export function WorkoutDisplayCard({ data }) {
 
-  console.log("WorkoutDisplayCard received data:", data);
+  console.log(data);
 
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 border">
+    <div className="min-w-xl bg-white rounded-2xl shadow-md p-6 border">
 
       <h2 className="text-3xl font-bold mb-2">
         {data?.data?.workoutName}
@@ -46,6 +46,12 @@ export function WorkoutDisplayCard({ data, publicId, onDelete }) {
             </div>
           </div>
         ))}
+        <button
+        className="mt-8 ml-[43%] bg-blue-500 text-white px-4 py-2 rounded-lg"
+        onClick={() => onDelete(workout.uuid)}
+        >
+          Delete Workout
+        </button>
       </div>
     </div>
   );

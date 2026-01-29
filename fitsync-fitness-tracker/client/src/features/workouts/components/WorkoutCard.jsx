@@ -40,7 +40,7 @@ export function WorkoutCard({ item: workout, publicId, onClick }) {
           onClick={() => onDelete(workout.uuid)}
           className="mt-auto bg-blue-500 text-white px-4 py-2 rounded-lg"
         >
-          Remove Workout
+          Delete Workout
         </button>
       )}
     </div>
