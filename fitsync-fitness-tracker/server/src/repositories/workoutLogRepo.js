@@ -1,4 +1,4 @@
-import { WorkoutLog } from "../models/WorkoutLogModel.js";
+import { WorkoutLog } from "../models/workoutLogModel.js";
 
 const PRIVATE_FIELDS_EXCLUSIONS = "-_id -createdAt -updatedAt";
 
@@ -177,4 +177,13 @@ export async function findWorkoutMuscleDistributionByUserPublicId(userPublicId, 
 
     { $sort: { label: 1 } }
   ]);
+}
+
+export async function updateUserDeletedWorkoutLogStatus(publicId, workoutUUID, isDeleted) {
+  await WorkoutLog.updateOne(
+    { creatorPublicId: publicId, workoutUUID },
+    { $set: { isDeleted } }
+  );
+
+  return;
 }

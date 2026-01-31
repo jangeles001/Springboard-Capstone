@@ -1,4 +1,4 @@
-import { Meal } from "../models/MealModel.js";
+import { Meal } from "../models/mealModel.js";
 
 const PRIVATE_FIELDS_EXCLUSIONS = "-_id -createdAt -updatedAt";
 
@@ -33,8 +33,4 @@ export async function findMealsByCreatorPublicId(userPublicId, offset, limit) {
 export async function findOneMealByUUID(mealUUID) {
   const meal = await Meal.findOne({ uuid: mealUUID });
   return meal.toJSON();
-}
-
-export async function duplicateOneMealByUUID(mealId) {
-  return;
 }

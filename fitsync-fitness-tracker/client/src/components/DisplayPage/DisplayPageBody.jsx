@@ -6,13 +6,15 @@ export function DisplayPageBody({
   error,
   data,
   publicId,
-  CardComponent
+  CardComponent,
+  handleDelete,
+  isPersonal,
 }) {
     if (isLoading) return <Loading type="content-only" />;
     if (isError) return (console.error(error) || <p>Error loading data.</p>);
 
 
     return (
-        <CardComponent data={data} publicId={publicId} />
+      <CardComponent data={data} publicId={publicId} handleDelete={handleDelete} isPersonal={isPersonal} />
     );
 }

@@ -36,7 +36,19 @@ const mealSchema = new mongoose.Schema(
       required: true,
       default: [],
     },
+    
     mealMacros: { type: macrosSchema, required: true },
+    
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    
+    snapshot:{
+      type: Object,
+      required: true,
+    },
   },
   { timestamps: true }
 );

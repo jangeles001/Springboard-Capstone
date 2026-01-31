@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
-const numberValidation = {
-  validator: (v) => Number.isInteger(v),
-  message: "Must be an integer!",
-};
-
 export const workoutExerciseSchema = new mongoose.Schema(
   {
     exerciseId: {
@@ -49,7 +44,7 @@ export const workoutExerciseSchema = new mongoose.Schema(
 );
 
 // Mongoose schema definition
-const workoutSchema = new mongoose.Schema(
+export const workoutSchema = new mongoose.Schema(
   {
     creatorPublicId: { type: String, trim: true, required: true },
     uuid: { type: String, default: uuidv4, unique: true, index: true },
@@ -86,10 +81,19 @@ const workoutSchema = new mongoose.Schema(
         },
       ],
     },
+
+    // Soft deletion field
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
   },
   { timestamps: true }
 );
 
+// Customized JSON output
 workoutSchema.set("toJSON", {
   transform: function (doc, ret, options) {
     delete ret.__v;

@@ -58,7 +58,7 @@ export function useMealsList({ limit }) {
     });
   };
 
-  const handleDeleteMeal = (mealId) => {
+  const handleDelete = (mealId) => {
     deleteMealMutation.mutate(mealId);
   };
 
@@ -88,7 +88,7 @@ export function useMealsList({ limit }) {
     handleMealClick,
     handleActiveChange,
     onClick: handleMealClick,
-    deleteMeal: handleDeleteMeal,
+    handleDelete,
     handleNextPage,
     handlePreviousPage,
     isRemoving: deleteMealMutation.isLoading,

@@ -1,5 +1,6 @@
 import * as mealRepo from "../repositories/mealRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
+import * as mealCollectionRepo from "../repositories/mealCollectionRepo.js";
 
 export async function createNewMeal(mealData) {
   const meal = await mealRepo.createMeal(mealData);
@@ -14,6 +15,10 @@ export async function createNewMeal(mealData) {
     };
 
     await mealLogRepo.createOneMealLogEntry(mealLogData);
+    await mealCollectionRepo.addMealToCollection(
+      meal.creatorPublicId,
+      meal.uuid,
+    );
   }
 
   return meal;

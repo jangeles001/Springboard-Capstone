@@ -47,6 +47,13 @@ export async function findOneWorkoutByUUID(workoutId) {
   return workout.toJSON();
 }
 
+export async function findAllWorkoutsByIds(workoutIds) {
+  const workouts = await Workout.find({ uuid: { $in: workoutIds } })
+    .select(PRIVATE_FIELDS_EXCLUSIONS)
+    .lean();
+  return workouts;
+}
+
 export async function duplicateOneWorkoutByUUID(workoutId) {
   return;
 }

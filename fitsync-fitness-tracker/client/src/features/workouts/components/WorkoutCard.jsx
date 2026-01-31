@@ -1,6 +1,9 @@
 import Exercise  from './WorkoutsList/exercise';
 
-export function WorkoutCard({ item: workout, publicId, onClick }) {
+export function WorkoutCard({ item: workout, onClick, publicId, handleDelete }) {
+
+  const isPersonal = publicId === workout.creatorPublicId;
+
   return (
     <div className="flex flex-col bg-white rounded-2xl shadow-md p-6 border">
 
@@ -35,9 +38,9 @@ export function WorkoutCard({ item: workout, publicId, onClick }) {
         )}
       </div>
 
-      {workout.creatorPublicId === publicId && (
+      {isPersonal && (
         <button
-          onClick={() => onDelete(workout.uuid)}
+          onClick={() => handleDelete(workout.uuid)}
           className="mt-auto bg-blue-500 text-white px-4 py-2 rounded-lg"
         >
           Delete Workout

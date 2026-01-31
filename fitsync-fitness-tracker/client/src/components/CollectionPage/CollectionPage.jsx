@@ -1,7 +1,6 @@
 import { CollectionPageHeader } from "./CollectionPageHeader";
 import { CollectionPageGrid } from "./CollectionPageGrid";
 import { CollectionPageFooter } from "./CollectionPageFooter";
-import { useRouter } from "@tanstack/react-router";
 
 export function CollectionPage({
   hook,
@@ -16,6 +15,7 @@ export function CollectionPage({
     isLoading,
     handleActiveChange,
     onClick,
+    handleDelete,
     data,
     isError,
     error,
@@ -41,6 +41,7 @@ export function CollectionPage({
         CardComponent={CardComponent}
         publicId={publicId}
         onClick={onClick}
+        handleDelete={handleDelete}
       />
 
       <CollectionPageFooter data={data} />

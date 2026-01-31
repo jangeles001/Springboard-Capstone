@@ -62,7 +62,7 @@ export function useWorkoutsList({ limit }) {
     // redirect to exercise page
   };
 
-  const handleDeleteWorkout = (workoutId) => {
+  const handleDelete = (workoutId) => {
     deleteWorkoutMutation.mutate(workoutId);
   };
 
@@ -95,7 +95,7 @@ export function useWorkoutsList({ limit }) {
     handlePreviousPage,
     handleNextPage,
     onClick: handleWorkoutClick,
-    deleteWorkout: handleDeleteWorkout,
+    handleDelete,
     isRemoving: deleteWorkoutMutation.isLoading,
   };
 }

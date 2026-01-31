@@ -19,7 +19,7 @@ export function useMealId(mealId) {
 
   const addMealMutation = useMutation({
     mutationFn: (mealId) =>
-      api.post(`api/v1/users/${publicId}/meals/`, { mealId }),
+      api.post(`api/v1/users/${publicId}/meals/duplicate`, { mealId }),
   });
 
   const handleReturn = () => {

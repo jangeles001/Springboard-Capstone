@@ -1,7 +1,4 @@
-export function WorkoutDisplayCard({ data }) {
-
-  console.log(data);
-
+export function WorkoutDisplayCard({ data, isPersonal, handleDelete }) {
   return (
     <div className="min-w-xl bg-white rounded-2xl shadow-md p-6 border">
 
@@ -17,8 +14,8 @@ export function WorkoutDisplayCard({ data }) {
       <div className="space-y-4">
         {data?.data?.exercises.map((exercise) => (
           <div
-            key={exercise.exerciseId}
-            className="border rounded-xl p-4"
+          key={exercise.exerciseId}
+          className="border rounded-xl p-4"
           >
             <h3 className="font-semibold">
               {exercise.exerciseName}
@@ -46,12 +43,17 @@ export function WorkoutDisplayCard({ data }) {
             </div>
           </div>
         ))}
-        <button
-        className="mt-8 ml-[43%] bg-blue-500 text-white px-4 py-2 rounded-lg"
-        onClick={() => onDelete(workout.uuid)}
-        >
-          Delete Workout
-        </button>
+        {/* Delete Button */}
+        <div className="w-max mx-auto">
+          { isPersonal && 
+            <button
+            className="mt-8 bg-blue-500 text-white px-4 py-2 rounded-lg"
+            onClick={() => handleDelete(data?.data?.uuid)}
+            >
+              Delete Workout
+            </button>
+          }
+        </div>
       </div>
     </div>
   );

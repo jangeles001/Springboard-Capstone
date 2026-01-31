@@ -19,7 +19,7 @@ export function useWorkoutId(workoutId) {
 
   const addMealMutation = useMutation({
     mutationFn: (mealId) =>
-      api.post(`api/v1/users/${publicId}/workouts/add`, { mealId }),
+      api.post(`api/v1/users/${publicId}/workouts/duplicate`, { mealId }),
   });
 
   const handleReturn = () => {
@@ -30,12 +30,13 @@ export function useWorkoutId(workoutId) {
     addMealMutation.mutate({ mealId });
   };
 
-  const handleDelete = () => {
+  const handleDelete = (workoutId) => {
     deleteWorkoutMutation.mutate({ workoutId });
     queryClient.invalidateQueries({
-      queryKey: ["workout"],
+      queryKey: ["workout", workoutId, publicId],
     });
     console.log(`Delete workout with ID: ${workoutId}`);
+    return navigate({ to: "/dashboard/workouts" });
   };
 
   return {

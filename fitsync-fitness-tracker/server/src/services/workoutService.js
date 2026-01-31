@@ -1,5 +1,6 @@
 import * as workoutRepo from "../repositories/workoutRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
+import * as workoutCollectionRepo from "../repositories/workoutCollectionRepo.js";
 
 export async function createWorkout(workoutData) {
   const newWorkout = await workoutRepo.createWorkout(workoutData);
@@ -12,6 +13,11 @@ export async function createWorkout(workoutData) {
     executedAt: new Date(),
   };
   await workoutLogRepo.createOneWorkoutLogEntry(workoutLogData);
+  await workoutCollectionRepo.addWorkoutToCollection(
+    newWorkout.creatorPublicId,
+    newWorkout.uuid,
+  );
+  
   return newWorkout;
 }
 

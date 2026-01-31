@@ -1,7 +1,6 @@
 import Ingredient from "./ingredient";
-import ThemedButton from "../../../components/ThemedButton";
 
-export function MealDisplayCard({ data, publicId, onDelete }) {
+export function MealDisplayCard({ data, publicId, handleDelete, isPersonal }) {
   if (!data) return null;
 
   const isOwner = data?.data?.creatorPublicId === publicId;
@@ -44,16 +43,17 @@ export function MealDisplayCard({ data, publicId, onDelete }) {
         ))}
       </div>
 
-      {/* Actions */}
-      {isOwner && onDelete && (
-        <div className="flex justify-end">
-          <ThemedButton
-            text="Delete Meal"
-            onClick={onDelete}
-            className="bg-red-500 hover:bg-red-600 text-white"
-          />
+      {/* Delete Button */}
+        <div className="w-max mx-auto">
+          { isPersonal && 
+            <button
+            className="mt-8 bg-blue-500 text-white px-4 py-2 rounded-lg"
+            onClick={() => handleDelete(data?.data?.uuid)}
+            >
+              Delete Workout
+            </button>
+          }
         </div>
-      )}
     </div>
   );
 }

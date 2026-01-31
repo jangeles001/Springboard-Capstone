@@ -1,4 +1,4 @@
-import { MealLog } from "../models/MealLogModel.js";
+import { MealLog } from "../models/mealLogModel.js";
 
 const PRIVATE_FIELDS_EXCLUSIONS = "-_id -consumedAt -updatedAt";
 

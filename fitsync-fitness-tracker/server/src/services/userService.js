@@ -3,6 +3,8 @@ import * as workoutRepo from "../repositories/workoutRepo.js";
 import * as mealRepo from "../repositories/mealRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
+import * as mealCollectionRepo from "../repositories/mealCollectionRepo.js";
+import * as workoutCollectionRepo from "../repositories/workoutCollectionRepo.js";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import redisClient from "../config/redisClient.js";
@@ -42,7 +44,6 @@ export async function registerNewUser(userData) {
 
   // Creates new User document with the userData object
   const newUser = await userRepo.createNewUser(userData);
-
   const { accessToken, refreshToken } = await generateTokens(newUser);
 
   return {
@@ -201,12 +202,11 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
   let hasNextPage = null;
   let hasPreviousPage = null;
 
-  const { workouts, totalCount } =
-    await workoutRepo.findWorkoutsByCreatorPublicId(
-      userPublicId,
-      offset,
-      pageSize,
-    );
+  const { workouts, totalCount } = await workoutCollectionRepo.findWorkoutsInCollectionByUserPublicId(
+    userPublicId,
+    offset,
+    pageSize,
+  );
 
   if (offset + pageSize < totalCount - 1) hasNextPage = true;
 
@@ -227,15 +227,39 @@ export async function duplicateWorkout(publicId, workoutId) {
 }
 
 export async function deleteWorkout(publicId, workoutId) {
+  let workout;
+  let collectionEntry;
   const user = await userRepo.findOneUserByPublicId(publicId);
   if (!user) throw new NotFoundError("User");
 
-  const workout = await workoutRepo.findOneWorkoutByUUID(workoutId);
-  if (!workout) throw new NotFoundError("Workout");
+  workout = await workoutRepo.findOneWorkoutByUUID(workoutId)
+  if (!workout){
+    collectionEntry = await workoutCollectionRepo.findWorkoutInCollectionById(publicId, workoutId);
+    if(!collectionEntry){
+      throw new NotFoundError("Workout");
+    }
+    await workoutCollectionRepo.removeOneWorkoutFromUserCollection(publicId, workoutId);
+    await workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true);
+    return;
+  }
 
-  if (workout.creatorPublicId !== user.publicId) throw new UnauthorizedError();
 
+  if (workout.creatorPublicId !== user.publicId){
+    await workoutCollectionRepo.removeOneWorkoutFromUserCollection(publicId, workoutId);
+    await workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true);
+    return;
+  }
+
+
+  await workoutCollectionRepo.removeOneWorkoutFromUserCollection(publicId, workoutId);
+  await workoutCollectionRepo.updateDeletedWorkoutInCollection(workoutId, {
+    workoutName: workout.workoutName,
+    workoutDuration: workout.workoutDuration,
+    exercises: workout.exercises,
+  });
   await workoutRepo.deleteOneWorkoutById(workoutId);
+  await workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true);
+  
   return;
 }
 
@@ -245,16 +269,14 @@ export async function getUserMeals(userPublicId, offset, pageSize) {
 
   let hasNextPage = null;
   let hasPreviousPage = null;
-  const { meals, totalCount } = await mealRepo.findMealsByCreatorPublicId(
+  const { meals, totalCount } = await mealCollectionRepo.findMealsInCollectionByUserPublicId(
     userPublicId,
     offset,
     pageSize,
   );
 
   if (offset + pageSize < totalCount - 1) hasNextPage = true;
-
   if (offset > 0) hasPreviousPage = true;
-
   return { meals, hasPreviousPage, hasNextPage };
 }
 
@@ -265,7 +287,11 @@ export async function duplicateMeal(publicId, mealId) {
   const meal = await mealRepo.findOneMealByUUID(mealId);
   if (!meal) throw new NotFoundError("Meal");
 
-  await mealRepo.duplicateOneMealByUUID(mealId);
+  meal.creatorPublicId = user.publicId;
+  console.log(meal);
+  //await mealRepo.createMeal(meal);
+  
+
   return;
 }
 
