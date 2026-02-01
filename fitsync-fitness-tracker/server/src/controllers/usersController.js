@@ -1,7 +1,5 @@
 import * as userService from "../services/userService.js";
 
-// Look up class extensions using prototype
-
 export async function getPublicUserInformationController(req, res) {
   try {
     const { userPublicId } = req.params;
@@ -40,7 +38,7 @@ export async function updatePrivateUserInformationController(req, res) {
 
 export async function getUserWorkoutsController(req, res) {
   try {
-    const { userPublicId } = req.params;
+    const { publicId: userPublicId } = req.user;
     const offset = parseInt(req.query.offset) || 0;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const userWorkouts = await userService.getUserWorkouts(
@@ -56,7 +54,8 @@ export async function getUserWorkoutsController(req, res) {
 
 export async function duplicateWorkoutController(req, res) {
   try {
-    const { workoutId, userPublicId } = req.params;
+    const { workoutId } = req.params;
+    const { publicId: userPublicId } = req.users;
     await userService.duplicateWorkout(userPublicId, workoutId);
     return res.generateSuccessResponse(null, "Success", 201);
   } catch (error) {
@@ -66,7 +65,8 @@ export async function duplicateWorkoutController(req, res) {
 
 export async function deleteWorkoutController(req, res) {
   try {
-    const { workoutId, userPublicId } = req.params;
+    const { workoutId } = req.params;
+    const { publicId: userPublicId } = req.user;
     await userService.deleteWorkout(userPublicId, workoutId);
     return res.generateSuccessResponse(null, "Delete Successful", 200);
   } catch (error) {
@@ -76,7 +76,7 @@ export async function deleteWorkoutController(req, res) {
 
 export async function getUserMealsController(req, res) {
   try {
-    const { userPublicId } = req.params;
+    const { publicId: userPublicId } = req.user;
     const offset = parseInt(req.query.offset) || 0;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const userMeals = await userService.getUserMeals(
@@ -92,7 +92,8 @@ export async function getUserMealsController(req, res) {
 
 export async function duplicateMealController(req, res) {
   try {
-    const { mealId, userPublicId } = req.params;
+    const { mealId } = req.params;
+    const { publicId: userPublicId } = req.user;
     await userService.duplicateMeal(mealId, userPublicId);
     return res.generateSuccessResponse(null, "Success", 201);
   } catch (error) {
@@ -102,7 +103,8 @@ export async function duplicateMealController(req, res) {
 
 export async function deleteMealController(req, res) {
   try {
-    const { mealId, userPublicId } = req.params;
+    const { mealId } = req.params;
+    const { publicId: userPublicId } = req.user;
     await userService.deleteMeal(userPublicId, mealId);
     return res.generateSuccessResponse(null, "Delete Successful", 200);
   } catch (error) {

@@ -1,23 +1,32 @@
 import * as workoutRepo from "../repositories/workoutRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
 import * as workoutCollectionRepo from "../repositories/workoutCollectionRepo.js";
+import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 
-export async function createWorkout(workoutData) {
-  const newWorkout = await workoutRepo.createWorkout(workoutData);
-  const workoutLogData = {
-    creatorPublicId: newWorkout.creatorPublicId,
-    sourceWorkoutUUID: newWorkout.uuid,
-    workoutNameSnapshot: newWorkout.workoutName,
-    workoutDuration: newWorkout.workoutDuration,
-    exercisesSnapshot: newWorkout.exercises,
-    executedAt: new Date(),
-  };
-  await workoutLogRepo.createOneWorkoutLogEntry(workoutLogData);
-  await workoutCollectionRepo.addWorkoutToCollection(
-    newWorkout.creatorPublicId,
-    newWorkout.uuid,
-  );
-  
+export async function createAndLogWorkout(userPublicId, workoutData) {
+  // Verifies user is trying to create workout as their own account
+  if (userPublicId !== workoutData.creatorPublicId)
+    throw new UnauthorizedError();
+
+  // Create the workout template
+  const newWorkout = await workoutRepo.createWorkout({
+    ...workoutData,
+    creatorPublicId: userPublicId,
+  });
+
+  // Add to collection and create log in parallel
+  await Promise.all([
+    workoutCollectionRepo.addWorkoutToCollection(userPublicId, newWorkout.uuid),
+    workoutLogRepo.createOneWorkoutLogEntry({
+      creatorPublicId: userPublicId,
+      sourceWorkoutUUID: newWorkout.uuid,
+      workoutNameSnapshot: newWorkout.workoutName,
+      workoutDuration: newWorkout.workoutDuration,
+      exercisesSnapshot: newWorkout.exercises,
+      executedAt: new Date(),
+    }),
+  ]);
+
   return newWorkout;
 }
 

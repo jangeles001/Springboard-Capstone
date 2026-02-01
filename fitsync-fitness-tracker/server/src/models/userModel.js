@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema(
 
     // Structured profile inputs
     profile: {
-      heightInches: { type: Number, required: true }, // numeric inches
-      weightLbs: { type: Number, required: true }, // numeric lbs
+      heightInches: { type: Number, required: true }, //inches
+      weightLbs: { type: Number, required: true }, // lbs
       age: { type: Number, min: 18, required: true },
       gender: {
         type: String,
@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema(
       formulaVersion: { type: String, required: true },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.set("toJSON", {
@@ -65,4 +65,4 @@ userSchema.set("toJSON", {
 });
 
 // Generates Mongoose model
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.models.User || mongoose.model("User", userSchema);

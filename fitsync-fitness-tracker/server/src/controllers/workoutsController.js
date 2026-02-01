@@ -3,7 +3,12 @@ import * as workoutService from "../services/workoutService.js";
 export async function createWorkoutController(req, res) {
   try {
     const workoutData = req.body;
-    const newWorkout = await workoutService.createWorkout(workoutData);
+    console.log(workoutData);
+    const { publicId: userPublicId } = req.user;
+    const newWorkout = await workoutService.createAndLogWorkout(
+      userPublicId,
+      workoutData,
+    );
     return res.generateSuccessResponse(newWorkout, "Workout Created!", 201);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);
@@ -13,9 +18,8 @@ export async function createWorkoutController(req, res) {
 export async function getWorkoutInformationController(req, res) {
   try {
     const workoutId = req.params.workoutId;
-    const workoutInformation = await workoutService.getWorkoutInformation(
-      workoutId
-    );
+    const workoutInformation =
+      await workoutService.getWorkoutInformation(workoutId);
     return res.generateSuccessResponse(workoutInformation, "Success!", 200);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);

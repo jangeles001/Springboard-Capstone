@@ -15,8 +15,6 @@ export function CollectionPageGrid({
     if (isError) return (console.error(error) || <p>Error loading data.</p>);
     const items = data?.data?.meals || data?.data?.workouts || [];
 
-    console.log(data)
-
     if (!items.length) {
         return (
             

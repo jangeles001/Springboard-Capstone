@@ -103,6 +103,7 @@ export async function generateTokens(user) {
   const accessTokenPayload = {
     sub: user.uuid.toString(),
     username: user.username,
+    publicId: user.publicId,
   };
   const accessToken = jwt.sign(accessTokenPayload, getEnv("JWT_SECRET"), {
     expiresIn: "15m",
@@ -199,14 +200,17 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
   if (!user) throw new NotFoundError("USER");
 
+  if (userPublicId !== user.publicId) throw new UnauthorizedError();
+
   let hasNextPage = null;
   let hasPreviousPage = null;
 
-  const { workouts, totalCount } = await workoutCollectionRepo.findWorkoutsInCollectionByUserPublicId(
-    userPublicId,
-    offset,
-    pageSize,
-  );
+  const { workouts, totalCount } =
+    await workoutCollectionRepo.findWorkoutsInCollectionByUserPublicId(
+      userPublicId,
+      offset,
+      pageSize,
+    );
 
   if (offset + pageSize < totalCount - 1) hasNextPage = true;
 
@@ -216,9 +220,11 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
 }
 
 export async function duplicateWorkout(publicId, workoutId) {
+  // Validates user exists
   const user = await userRepo.findOneUserByPublicId(publicId);
   if (!user) throw new NotFoundError("User");
 
+  // Validate workout exists
   const workout = await workoutRepo.findOneWorkoutByUUID(workoutId);
   if (!workout) throw new NotFoundError("Workout");
 
@@ -227,40 +233,69 @@ export async function duplicateWorkout(publicId, workoutId) {
 }
 
 export async function deleteWorkout(publicId, workoutId) {
-  let workout;
-  let collectionEntry;
+  // Validates user exists
   const user = await userRepo.findOneUserByPublicId(publicId);
   if (!user) throw new NotFoundError("User");
 
-  workout = await workoutRepo.findOneWorkoutByUUID(workoutId)
-  if (!workout){
-    collectionEntry = await workoutCollectionRepo.findWorkoutInCollectionById(publicId, workoutId);
-    if(!collectionEntry){
+  // Fetch workouts and collections entry in parallel
+  const [workout, collectionEntries] = await Promise.all([
+    workoutRepo.findOneWorkoutByUUID(workoutId),
+    workoutCollectionRepo.findWorkoutInCollectionById(publicId, workoutId),
+  ]);
+
+  const hasCollectionEntry = collectionEntries && collectionEntries.length > 0;
+
+  // Workout doesn't exist (only collection entry or nothing)
+  if (!workout) {
+    if (!hasCollectionEntry) {
       throw new NotFoundError("Workout");
     }
-    await workoutCollectionRepo.removeOneWorkoutFromUserCollection(publicId, workoutId);
-    await workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true);
+
+    // Remove from collection and mark logs as deleted in parallel
+    await Promise.all([
+      workoutCollectionRepo.removeOneWorkoutFromUserCollection(
+        publicId,
+        workoutId,
+      ),
+      workoutLogRepo.updateUserDeletedWorkoutLogStatus(
+        publicId,
+        workoutId,
+        true,
+      ),
+    ]);
     return;
   }
 
-
-  if (workout.creatorPublicId !== user.publicId){
-    await workoutCollectionRepo.removeOneWorkoutFromUserCollection(publicId, workoutId);
-    await workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true);
+  // User is NOT the creator (removing someone else's workout from their collection)
+  if (workout.creatorPublicId !== publicId) {
+    await Promise.all([
+      workoutCollectionRepo.removeOneWorkoutFromUserCollection(
+        publicId,
+        workoutId,
+      ),
+      workoutLogRepo.updateUserDeletedWorkoutLogStatus(
+        publicId,
+        workoutId,
+        true,
+      ),
+    ]);
     return;
   }
 
-
-  await workoutCollectionRepo.removeOneWorkoutFromUserCollection(publicId, workoutId);
-  await workoutCollectionRepo.updateDeletedWorkoutInCollection(workoutId, {
-    workoutName: workout.workoutName,
-    workoutDuration: workout.workoutDuration,
-    exercises: workout.exercises,
-  });
-  await workoutRepo.deleteOneWorkoutById(workoutId);
-  await workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true);
-  
-  return;
+  // Case 3: User IS the creator (delete the workout itself)
+  await Promise.all([
+    workoutCollectionRepo.removeOneWorkoutFromUserCollection(
+      publicId,
+      workoutId,
+    ),
+    workoutCollectionRepo.updateDeletedWorkoutInCollection(workoutId, {
+      workoutName: workout.workoutName,
+      workoutDuration: workout.workoutDuration,
+      exercises: workout.exercises,
+    }),
+    workoutRepo.deleteOneWorkoutById(workoutId),
+    workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true),
+  ]);
 }
 
 export async function getUserMeals(userPublicId, offset, pageSize) {
@@ -269,11 +304,12 @@ export async function getUserMeals(userPublicId, offset, pageSize) {
 
   let hasNextPage = null;
   let hasPreviousPage = null;
-  const { meals, totalCount } = await mealCollectionRepo.findMealsInCollectionByUserPublicId(
-    userPublicId,
-    offset,
-    pageSize,
-  );
+  const { meals, totalCount } =
+    await mealCollectionRepo.findMealsInCollectionByUserPublicId(
+      userPublicId,
+      offset,
+      pageSize,
+    );
 
   if (offset + pageSize < totalCount - 1) hasNextPage = true;
   if (offset > 0) hasPreviousPage = true;
@@ -290,7 +326,6 @@ export async function duplicateMeal(publicId, mealId) {
   meal.creatorPublicId = user.publicId;
   console.log(meal);
   //await mealRepo.createMeal(meal);
-  
 
   return;
 }

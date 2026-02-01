@@ -9,18 +9,24 @@ export const exerciseZodSchema = z.object({
     invalid_type_error: "The exercise name must be a string!",
     required_error: "The name of the exercise is required!",
   }),
-  muscles: z.array({
-    invalid_type_error: "Muscles must be an array of strings!",
-    required_error: "Muscles array is needed for AI functionality!" 
-  }),
+  muscles: z.array(
+    z.string({
+      invalid_type_error: "Each muscle must be a string!",
+    }),
+    {
+      required_error: "Muscles array is needed for AI functionality!",
+      invalid_type_error: "Muscles must be an array of strings!",
+    },
+  ),
   description: z.string({
     invalid_type_error: "The description must be a string!",
     required_error: "A exercise description is required!",
   }),
-  difficultyAtCreation: z.number({
-    invalid_type_error: "The difficulty at creation must be a number!",
-    required_error: "The difficulty at creationg is required!",
-  }), // snapshot of difficulty at workout creation
+  difficultyAtCreation: z
+    .number({
+      invalid_type_error: "The difficulty at creation must be a number!",
+    })
+    .optional(),
   reps: z
     .number({
       invalid_type_error: "Reps must be a number!",
