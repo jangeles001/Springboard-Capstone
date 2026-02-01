@@ -52,28 +52,6 @@ export async function getUserWorkoutsController(req, res) {
   }
 }
 
-export async function duplicateWorkoutController(req, res) {
-  try {
-    const { workoutId } = req.params;
-    const { publicId: userPublicId } = req.users;
-    await userService.duplicateWorkout(userPublicId, workoutId);
-    return res.generateSuccessResponse(null, "Success", 201);
-  } catch (error) {
-    return res.generateErrorResponse(error.message, error.statusCode);
-  }
-}
-
-export async function deleteWorkoutController(req, res) {
-  try {
-    const { workoutId } = req.params;
-    const { publicId: userPublicId } = req.user;
-    await userService.deleteWorkout(userPublicId, workoutId);
-    return res.generateSuccessResponse(null, "Delete Successful", 200);
-  } catch (error) {
-    return res.generateErrorResponse(error.message, error.statusCode);
-  }
-}
-
 export async function getUserMealsController(req, res) {
   try {
     const { publicId: userPublicId } = req.user;

@@ -6,6 +6,14 @@ export async function findMealCollectionsByUserPublicId(userPublicId) {
   }).populate("mealUUID").lean();
 }
 
+export async function findMealInCollectionByMealId(userPublicId, mealUUID) {
+  return await MealCollection.find({
+    userPublicId,
+    mealUUID,
+    isDeleted: false,
+  }).lean();
+}
+
 export async function addMealToCollection(userPublicId, mealUUID) {
   const newEntry = await MealCollection.create({
     userPublicId,

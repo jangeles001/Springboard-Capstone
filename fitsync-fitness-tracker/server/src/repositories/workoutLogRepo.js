@@ -207,7 +207,7 @@ export async function findWorkoutMuscleDistributionByUserPublicId(
 
 export async function updateUserDeletedWorkoutLogStatus(
   publicId,
-  workoutUUID,
+  sourceWorkoutUUID,
   isDeleted,
 ) {
   await WorkoutLog.updateMany(

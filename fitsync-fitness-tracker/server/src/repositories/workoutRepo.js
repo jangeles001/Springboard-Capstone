@@ -44,6 +44,8 @@ export async function findWorkoutsByCreatorPublicId(
 
 export async function findOneWorkoutByUUID(workoutId) {
   const workout = await Workout.findOne({ uuid: workoutId });
+  if (!workout) return workout;
+
   return workout.toJSON();
 }
 

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const mealLogSchema = new mongoose.Schema(
   {
-    userPublicId: {
+    creatorPublicId: {
       type: String,
       required: true,
       index: true,

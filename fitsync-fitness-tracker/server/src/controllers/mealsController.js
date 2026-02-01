@@ -10,6 +10,28 @@ export async function createMealController(req, res) {
   }
 }
 
+export async function deleteMealController(req, res) {
+  try {
+    const { mealId } = req.params;  
+    const { publicId } = req.user;
+    await mealService.deleteMeal(publicId, mealId);
+    return res.generateSuccessResponse(null, "Meal Deleted Successfully!", 200);
+  } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode);
+  } 
+}
+
+export async function duplicateMealController(req, res) {
+  try {
+    const { mealId } = req.params;
+    const { publicId } = req.user;
+    await mealService.duplicateMeal(publicId, mealId);
+    return res.generateSuccessResponse(null, "Meal Duplicated Successfully!", 201);
+  } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode);
+  }
+}
+
 export async function getAllMealsController(req, res) {
   try {
     const offset = parseInt(req.query.page) || 0;

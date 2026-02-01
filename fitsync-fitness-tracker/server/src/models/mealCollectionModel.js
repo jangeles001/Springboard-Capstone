@@ -21,6 +21,18 @@ const mealCollectionSchema = new mongoose.Schema(
       index: true,
     },
 
+    // Soft deletion field
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    snapshot:{
+      type: Object,
+      default: {},
+    },
+
   },
   { timestamps: true }
 );

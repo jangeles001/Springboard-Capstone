@@ -2,6 +2,7 @@ import * as workoutRepo from "../repositories/workoutRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
 import * as workoutCollectionRepo from "../repositories/workoutCollectionRepo.js";
 import { UnauthorizedError } from "../errors/UnauthorizedError.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 
 export async function createAndLogWorkout(userPublicId, workoutData) {
   // Verifies user is trying to create workout as their own account
@@ -28,6 +29,101 @@ export async function createAndLogWorkout(userPublicId, workoutData) {
   ]);
 
   return newWorkout;
+}
+
+export async function duplicateWorkout(publicId, workoutId) {
+  const workout = await workoutRepo.findOneWorkoutByUUID(workoutId);
+  if (!workout) throw new NotFoundError("WORKOUT");
+
+  const collection = await workoutCollectionRepo.findWorkoutInCollectionById(publicId, workoutId);
+  
+  if(collection && collection.length > 0){
+    workoutLogRepo.createOneWorkoutLogEntry({
+      creatorPublicId: publicId,
+      sourceWorkoutUUID: workoutId, 
+      workoutNameSnapshot: workout.workoutName,
+      workoutDuration: workout.workoutDuration,
+      exercisesSnapshot: workout.exercises,
+      executedAt: new Date(),
+    });
+    return; 
+  }
+
+  await Promise.all([
+    workoutLogRepo.createOneWorkoutLogEntry({
+      creatorPublicId: publicId,
+      sourceWorkoutUUID: workoutId,
+      workoutNameSnapshot: workout.workoutName,
+      workoutDuration: workout.workoutDuration,
+      exercisesSnapshot: workout.exercises,
+      executedAt: new Date(),
+    }),
+    workoutCollectionRepo.addWorkoutToCollection(publicId, workoutId),
+  ]);
+
+  return;
+}
+
+export async function deleteWorkout(publicId, workoutId) {
+  // Fetch workouts and collections entry in parallel
+  const [workout, collectionEntries] = await Promise.all([
+    workoutRepo.findOneWorkoutByUUID(workoutId),
+    workoutCollectionRepo.findWorkoutInCollectionById(publicId, workoutId),
+  ]);
+
+  const hasCollectionEntry = collectionEntries && collectionEntries.length > 0;
+
+  // Workout doesn't exist (only collection entry or nothing)
+  if (!workout) {
+    if (!hasCollectionEntry) {
+      throw new NotFoundError("WORKOUT");
+    }
+
+    // Remove from collection and mark logs as deleted in parallel
+    await Promise.all([
+      workoutCollectionRepo.removeOneWorkoutFromUserCollection(
+        publicId,
+        workoutId,
+      ),
+      workoutLogRepo.updateUserDeletedWorkoutLogStatus(
+        publicId,
+        workoutId,
+        true,
+      ),
+    ]);
+    return;
+  }
+
+  // User is NOT the creator (removing someone else's workout from their collection)
+  if (workout.creatorPublicId !== publicId) {
+    await Promise.all([
+      workoutCollectionRepo.removeOneWorkoutFromUserCollection(
+        publicId,
+        workoutId,
+      ),
+      workoutLogRepo.updateUserDeletedWorkoutLogStatus(
+        publicId,
+        workoutId,
+        true,
+      ),
+    ]);
+    return;
+  }
+
+  // Case 3: User IS the creator (delete the workout itself)
+  await Promise.all([
+    workoutCollectionRepo.removeOneWorkoutFromUserCollection(
+      publicId,
+      workoutId,
+    ),
+    workoutCollectionRepo.updateDeletedWorkoutInCollection(workoutId, {
+      workoutName: workout.workoutName,
+      workoutDuration: workout.workoutDuration,
+      exercises: workout.exercises,
+    }),
+    workoutRepo.deleteOneWorkoutById(workoutId),
+    workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true),
+  ]);
 }
 
 export async function getWorkoutInformation(workoutId) {

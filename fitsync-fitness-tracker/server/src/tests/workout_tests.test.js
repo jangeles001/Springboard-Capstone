@@ -139,7 +139,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
   // ========== WORKOUT CREATION TESTS ==========
 
   describe("POST /api/v1/workouts/create - Create and Log Workout", () => {
-    it("should return 201 and create workout template, log entry, and add to collection", async () => {
+    it("Should return 201 and create workout template, log entry, and add to collection", async () => {
       const newWorkoutData = {
         creatorPublicId: newUserA.publicId,
         workoutName: "Upper Body Blast",
@@ -202,7 +202,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       expect(collection).to.exist;
     });
 
-    it("should return 400 for validation errors (missing required fields)", async () => {
+    it("Should return 400 for validation errors (missing required fields)", async () => {
       const invalidWorkoutData = {
         // Missing workoutName
         creatorPublicId: newUserA.publicId,
@@ -229,7 +229,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       expect(results.data.error).to.exist;
     });
 
-    it("should return 401 if user is not authenticated", async () => {
+    it("Should return 401 if user is not authenticated", async () => {
       await userA.jar.removeAllCookies();
 
       const newWorkoutData = {
@@ -258,7 +258,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       expect(results.status).to.equal(401);
     });
 
-    it("should create workout with creatorPublicId from authenticated user", async () => {
+    it("Should create workout with creatorPublicId from authenticated user", async () => {
       const newWorkoutData = {
         creatorPublicId: newUserA.publicId,
         workoutName: "Security Test Workout",
@@ -296,8 +296,9 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
   // ========== WORKOUT DELETION TESTS ==========
 
   describe("DELETE /api/v1/users/:userPublicId/workouts/:workoutId - Delete Workout", () => {
-    it("should return 200 and delete workout created by user (creator deletion)", async () => {
+    it("Should return 200 and delete workout created by user (creator deletion)", async () => {
       // Add workout to User A's collection
+      
       await WorkoutCollection.create({
         userPublicId: newUserA.publicId,
         workoutUUID: newWorkoutA.uuid,
@@ -314,13 +315,12 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       });
 
       const results = await userA.client.delete(
-        `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts/${newWorkoutA.uuid}`,
+        `${BASE_URL}/api/v1/workouts/delete/${newWorkoutA.uuid}`,
         {
           headers: { "Content-Type": "application/json" },
           validateStatus: () => true,
         },
       );
-
       expect(results.status).to.equal(200);
       expect(results.data.message).to.equal("Delete Successful");
 
@@ -355,7 +355,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       });
     });
 
-    it("should return 200 and remove from collection when user deletes someone else's workout", async () => {
+    it("Should return 200 and remove from collection when user deletes someone else's workout", async () => {
       // User B adds User A's workout to their collection
       await WorkoutCollection.create({
         userPublicId: newUserB.publicId,
@@ -373,7 +373,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       });
 
       const results = await userB.client.delete(
-        `${BASE_URL}/api/v1/users/${newUserB.publicId}/workouts/${newWorkoutA.uuid}`,
+        `${BASE_URL}/api/v1/workouts/delete/${newWorkoutA.uuid}`,
         {
           headers: { "Content-Type": "application/json" },
           validateStatus: () => true,
@@ -404,7 +404,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       });
     });
 
-    it("should return 200 and handle deletion when only collection entry exists (workout already deleted)", async () => {
+    it("Should return 200 and handle deletion when only collection entry exists (workout already deleted)", async () => {
       // Add workout to User A's collection
       await WorkoutCollection.create({
         userPublicId: newUserA.publicId,
@@ -413,9 +413,9 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
 
       // Delete the actual workout
       await Workout.deleteOne({ uuid: newWorkoutA.uuid });
-
+      
       const results = await userA.client.delete(
-        `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts/${newWorkoutA.uuid}`,
+        `${BASE_URL}/api/v1/workouts/delete/${newWorkoutA.uuid}`,
         {
           headers: { "Content-Type": "application/json" },
           validateStatus: () => true,
@@ -433,11 +433,11 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       expect(collectionEntry).to.not.exist;
     });
 
-    it("should return 404 if workout and collection entry don't exist", async () => {
+    it("Should return 404 if workout and collection entry don't exist", async () => {
       const nonExistentUUID = "00000000-0000-0000-0000-000000000000";
 
       const results = await userA.client.delete(
-        `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts/${nonExistentUUID}`,
+        `${BASE_URL}/api/v1/workouts/delete/${nonExistentUUID}`,
         {
           headers: { "Content-Type": "application/json" },
           validateStatus: () => true,
@@ -452,7 +452,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       await userA.jar.removeAllCookies();
 
       const results = await userA.client.delete(
-        `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts/${newWorkoutA.uuid}`,
+        `${BASE_URL}/api/v1/workouts/delete/${newWorkoutA.uuid}`,
         {
           headers: { "Content-Type": "application/json" },
           validateStatus: () => true,
@@ -462,9 +462,9 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       expect(results.status).to.equal(401);
     });
 
-    it("should mark multiple logs as deleted when deleting a workout logged multiple times", async () => {
-      // Create multiple logs for the same workout
-      const log1 = await WorkoutLog.create({
+    it("Should mark multiple logs as deleted when deleting a workout logged multiple times", async () => {
+      // Creates multiple logs for the same workout
+      await WorkoutLog.create({
         creatorPublicId: newUserA.publicId,
         sourceWorkoutUUID: newWorkoutA.uuid,
         workoutNameSnapshot: "Leg Day",
@@ -473,7 +473,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         executedAt: new Date("2026-01-15"),
       });
 
-      const log2 = await WorkoutLog.create({
+      await WorkoutLog.create({
         creatorPublicId: newUserA.publicId,
         sourceWorkoutUUID: newWorkoutA.uuid,
         workoutNameSnapshot: "Leg Day",
@@ -482,7 +482,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         executedAt: new Date("2026-01-20"),
       });
 
-      const log3 = await WorkoutLog.create({
+      await WorkoutLog.create({
         creatorPublicId: newUserA.publicId,
         sourceWorkoutUUID: newWorkoutA.uuid,
         workoutNameSnapshot: "Leg Day",
@@ -492,7 +492,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       });
 
       const results = await userA.client.delete(
-        `${BASE_URL}/api/v1/users/${newUserA.publicId}/workouts/${newWorkoutA.uuid}`,
+        `${BASE_URL}/api/v1/workouts/delete/${newWorkoutA.uuid}`,
         {
           headers: { "Content-Type": "application/json" },
           validateStatus: () => true,
@@ -501,7 +501,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
 
       expect(results.status).to.equal(200);
 
-      // Verify all logs are marked as deleted
+      // Verifies all logs are marked as deleted
       const logs = await WorkoutLog.find({
         sourceWorkoutUUID: newWorkoutA.uuid,
       });
@@ -512,4 +512,106 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       });
     });
   });
+
+    // ========== WORKOUT DUPLICATION TESTS ==========
+    describe("POST /api/v1/workouts/duplicate/:workoutId", () => {
+    it("Should not create a new collection document if workout already exists in collection and return 201", async () => {
+      const results = await userA.client.post(
+        `${BASE_URL}/api/v1/workouts/duplicate/${newWorkoutA.uuid}`,
+        {},
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(results.status).to.equal(201);
+      expect(results.data.message).to.equal("Success");
+
+      // Verifies log created
+      const log = await WorkoutLog.findOne({
+        creatorPublicId: newUserA.publicId,
+        sourceWorkoutUUID: newWorkoutA.uuid,
+      });
+
+      expect(log).to.exist;
+
+      // Verifies added to collection
+      const collectionEntry = await WorkoutCollection.findOne({
+        userPublicId: userA.publicId,
+        workoutUUID: newWorkoutA.uuid,
+      });
+
+      expect(collectionEntry).to.not.exist;
+    });
+
+    it("Should return 200 when user tries to duplicate another user's workout", async () => {
+      const results = await userB.client.post(
+        `${BASE_URL}/api/v1/workouts/duplicate/${newWorkoutA.uuid}`,
+        {},
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+      expect(results.status).to.equal(201);
+
+      const log = await WorkoutLog.findOne({
+        creatorPublicId: newUserB.publicId,
+        sourceWorkoutUUID: newWorkoutA.uuid,
+      });
+
+      expect(log).to.exist;
+
+      const collectionEntry = await WorkoutCollection.findOne({
+        userPublicId: newUserB.publicId,
+        workoutUUID: newWorkoutA.uuid,
+      });
+
+      expect(collectionEntry).to.exist;
+    });
+
+    it("Should return 404 when workout does not exist", async () => {
+      const fakeUUID = crypto.randomUUID();
+
+      const results = await userA.client.post(
+        `${BASE_URL}/api/v1/workouts/duplicate/${fakeUUID}`,
+        {},
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(results.status).to.equal(404);
+    });
+
+    it("Should not create duplicate collection entry if workout already exists in collection", async () => {
+      await WorkoutCollection.create({
+        userPublicId: newUserA.publicId,
+        workoutUUID: newWorkoutA.uuid,
+      });
+
+      const results = await userA.client.post(
+        `${BASE_URL}/api/v1/workouts/duplicate/${newWorkoutA.uuid}`,
+        {},
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(results.status).to.equal(201);
+
+      const entries = await WorkoutCollection.find({
+        userPublicId: newUserA.publicId,
+        workoutUUID: newWorkoutA.uuid,
+      });
+
+      expect(entries.length).to.equal(1);
+    });
+  });
 });
+
+
+

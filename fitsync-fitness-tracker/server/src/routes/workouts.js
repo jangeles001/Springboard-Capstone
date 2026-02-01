@@ -2,6 +2,8 @@ import express from "express";
 import {
   getAllWorkoutsController,
   createWorkoutController,
+  deleteWorkoutController,
+  duplicateWorkoutController,
   getWorkoutInformationController,
 } from "../controllers/workoutsController.js";
 import requireAuth from "../middleware/authMiddleware.js";
@@ -17,6 +19,12 @@ router
     validate(newWorkoutZodSchema),
     createWorkoutController,
   )
+  .delete(
+    "/delete/:workoutId",
+    requireAuth,
+    deleteWorkoutController,
+  )
+  .post("/duplicate/:workoutId", requireAuth, duplicateWorkoutController)
   .get("/", requireAuth, getAllWorkoutsController)
   .get("/:workoutId", requireAuth, getWorkoutInformationController);
 
