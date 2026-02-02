@@ -10,7 +10,7 @@ export async function createOneMealLogEntry(mealLogData) {
 export async function updateOneMealLogEntryByUUID(mealUUID, logId) {
   await MealLog.findOneAndUpdate(
     { mealUUID },
-    { $set: { isDeleted: true, correctedFromLogId: logId } }
+    { $set: { isDeleted: true, correctedFromLogId: logId } },
   );
   return;
 }
@@ -64,14 +64,14 @@ export async function findAllMealLogsByUserPublicId(userPublicId, range) {
           type === "daily"
             ? "$_id.day"
             : type === "monthly"
-            ? "$_id.month"
-            : {
-                $concat: [
-                  { $toString: "$_id.isoWeek" },
-                  "-",
-                  { $toString: "$_id.year" },
-                ],
-              },
+              ? "$_id.month"
+              : {
+                  $concat: [
+                    { $toString: "$_id.isoWeek" },
+                    "-",
+                    { $toString: "$_id.year" },
+                  ],
+                },
         calories: 1,
         protein: 1,
         carbs: 1,
@@ -83,4 +83,17 @@ export async function findAllMealLogsByUserPublicId(userPublicId, range) {
   ]);
 
   return { mealLogs };
+}
+
+export async function updateDeletedMealLogStatus(
+  publicId,
+  sourceMealUUID,
+  isDeleted,
+) {
+  await MealLog.updateMany(
+    { creatorPublicId: publicId, sourceMealUUID },
+    { $set: { isDeleted } },
+  );
+
+  return;
 }

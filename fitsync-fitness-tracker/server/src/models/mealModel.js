@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
-const macrosSchema = new mongoose.Schema(
+export const macrosSchema = new mongoose.Schema(
   {
     protein: { type: Number, required: true },
     fat: { type: Number, required: true },
@@ -10,10 +10,10 @@ const macrosSchema = new mongoose.Schema(
     netCarbs: { type: Number, required: true },
     calories: { type: Number, required: true },
   },
-  { _id: false } // Removes _id from the ingredient object
+  { _id: false }, // Removes _id from the ingredient object
 );
 
-const mealIngredientSchema = new mongoose.Schema(
+export const mealIngredientSchema = new mongoose.Schema(
   {
     ingredientId: { type: Number, required: true }, // FDCID item id
     ingredientName: { type: String, required: true },
@@ -22,7 +22,7 @@ const mealIngredientSchema = new mongoose.Schema(
     caloriesPer100G: { type: Number, required: true },
     macrosPer100G: { type: macrosSchema, required: true },
   },
-  { _id: false } // Removes _id from the ingredient object
+  { _id: false }, // Removes _id from the ingredient object
 );
 
 const mealSchema = new mongoose.Schema(
@@ -36,31 +36,26 @@ const mealSchema = new mongoose.Schema(
       required: true,
       default: [],
     },
-    
+
     mealMacros: { type: macrosSchema, required: true },
-    
+
     isDeleted: {
       type: Boolean,
       default: false,
       index: true,
     },
-    
-    snapshot:{
-      type: Object,
-      required: true,
-    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-mealSchema.set('toJSON', {
-  transform: function(doc, ret, options) {
+mealSchema.set("toJSON", {
+  transform: function (doc, ret, options) {
     delete ret._id;
     delete ret.__v;
     delete ret.createdAt;
     delete ret.updatedAt;
     return ret;
-  }
+  },
 });
 
 export const Meal = mongoose.model("Meal", mealSchema);

@@ -3,7 +3,9 @@ import { MealCollection } from "../models/mealCollectionModel.js";
 export async function findMealCollectionsByUserPublicId(userPublicId) {
   return await MealCollection.find({
     userPublicId,
-  }).populate("mealUUID").lean();
+  })
+    .populate("mealUUID")
+    .lean();
 }
 
 export async function findMealInCollectionByMealId(userPublicId, mealUUID) {
@@ -27,7 +29,6 @@ export async function findMealsInCollectionByUserPublicId(
   offset = 0,
   pageSize = 10,
 ) {
-
   const meals = await MealCollection.find({ userPublicId })
     .populate("mealUUID")
     .skip(offset)
@@ -41,5 +42,26 @@ export async function findMealsInCollectionByUserPublicId(
 
 export async function removeMealFromCollection(userPublicId, mealUUID) {
   await MealCollection.deleteOne({ userPublicId, mealUUID });
+  return;
+}
+
+export async function updateDeletedMealInCollection(mealUUID, updateData) {
+  await MealCollection.updateMany(
+    {
+      mealUUID,
+      isDeleted: false,
+      snapshot: { $exists: false },
+    },
+    {
+      $set: {
+        snapshot: {
+          mealName: updateData.mealName,
+          mealDescription: updateData.mealDescription,
+          ingredients: updateData.ingredients,
+          mealMacros: updateData.exercises,
+        },
+      },
+    },
+  );
   return;
 }

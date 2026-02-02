@@ -205,7 +205,7 @@ export async function findWorkoutMuscleDistributionByUserPublicId(
   ]);
 }
 
-export async function updateUserDeletedWorkoutLogStatus(
+export async function updateDeletedWorkoutLogStatus(
   publicId,
   sourceWorkoutUUID,
   isDeleted,

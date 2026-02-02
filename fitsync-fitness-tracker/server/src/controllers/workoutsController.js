@@ -18,9 +18,12 @@ export async function duplicateWorkoutController(req, res) {
   try {
     const { workoutId } = req.params;
     const { publicId } = req.user;
-    console.log(publicId, workoutId);
     await workoutService.duplicateWorkout(publicId, workoutId);
-    return res.generateSuccessResponse(null, "Workout Duplicated Successfully!", 201);
+    return res.generateSuccessResponse(
+      null,
+      "Workout Duplicated Successfully!",
+      201,
+    );
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);
   }
@@ -30,11 +33,13 @@ export async function deleteWorkoutController(req, res) {
   try {
     const { workoutId } = req.params;
     const { publicId } = req.user;
-    console.log(publicId, workoutId);
     await workoutService.deleteWorkout(publicId, workoutId);
-    return res.generateSuccessResponse(null, "Workout Deleted Successfully!", 200);
+    return res.generateSuccessResponse(
+      null,
+      "Workout Deleted Successfully!",
+      200,
+    );
   } catch (error) {
-    console.log(error);
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 }

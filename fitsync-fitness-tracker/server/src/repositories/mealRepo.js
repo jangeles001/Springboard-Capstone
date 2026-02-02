@@ -32,5 +32,8 @@ export async function findMealsByCreatorPublicId(userPublicId, offset, limit) {
 
 export async function findOneMealByUUID(mealUUID) {
   const meal = await Meal.findOne({ uuid: mealUUID });
+
+  if (!meal) return meal;
+
   return meal.toJSON();
 }

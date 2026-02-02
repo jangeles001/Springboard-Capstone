@@ -1,44 +1,53 @@
 import * as mealRepo from "../repositories/mealRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
 import * as mealCollectionRepo from "../repositories/mealCollectionRepo.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 
-export async function createNewMeal(mealData) {
-  const meal = await mealRepo.createMeal(mealData);
-  if (meal) {
-    const mealLogData = {
-      userPublicId: meal.creatorPublicId,
-      mealUUID: meal.uuid,
-      mealNameSnapshot: meal.mealName,
-      macrosSnapshot: meal.mealMacros,
-      consumedAt: new Date(),
-      correctedFromLogId: null,
-    };
+export async function createNewMeal(mealData, userPublicId) {
+  const meal = await mealRepo.createMeal({
+    ...mealData,
+    creatorPublicId: userPublicId,
+  });
 
-    await mealLogRepo.createOneMealLogEntry(mealLogData);
-    await mealCollectionRepo.addMealToCollection(
-      meal.creatorPublicId,
-      meal.uuid,
-    );
-  }
+  const mealLogData = {
+    creatorPublicId: userPublicId,
+    sourceMealUUID: meal.uuid,
+    mealNameSnapshot: meal.mealName,
+    mealDescriptionSnapshot: meal.mealDescription,
+    ingredientsSnapshot: meal.ingredients,
+    macrosSnapshot: meal.mealMacros,
+    consumedAt: new Date(),
+  };
+
+  // Add to collection and create log in parallel
+  await Promise.all([
+    mealCollectionRepo.addMealToCollection(userPublicId, meal.uuid),
+    mealLogRepo.createOneMealLogEntry(mealLogData),
+  ]);
 
   return meal;
 }
-  
+
 export async function duplicateMeal(publicId, mealId) {
   const meal = await mealRepo.findOneMealByUUID(mealId);
   if (!meal) throw new NotFoundError("MEAL");
 
-  const collection = await mealCollectionRepo.findMealInCollectionByMealId(publicId, mealId);
-  
-  if(collection && collection.length > 0){
-    mealLogRepo.createOneMealLogEntry({
+  const collection = await mealCollectionRepo.findMealInCollectionByMealId(
+    publicId,
+    mealId,
+  );
+
+  if (collection && collection.length > 0) {
+    await mealLogRepo.createOneMealLogEntry({
       creatorPublicId: publicId,
-      sourceMealUUID: mealId, 
+      sourceMealUUID: mealId,
       mealNameSnapshot: meal.mealName,
+      mealDescriptionSnapshot: meal.mealDescription,
+      ingredientsSnapshot: meal.ingredients,
       macrosSnapshot: meal.mealMacros,
       consumedAt: new Date(),
     });
-    return; 
+    return;
   }
 
   await Promise.all([
@@ -46,6 +55,8 @@ export async function duplicateMeal(publicId, mealId) {
       creatorPublicId: publicId,
       sourceMealUUID: mealId,
       mealNameSnapshot: meal.mealName,
+      mealDescriptionSnapshot: meal.mealDescription,
+      ingredientsSnapshot: meal.ingredients,
       macrosSnapshot: meal.mealMacros,
       consumedAt: new Date(),
     }),
@@ -72,15 +83,8 @@ export async function deleteMeal(publicId, mealId) {
 
     // Remove from collection and mark logs as deleted in parallel
     await Promise.all([
-      mealCollectionRepo.removeMealFromCollection(
-        publicId,
-        mealId,
-      ),
-      mealLogRepo.updateUserDeletedMealLogStatus(
-        publicId,
-        mealId,
-        true,
-      ),
+      mealCollectionRepo.removeMealFromCollection(publicId, mealId),
+      mealLogRepo.updateDeletedMealLogStatus(publicId, mealId, true),
     ]);
     return;
   }
@@ -88,31 +92,21 @@ export async function deleteMeal(publicId, mealId) {
   // User is NOT the creator (removing someone else's meal from their collection)
   if (meal.creatorPublicId !== publicId) {
     await Promise.all([
-      mealCollectionRepo.removeMealFromCollection(
-        publicId,
-        mealId,
-      ),
-      mealLogRepo.updateUserDeletedMealLogStatus(
-        publicId,
-        mealId,
-        true,
-      ),
+      mealCollectionRepo.removeMealFromCollection(publicId, mealId),
+      mealLogRepo.updateDeletedMealLogStatus(publicId, mealId, true),
     ]);
     return;
   }
 
   // Case 3: User IS the creator (delete the meal itself)
   await Promise.all([
-    mealCollectionRepo.removeMealFromCollection(
-      publicId,
-      mealId,
-    ),
+    mealCollectionRepo.removeMealFromCollection(publicId, mealId),
     mealCollectionRepo.updateDeletedMealInCollection(mealId, {
       mealName: meal.mealName,
       mealMacros: meal.mealMacros,
     }),
     mealRepo.deleteOneMealById(mealId),
-    mealLogRepo.updateUserDeletedMealLogStatus(publicId, mealId, true),
+    mealLogRepo.updateDeletedMealLogStatus(publicId, mealId, true),
   ]);
 }
 

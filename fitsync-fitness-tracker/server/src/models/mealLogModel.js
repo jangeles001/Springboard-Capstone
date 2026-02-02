@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { mealIngredientSchema, macrosSchema } from "./mealModel.js";
 
 const mealLogSchema = new mongoose.Schema(
   {
@@ -9,29 +10,29 @@ const mealLogSchema = new mongoose.Schema(
     },
 
     // Reference to a saved meal
-    mealUUID: {
+    sourceMealUUID: {
       type: String,
+      required: true,
     },
 
-    // Snapshot data (DO NOT reference Meal dynamically)
     mealNameSnapshot: {
       type: String,
       required: true,
     },
 
-    macrosSnapshot: {
-      protein: { type: Number, required: true },
-      fat: { type: Number, required: true },
-      carbs: { type: Number, required: true },
-      fiber: { type: Number, required: true },
-      netCarbs: { type: Number, required: true },
-      calories: { type: Number, required: true },
+    mealDescriptionSnapshot: {
+      type: String,
+      required: true,
     },
 
-    servings: {
-      type: Number,
-      default: 1,
-      min: 0.25,
+    ingredientsSnapshot: {
+      type: [mealIngredientSchema],
+      required: true,
+    },
+
+    macrosSnapshot: {
+      type: macrosSchema,
+      default: {},
     },
 
     consumedAt: {
@@ -52,7 +53,7 @@ const mealLogSchema = new mongoose.Schema(
       ref: "MealLog",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const MealLog = mongoose.model("MealLog", mealLogSchema);

@@ -3,10 +3,6 @@ import { mealIngredientZodSchema } from "./mealIngredientZodSchema.js";
 import { mealMacrosZodSchema } from "./mealMacrosZodSchema.js";
 
 export const newMealZodSchema = z.object({
-  creatorPublicId: z.string({
-    required_error: "Creator Public Id is required!",
-    invalid_type_error: "Creator public id must be a string!",
-  }),
   mealName: z.string({
     required_error: "Meal name is required!",
   }),

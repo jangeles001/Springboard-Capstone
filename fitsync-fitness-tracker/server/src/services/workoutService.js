@@ -35,18 +35,21 @@ export async function duplicateWorkout(publicId, workoutId) {
   const workout = await workoutRepo.findOneWorkoutByUUID(workoutId);
   if (!workout) throw new NotFoundError("WORKOUT");
 
-  const collection = await workoutCollectionRepo.findWorkoutInCollectionById(publicId, workoutId);
-  
-  if(collection && collection.length > 0){
+  const collection = await workoutCollectionRepo.findWorkoutInCollectionById(
+    publicId,
+    workoutId,
+  );
+
+  if (collection && collection.length > 0) {
     workoutLogRepo.createOneWorkoutLogEntry({
       creatorPublicId: publicId,
-      sourceWorkoutUUID: workoutId, 
+      sourceWorkoutUUID: workoutId,
       workoutNameSnapshot: workout.workoutName,
       workoutDuration: workout.workoutDuration,
       exercisesSnapshot: workout.exercises,
       executedAt: new Date(),
     });
-    return; 
+    return;
   }
 
   await Promise.all([
@@ -85,11 +88,7 @@ export async function deleteWorkout(publicId, workoutId) {
         publicId,
         workoutId,
       ),
-      workoutLogRepo.updateUserDeletedWorkoutLogStatus(
-        publicId,
-        workoutId,
-        true,
-      ),
+      workoutLogRepo.updateDeletedWorkoutLogStatus(publicId, workoutId, true),
     ]);
     return;
   }
@@ -101,11 +100,7 @@ export async function deleteWorkout(publicId, workoutId) {
         publicId,
         workoutId,
       ),
-      workoutLogRepo.updateUserDeletedWorkoutLogStatus(
-        publicId,
-        workoutId,
-        true,
-      ),
+      workoutLogRepo.updateDeletedWorkoutLogStatus(publicId, workoutId, true),
     ]);
     return;
   }
@@ -122,7 +117,7 @@ export async function deleteWorkout(publicId, workoutId) {
       exercises: workout.exercises,
     }),
     workoutRepo.deleteOneWorkoutById(workoutId),
-    workoutLogRepo.updateUserDeletedWorkoutLogStatus(publicId, workoutId, true),
+    workoutLogRepo.updateDeletedWorkoutLogStatus(publicId, workoutId, true),
   ]);
 }
 
