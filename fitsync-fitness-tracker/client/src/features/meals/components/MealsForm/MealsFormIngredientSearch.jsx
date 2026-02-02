@@ -1,17 +1,15 @@
 import { useMealsFormContext } from '../../hooks/useMealsFormContext'
 import ResultItem from '../ResultItem';
-import  useSearch from '../../hooks/useSearch'
+import useSearch from '../../hooks/useSearch'
 
 export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
     const { handleClick } = useMealsFormContext();
     const { 
             query,
-            setQuery,
-            handleIngredientSearchChange,
+            debouncedSetQuery,
             handleScroll, 
             results, 
-        } = useSearch("" ,700); // Ingredients search bar debouncer 
-
+        } = useSearch("" ,50); // Ingredients search bar debouncer 
     return (
         <div className="flex flex-col">
             <label htmlFor="ingredients" className="form-label">Enter Ingredient</label>
@@ -22,11 +20,11 @@ export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
                 name='ingredients'
                 id="ingredients"
                 value={query}
-                onChange={handleIngredientSearchChange}
+                onChange={(e) => debouncedSetQuery(e.target.value)}
                 placeholder='Type to search for ingredients...'
                 onFocus={() => setIsOpen(true)}
                 />
-                {isOpen && results?.length > 0 && (
+                {isOpen && (
                     <ul 
                     className="absolute left-0 right-0 mt-1 border rounded bg-white shadow-md z-10 max-h-60 overflow-y-auto"
                     onScroll={handleScroll}
@@ -36,7 +34,7 @@ export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
                         item={item} 
                         onClick={ () => {
                             handleClick(item)
-                            setQuery("");
+                            debouncedSetQuery("");
                             setIsOpen(false);
                         }} 
                         />

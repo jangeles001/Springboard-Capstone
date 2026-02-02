@@ -33,6 +33,7 @@ export function CollectionPage({
       />
 
       <CollectionPageGrid
+        active={active}
         isLoading={isLoading}
         isError={isError}
         error={error}

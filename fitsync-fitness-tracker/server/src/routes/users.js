@@ -24,8 +24,8 @@ router
   )
   .get("/reports/workouts", requireAuth, generateUserWorkoutsReportController)
   .get("/reports/nutrition", requireAuth, generateUserNutritionReportController)
-  .get("/:userPublicId/workouts", requireAuth, getUserWorkoutsController)
-  .get("/:userPublicId/meals", requireAuth, getUserMealsController)
+  .get("/workouts", requireAuth, getUserWorkoutsController)
+  .get("/meals", requireAuth, getUserMealsController)
   .get("/:userPublicId", requireAuth, getPublicUserInformationController);
 
 export default router;

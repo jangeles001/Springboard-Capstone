@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { fetchCreatedMeals } from "../services/fetchCreatedMeals";
+import { fetchUserMeals } from "../services/fetchUserMeals";
 import { fetchAllMeals } from "../services/fetchAllMeals";
 import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
@@ -26,7 +26,7 @@ export function useMealsList({ limit }) {
       queryKey: ["meals", nextTab, nextPage, limit],
       queryFn: () =>
         nextTab === "Personal"
-          ? fetchCreatedMeals({ page: nextPage, limit, publicId })
+          ? fetchUserMeals({ page: nextPage, limit, publicId })
           : fetchAllMeals({ page: nextPage, limit }),
     });
   }, [active, pages, limit, queryClient]);
@@ -35,14 +35,16 @@ export function useMealsList({ limit }) {
     queryKey: [`meals`, active, pages[active], limit],
     queryFn: () =>
       active === "Personal"
-        ? fetchCreatedMeals({ page: pages[active], limit, publicId })
+        ? fetchUserMeals({ page: pages[active], limit, publicId })
         : fetchAllMeals({ page: pages[active], limit }),
     keepPreviousData: true,
+    refetchOnWindowFocus: false,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
   const deleteMealMutation = useMutation({
     mutationFn: (mealId) =>
-      api.delete(`api/v1/users/${publicId}/meals/${mealId}`),
+      api.delete(`api/v1/meals/delete/${mealId}`),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

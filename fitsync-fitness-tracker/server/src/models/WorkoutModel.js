@@ -46,7 +46,7 @@ export const workoutExerciseSchema = new mongoose.Schema(
 // Mongoose schema definition
 export const workoutSchema = new mongoose.Schema(
   {
-    creatorPublicId: { type: String, trim: true, required: true },
+    creatorPublicId: { type: String, trim: true, required: true, index: true },
     uuid: { type: String, default: uuidv4, unique: true, index: true },
     workoutName: {
       type: String,

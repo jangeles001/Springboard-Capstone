@@ -10,7 +10,14 @@ import { routeTree } from './routeTree.gen'
 import { useUserStore } from './store/UserStore'
 
 // Create new router and QueryClient instances
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 3,
+    },
+  },
+});
 const userStore = useUserStore.getState();
 const router = createRouter({ routeTree, context: { queryClient, userStore }, defaultNotFoundComponent: NotFoundPage })
 

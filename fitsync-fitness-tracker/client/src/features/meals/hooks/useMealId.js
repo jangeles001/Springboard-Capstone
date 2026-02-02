@@ -14,12 +14,12 @@ export function useMealId(mealId) {
   });
   const deleteMealMutation = useMutation({
     mutationFn: (mealId) =>
-      api.delete(`api/v1/users/${publicId}/meals/${mealId}`),
+      api.delete(`api/v1/meals/delete/${mealId}`),
   });
 
   const addMealMutation = useMutation({
     mutationFn: (mealId) =>
-      api.post(`api/v1/users/${publicId}/meals/duplicate`, { mealId }),
+      api.post(`api/v1/meals/duplicate/${mealId}`),
   });
 
   const handleReturn = () => {
@@ -27,15 +27,15 @@ export function useMealId(mealId) {
   };
 
   const handleAddToPersonal = () => {
-    addMealMutation.mutate({ mealId });
+    addMealMutation.mutate(mealId);
   };
 
   const handleDelete = () => {
-    deleteMealMutation.mutate({ mealId });
+    deleteMealMutation.mutate(mealId);
     queryClient.invalidateQueries({
       queryKey: ["meal"],
     });
-    console.log(`Delete meal with ID: ${mealId}`);
+    handleReturn();
   };
 
   return {

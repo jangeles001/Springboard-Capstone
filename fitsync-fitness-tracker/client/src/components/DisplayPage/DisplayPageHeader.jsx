@@ -14,7 +14,7 @@ export function DisplayPageHeader({ type, handleReturn, handleAddToPersonal, res
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
             onClick={() => handleAddToPersonal(resourceId)}
             >
-              Add to Personal
+              Record {type}
             </button>}
       </div>
     </div>

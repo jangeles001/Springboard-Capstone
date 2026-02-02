@@ -568,7 +568,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
 
   // ========== WORKOUT DUPLICATION TESTS ==========
   describe("POST /api/v1/workouts/duplicate/:workoutId", () => {
-    it("Should not create a new collection document if workout already exists in collection and return 201", async () => {
+    it("Should not create a new collection document if workout already exists in collection. A new log should be created and return 201", async () => {
       const results = await userA.client.post(
         `${BASE_URL}/api/v1/workouts/duplicate/${newWorkoutA.uuid}`,
         {},

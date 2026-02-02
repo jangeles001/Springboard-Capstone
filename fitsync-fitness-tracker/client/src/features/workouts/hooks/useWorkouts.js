@@ -66,7 +66,7 @@ export default function useWorkouts() {
 
     const normalizedeExercises = createdWorkout.exercises.map((exercise) => {
       return {
-        exerciseId: exercise.id,
+        exerciseId: String(exercise.id),
         exerciseName: exercise.translations?.[0]?.name,
         muscles: exercise.muscles?.map(
           (muscle) => muscle.name_en || muscle.name,
@@ -81,8 +81,8 @@ export default function useWorkouts() {
 
     if (createdWorkout) {
       const workoutData = {
-        creatorPublicId: publicId,
         ...createdWorkout,
+        workoutDuration: Number(createdWorkout.workoutDuration),
         exercises: [...normalizedeExercises],
       };
       mutation.mutate(workoutData);

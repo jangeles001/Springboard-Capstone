@@ -1,9 +1,7 @@
 import Ingredient from "./ingredient";
 
-export function MealDisplayCard({ data, publicId, handleDelete, isPersonal }) {
+export function MealDisplayCard({ data, handleDelete, isPersonal }) {
   if (!data) return null;
-
-  const isOwner = data?.data?.creatorPublicId === publicId;
 
   return (
     <div className="max-w-4xl min-w-min mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">

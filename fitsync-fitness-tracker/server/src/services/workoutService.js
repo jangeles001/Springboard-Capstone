@@ -5,10 +5,6 @@ import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 
 export async function createAndLogWorkout(userPublicId, workoutData) {
-  // Verifies user is trying to create workout as their own account
-  if (userPublicId !== workoutData.creatorPublicId)
-    throw new UnauthorizedError();
-
   // Create the workout template
   const newWorkout = await workoutRepo.createWorkout({
     ...workoutData,

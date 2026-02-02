@@ -197,11 +197,6 @@ export async function updatePrivateUserInformation(userUUID, updatedFields) {
 }
 
 export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
-  const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if (!user) throw new NotFoundError("USER");
-
-  if (userPublicId !== user.publicId) throw new UnauthorizedError();
-
   let hasNextPage = null;
   let hasPreviousPage = null;
 
@@ -234,9 +229,6 @@ export async function duplicateWorkout(publicId, workoutId) {
 
 
 export async function getUserMeals(userPublicId, offset, pageSize) {
-  const user = await userRepo.findOneUserByPublicId(userPublicId);
-  if (!user) throw new NotFoundError("USER");
-
   let hasNextPage = null;
   let hasPreviousPage = null;
   const { meals, totalCount } =

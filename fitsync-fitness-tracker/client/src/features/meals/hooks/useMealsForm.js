@@ -77,6 +77,15 @@ export function useMealsForm() {
   };
 
   const handleIngredientQuantityChange = (e, id) => {
+    if(e.target.value < 0) return; // Prevents negative quantities  
+    if(e.target.value > 999) return; // Prevents quantities over 999g
+    if(e.target.value === "") {
+      changeIngredientField(id, "quantity", "");
+      changeIngredientField(id, "macros", { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 });
+      updateMacros();
+      return;
+    }
+    
     const quantity = Number(e.target.value);
 
     // Calculates macros for this ingredient

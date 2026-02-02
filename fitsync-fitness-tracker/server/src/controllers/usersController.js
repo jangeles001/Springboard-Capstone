@@ -68,28 +68,6 @@ export async function getUserMealsController(req, res) {
   }
 }
 
-export async function duplicateMealController(req, res) {
-  try {
-    const { mealId } = req.params;
-    const { publicId: userPublicId } = req.user;
-    await userService.duplicateMeal(mealId, userPublicId);
-    return res.generateSuccessResponse(null, "Success", 201);
-  } catch (error) {
-    return res.generateErrorResponse(error.message, error.statusCode);
-  }
-}
-
-export async function deleteMealController(req, res) {
-  try {
-    const { mealId } = req.params;
-    const { publicId: userPublicId } = req.user;
-    await userService.deleteMeal(userPublicId, mealId);
-    return res.generateSuccessResponse(null, "Delete Successful", 200);
-  } catch (error) {
-    return res.generateErrorResponse(error.message, error.statusCode);
-  }
-}
-
 export async function generateUserWorkoutsReportController(req, res) {
   try {
     const userUUID = req.user.sub;

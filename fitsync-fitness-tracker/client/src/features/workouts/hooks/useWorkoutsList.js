@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchCreatedWorkouts } from "../services/fetchCreatedWorkouts";
+import { fetchUserWorkouts } from "../services/fetchUserWorkouts";
 import { fetchAllWorkouts } from "../services/fetchAllWorkouts";
 import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
@@ -25,7 +25,7 @@ export function useWorkoutsList({ limit }) {
       queryKey: ["workouts", nextTab, nextPage, limit],
       queryFn: () =>
         nextTab === "Personal"
-          ? fetchCreatedWorkouts({ page: nextPage, limit, publicId })
+          ? fetchUserWorkouts({ page: nextPage, limit })
           : fetchAllWorkouts({ page: nextPage, limit }),
     });
   }, [active, pages, limit, queryClient]);
@@ -34,14 +34,14 @@ export function useWorkoutsList({ limit }) {
     queryKey: ["workouts", active, pages[active], limit],
     queryFn: () =>
       active === "Personal"
-        ? fetchCreatedWorkouts({ page: pages[active], limit, publicId })
+        ? fetchUserWorkouts({ page: pages[active], limit })
         : fetchAllWorkouts({ page: pages[active], limit }),
     keepPreviousData: true,
   });
 
   const deleteWorkoutMutation = useMutation({
     mutationFn: (workoutId) =>
-      api.delete(`api/v1/users/${publicId}/workouts/${workoutId}`),
+      api.delete(`api/v1/workouts/delete/${workoutId}`),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

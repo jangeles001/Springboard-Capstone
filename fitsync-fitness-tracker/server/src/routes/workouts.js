@@ -16,7 +16,7 @@ router
   .post(
     "/create",
     requireAuth,
-    validate(newWorkoutZodSchema),
+    validate(newWorkoutZodSchema.omit({ creatorPublicId: true })),
     createWorkoutController,
   )
   .delete(

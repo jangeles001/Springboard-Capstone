@@ -11,7 +11,7 @@ export const Route = createFileRoute('/dashboard/workouts/')({
     CardComponent={WorkoutCard}
     titlePersonal="Your Workouts"
     titleAll="All Workouts"
-    emptyText="No workouts created yet."
+    emptyText="No workouts found."
     dataKey="workouts"
     />
   },

@@ -19,11 +19,10 @@ export default function IngredientItem({ item, getIngredientField, handleRemoveC
                     name="quantity"
                     type="number"
                     inputValue={getIngredientField(item.ingredientId, "quantity")}
-                    inputErrors={formErrors}
+                    inputErrors={formErrors || ""}
                     handleChange={(e) => handleIngredientQuantityChange(e, item.ingredientId)}
                     placeholder=""
                     styling="min-w-min max-w-[60px] ml-auto mr-[10px]"
-                    min={0}
                     max={999}
                     onKeyDown={(e) => {
                             if(e.target.value.length === 3 && e.code !== "Backspace")

@@ -1,6 +1,6 @@
 import Ingredient from "./ingredient";
 
-export function MealCard({ item: meal, onClick, handleDelete, isPersonal}) {
+export function MealCard({ item: meal, onClick, handleDelete, active}) {
   return (
     <div className="flex flex-col min-w-md max-w-md bg-white rounded-2xl shadow-md p-6 border border-gray-200 transition hover:shadow-lg">
       {/* Title */}
@@ -39,9 +39,9 @@ export function MealCard({ item: meal, onClick, handleDelete, isPersonal}) {
       </div>
 
       {/* Delete Button */}
-      {isPersonal &&  
+      {active === "Personal" &&  
         <button
-        className="mt-8 ml-[43%] bg-blue-500 text-white px-4 py-2 rounded-lg"
+        className="mt-8 bg-blue-500 text-white px-4 py-2 rounded-lg"
         onClick={() => handleDelete(meal.uuid)}
         >
           Delete Meal

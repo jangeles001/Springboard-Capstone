@@ -24,7 +24,6 @@ export function DisplayPage({ hook, CardComponent, ResourceId, type }) {
       error={error}
       data={data}
       CardComponent={CardComponent}
-      publicId={publicId}
       handleDelete={handleDelete}
       isPersonal={isPersonal}
       />

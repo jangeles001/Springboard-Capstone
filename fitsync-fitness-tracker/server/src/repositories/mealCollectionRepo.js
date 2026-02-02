@@ -1,4 +1,5 @@
 import { MealCollection } from "../models/mealCollectionModel.js";
+import { findAllMealsByIds } from "./mealRepo.js";
 
 export async function findMealCollectionsByUserPublicId(userPublicId) {
   return await MealCollection.find({
@@ -29,15 +30,28 @@ export async function findMealsInCollectionByUserPublicId(
   offset = 0,
   pageSize = 10,
 ) {
-  const meals = await MealCollection.find({ userPublicId })
-    .populate("mealUUID")
+  // Fetches collection docs
+  const collectionDocs = await MealCollection.find({
+    userPublicId
+  })
     .skip(offset)
     .limit(pageSize)
     .lean();
 
-  const totalCount = await MealCollection.countDocuments({ userPublicId });
+  const totalCount = await MealCollection.countDocuments({
+    userPublicId
+  });
 
-  return { meals, totalCount };
+  // Pulls meal UUIDs
+  const mealUUIDs = collectionDocs.map(doc => doc.mealUUID);
+
+  // Fetches actual meals
+  const meals = await findAllMealsByIds(mealUUIDs);
+
+  return {
+    meals,
+    totalCount,
+    };
 }
 
 export async function removeMealFromCollection(userPublicId, mealUUID) {

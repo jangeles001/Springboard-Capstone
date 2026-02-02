@@ -14,24 +14,24 @@ export function useWorkoutId(workoutId) {
   });
   const deleteWorkoutMutation = useMutation({
     mutationFn: (workoutId) =>
-      api.delete(`api/v1/users/${publicId}/workouts/${workoutId}`),
+      api.delete(`api/v1/workouts/delete/${workoutId}`),
   });
 
-  const addMealMutation = useMutation({
-    mutationFn: (mealId) =>
-      api.post(`api/v1/users/${publicId}/workouts/duplicate`, { mealId }),
+  const addWorkoutMutation = useMutation({
+    mutationFn: (workoutId) =>
+      api.post(`api/v1/workouts/duplicate/${workoutId}`),
   });
 
   const handleReturn = () => {
     return navigate({ to: "/dashboard/workouts" });
   };
 
-  const handleAddToPersonal = () => {
-    addMealMutation.mutate({ mealId });
+  const handleAddToPersonal = (workoutId) => {
+    addWorkoutMutation.mutate(workoutId);
   };
 
   const handleDelete = (workoutId) => {
-    deleteWorkoutMutation.mutate({ workoutId });
+    deleteWorkoutMutation.mutate(workoutId);
     queryClient.invalidateQueries({
       queryKey: ["workout", workoutId, publicId],
     });

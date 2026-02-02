@@ -10,7 +10,7 @@ export const Route = createFileRoute('/dashboard/meals/')({
     CardComponent={MealCard}
     titlePersonal="Your Meals"
     titleAll="All Meals"
-    emptyText="No meals created yet."
+    emptyText="No meals found."
     dataKey="meals"
     />,
 })

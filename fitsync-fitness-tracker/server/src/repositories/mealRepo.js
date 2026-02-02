@@ -21,6 +21,13 @@ export async function findAllMeals(offset, limit) {
   return { meals, totalCount };
 }
 
+export async function findAllMealsByIds(mealUUIDs) {
+  const meals = await Meal.find({ uuid: { $in: mealUUIDs } })
+    .select(PRIVATE_FIELDS_EXCLUSIONS)
+    .lean();
+  return meals;
+}
+
 export async function findMealsByCreatorPublicId(userPublicId, offset, limit) {
   const meals = await Meal.find({ creatorPublicId: userPublicId })
     .skip(offset)
