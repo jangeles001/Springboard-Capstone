@@ -3,6 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchNutritionReports } from "../services/fetchNutritionReports";
 import { fetchWorkoutReports } from "../services/fetchWorkoutReports";
 
+const REGEN_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours
+
 export function useDashboard(range) {
   const queryClient = useQueryClient();
   const [activeView, setActiveView] = useState("nutrition");
@@ -20,6 +22,44 @@ export function useDashboard(range) {
     enabled: activeView === "workouts",
     staleTime: 5 * 60 * 1000,
   });
+  
+  const recommendationsQuery = useQuery({
+    queryKey: ["dashboard", "recommendations"],
+    queryFn: () =>  fetchRecommendations(),
+    staleTime: Infinity,
+  });
+
+  const generateRecommendationsMutation = useMutation({
+    mutationFn: generateRecommendations,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "recommendations"],
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (!recommendationsQuery.isSuccess) return;
+
+    const lastGeneratedAt =
+      recommendationsQuery.data?.lastGeneratedAt;
+
+    const shouldRegenerate =
+      !lastGeneratedAt ||
+      Date.now() - new Date(lastGeneratedAt).getTime() >
+        REGEN_THRESHOLD_MS;
+
+    if (
+      shouldRegenerate &&
+      !generateRecommendationsMutation.isPending
+    ) {
+      generateRecommendationsMutation.mutate();
+    }
+  }, [
+    recommendationsQuery.isSuccess,
+    recommendationsQuery.data,
+    generateRecommendationsMutation.isPending,
+  ]);
 
   useEffect(() => {
     const nextView = activeView === "nutrition" ? "workouts" : "nutrition";

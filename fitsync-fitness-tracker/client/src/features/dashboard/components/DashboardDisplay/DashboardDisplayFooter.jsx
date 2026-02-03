@@ -1,4 +1,5 @@
 export function DashboardDisplayFooter(){
+  
   return (
     <div className="rounded-2xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-2">

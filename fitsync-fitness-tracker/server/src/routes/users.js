@@ -10,6 +10,7 @@ import {
   getUserMealsController,
   generateUserWorkoutsReportController,
   generateUserNutritionReportController,
+  generateWorkoutRecommendationsController,
 } from "../controllers/usersController.js";
 
 const router = express.Router();
@@ -24,6 +25,7 @@ router
   )
   .get("/reports/workouts", requireAuth, generateUserWorkoutsReportController)
   .get("/reports/nutrition", requireAuth, generateUserNutritionReportController)
+  .get("/recommendations/workouts", requireAuth, generateWorkoutRecommendationsController)
   .get("/workouts", requireAuth, getUserWorkoutsController)
   .get("/meals", requireAuth, getUserMealsController)
   .get("/:userPublicId", requireAuth, getPublicUserInformationController);

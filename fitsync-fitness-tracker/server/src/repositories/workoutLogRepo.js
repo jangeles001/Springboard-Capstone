@@ -174,7 +174,7 @@ export async function findWorkoutMuscleDistributionByUserPublicId(
     // Each muscle listed contributes individually
     { $unwind: "$exercisesSnapshot.muscles" },
 
-    // Optional: ignore unknown
+    // Ignore unknown
     // { $match: { "exercisesSnapshot.muscles": { $ne: "unknown" } } },
 
     {

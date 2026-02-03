@@ -1,10 +1,3 @@
-import * as userRepo from "../repositories/userRepo.js";
-import * as workoutRepo from "../repositories/workoutRepo.js";
-import * as mealRepo from "../repositories/mealRepo.js";
-import * as mealLogRepo from "../repositories/mealLogRepo.js";
-import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
-import * as mealCollectionRepo from "../repositories/mealCollectionRepo.js";
-import * as workoutCollectionRepo from "../repositories/workoutCollectionRepo.js";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import redisClient from "../config/redisClient.js";
@@ -18,6 +11,12 @@ import { NotFoundError } from "../errors/NotFoundError.js";
 import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 import { getDateRange } from "../utils/getDateRange.js";
 import { calculateMacros } from "../utils/calculateMacros.js";
+import * as userRepo from "../repositories/userRepo.js";
+import * as workoutRepo from "../repositories/workoutRepo.js";
+import * as mealLogRepo from "../repositories/mealLogRepo.js";
+import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
+import * as mealCollectionRepo from "../repositories/mealCollectionRepo.js";
+import * as workoutCollectionRepo from "../repositories/workoutCollectionRepo.js";
 
 export async function registerNewUser(userData) {
   // Checks if a user has already registered with the provided email
@@ -227,7 +226,6 @@ export async function duplicateWorkout(publicId, workoutId) {
   return;
 }
 
-
 export async function getUserMeals(userPublicId, offset, pageSize) {
   let hasNextPage = null;
   let hasPreviousPage = null;
@@ -243,37 +241,12 @@ export async function getUserMeals(userPublicId, offset, pageSize) {
   return { meals, hasPreviousPage, hasNextPage };
 }
 
-export async function duplicateMeal(publicId, mealId) {
-  const user = await userRepo.findOneUserByPublicId(publicId);
-  if (!user) throw new NotFoundError("User");
-
-  const meal = await mealRepo.findOneMealByUUID(mealId);
-  if (!meal) throw new NotFoundError("Meal");
-
-  meal.creatorPublicId = user.publicId;
-  console.log(meal);
-  //await mealRepo.createMeal(meal);
-
-  return;
-}
-
-export async function deleteMeal(publicId, mealId) {
-  const user = await userRepo.findOneUserByPublicId(publicId);
-  if (!user) throw new NotFoundError("User");
-
-  const meal = await mealRepo.findOneMealByUUID(mealId);
-  if (!meal) throw new NotFoundError("Meal");
-
-  if (meal.creatorPublicId !== user.publicId) throw new UnauthorizedError();
-
-  await mealRepo.deleteOneMealById(mealId);
-  return;
-}
-
 export async function generateUserWorkoutsReport(userUUID, range = "all") {
+  // Checks if user exists
   const user = await userRepo.findOneUserByUUID(userUUID);
   if (!user) throw new NotFoundError("User");
 
+  // Gets date ranges based on requested range
   const ranges = getDateRange(range);
 
   if (range === "all") {

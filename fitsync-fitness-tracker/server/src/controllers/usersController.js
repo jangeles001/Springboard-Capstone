@@ -1,4 +1,5 @@
 import * as userService from "../services/userService.js";
+import { generateAiWorkoutRecommendations } from "../services/aiService.js";
 
 export async function getPublicUserInformationController(req, res) {
   try {
@@ -63,6 +64,16 @@ export async function getUserMealsController(req, res) {
       pageSize,
     );
     return res.generateSuccessResponse(userMeals, null, 200);
+  } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode);
+  }
+}
+
+export async function generateWorkoutRecommendationsController(req, res) {
+  try {
+    const { publicId: userPublicId } = req.user;
+    const recommendations = await generateAiWorkoutRecommendations(userPublicId);
+    return res.generateSuccessResponse(recommendations, "Recommendations generated!", 200);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);
   }

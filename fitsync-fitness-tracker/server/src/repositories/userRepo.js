@@ -24,3 +24,11 @@ export async function updateMultipleUserFieldsByUUID(userUUID, updatedFields) {
     { new: true, runValidators: true },
   );
 }
+
+export async function updateUserLastAiRecommendationAt(userPublicId) {
+  return await User.findOneAndUpdate(
+    { publicId: userPublicId },
+    { $set: { lastAiRecommendationAt: new Date() } },
+    { new: true },
+  );
+}
