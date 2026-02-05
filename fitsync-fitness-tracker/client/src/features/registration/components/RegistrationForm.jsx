@@ -208,7 +208,7 @@ export default function RegistrationForm() {
                             <FormField name="email" label="Email" formError={formErrors.email}>
                                     <FormInput
                                     name="email"
-                                    inputType="text"
+                                    inputType="email"
                                     inputValue={email}
                                     inputErrors={formErrors.email}
                                     handleChange={handleChange}

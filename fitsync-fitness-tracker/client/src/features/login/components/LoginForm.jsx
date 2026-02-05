@@ -22,7 +22,7 @@ export default function LoginForm() {
     } = useLoginForm({
         onSuccessFunction: () => router.navigate({ to: '/dashboard/'})
     });
-
+    
     return (
         <div className='flex justify-center-safe mx-auto min-w-full'>
             <div className='flex bg-white justify-center rounded-2xl shadow-xl p-8 w-full max-w-2xl'>

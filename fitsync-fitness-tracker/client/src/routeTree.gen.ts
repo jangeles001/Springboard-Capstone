@@ -27,6 +27,7 @@ import { Route as DashboardMealsRouteImport } from './routes/dashboard/meals'
 import { Route as DashboardMealBuilderRouteImport } from './routes/dashboard/mealBuilder'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as DashboardWorkoutsIndexRouteImport } from './routes/dashboard/workouts.index'
 import { Route as DashboardMealsIndexRouteImport } from './routes/dashboard/meals.index'
 import { Route as DashboardWorkoutsWorkoutIdRouteImport } from './routes/dashboard/workouts.$workoutId'
@@ -122,6 +123,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const DashboardWorkoutsIndexRoute = DashboardWorkoutsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/landing': typeof LandingRouteRouteWithChildren
   '/legal': typeof LegalRouteRouteWithChildren
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/landing': typeof LandingRouteRouteWithChildren
   '/legal': typeof LegalRouteRouteWithChildren
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/legal'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/mealBuilder'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/mealBuilder'
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/legal'
+    | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/signup'
     | '/dashboard/mealBuilder'
@@ -416,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/dashboard/workouts/': {
       id: '/dashboard/workouts/'
       path: '/'
@@ -448,12 +467,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthIndexRoute: AuthIndexRoute,

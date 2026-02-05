@@ -79,6 +79,16 @@ export async function getUserController(req, res) {
   }
 }
 
+export async function resetPasswordController(req, res){
+  try {
+    const { email } = req.validatedBody;
+    await userService.initiatePasswordReset(email);
+    return res.generateSuccessResponse(null, "Password reset initiated. Please check your email for further instructions.", 200);
+  } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode); 
+  }
+}
+
 export async function refreshSessionTokens(req, res) {
   try {
     const { refreshToken } = req.cookies;

@@ -15,7 +15,7 @@ function RouteComponent() {
 
     return (
         <>
-            <DefaultNav links={navLinks} />
+            <DefaultNav links={navLinks} queryEnabled={false} />
         </>
     )
 }

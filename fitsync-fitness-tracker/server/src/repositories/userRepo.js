@@ -25,6 +25,14 @@ export async function updateMultipleUserFieldsByUUID(userUUID, updatedFields) {
   );
 }
 
+export async function updatePasswordHashByUUID(){
+  return await User.findOneAndUpdate(
+    { uuid: userUUID },
+    { $set: { passwordHash: newPasswordHash } },
+    { new: true, runValidators: true },
+  );
+}
+
 export async function updateUserLastAiRecommendationAt(userPublicId) {
   return await User.findOneAndUpdate(
     { publicId: userPublicId },

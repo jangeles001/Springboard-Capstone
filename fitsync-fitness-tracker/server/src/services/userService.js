@@ -45,8 +45,23 @@ export async function registerNewUser(userData) {
   await redisClient.setEx();
   const { accessToken, refreshToken } = await generateTokens(newUser);
 
-  
+  const verificationToken = uuidv4();
+  await redisClient.setEx(
+    `emailVerificationToken:${verificationToken}`,
+    86400,
+    JSON.stringify({ uuid: newUser.uuid }),
+  );
 
+  await transporter.sendMail({
+    from: '"FitSync" <noreply@.fitsync.com>',
+    to: newUser.email,
+    subject: "Verify FitSync Account",
+    html: `
+      <h2>Verify Your Account</h2>
+      <p>Click below:</p> <a href="${verifyUrl}">Here</a>
+    `,
+  });
+    
   return {
     accessToken,
     refreshToken,
@@ -68,6 +83,35 @@ export async function validateCredentials(email, password) {
     accessToken,
     refreshToken,
   };
+}
+
+export async function initiatePasswordReset(email) {
+  // Checks if user email exists in database
+  const user = await userRepo.findOneUserByEmail(email);
+  if (!user) throw new NotFoundError("USER"); // throws error if email is not found
+ 
+  // Creates token if user is found
+  const resetToken = uuidv4();
+
+  // Stores token in redis with 1 hour expiration time
+  await redisClient.setEx(
+    `passwordResetToken:${resetToken}`,
+    3600,
+    JSON.stringify({ uuid: user.uuid }),
+  );
+  // Sends email to user with password reset link containing the token
+  const resetUrl = `${getEnv("CLIENT_ORIGIN")}auth/change-password/${resetToken}`;
+  await transporter.sendMail({
+    from: '"FitSync" <noreply@.fitsync.com>',
+    to: user.email,
+    subject: "FitSync Password Reset",
+    html: `
+      <h2>Password Reset Request</h2>
+      <p>Click below to reset your password:</p> <a href="${resetUrl}">Reset Password</a>
+      <p>This link will expire in 1 hour.</p>
+    `,
+  });
+  return;
 }
 
 export async function refreshTokens(refreshToken) {
