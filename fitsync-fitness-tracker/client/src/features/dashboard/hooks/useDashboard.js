@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchNutritionReports } from "../services/fetchNutritionReports";
 import { fetchWorkoutReports } from "../services/fetchWorkoutReports";
 
@@ -9,7 +9,7 @@ export function useDashboard(range) {
   const queryClient = useQueryClient();
   const [activeView, setActiveView] = useState("nutrition");
 
- const nutritionQuery = useQuery({
+  const nutritionQuery = useQuery({
     queryKey: ["dashboard", "nutrition", range],
     queryFn: () => fetchNutritionReports(range),
     enabled: activeView === "nutrition",
@@ -22,44 +22,13 @@ export function useDashboard(range) {
     enabled: activeView === "workouts",
     staleTime: 5 * 60 * 1000,
   });
-  
+
   const recommendationsQuery = useQuery({
     queryKey: ["dashboard", "recommendations"],
-    queryFn: () =>  fetchRecommendations(),
+    queryFn: () => fetchRecommendations(),
     staleTime: Infinity,
   });
 
-  const generateRecommendationsMutation = useMutation({
-    mutationFn: generateRecommendations,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["dashboard", "recommendations"],
-      });
-    },
-  });
-
-  useEffect(() => {
-    if (!recommendationsQuery.isSuccess) return;
-
-    const lastGeneratedAt =
-      recommendationsQuery.data?.lastGeneratedAt;
-
-    const shouldRegenerate =
-      !lastGeneratedAt ||
-      Date.now() - new Date(lastGeneratedAt).getTime() >
-        REGEN_THRESHOLD_MS;
-
-    if (
-      shouldRegenerate &&
-      !generateRecommendationsMutation.isPending
-    ) {
-      generateRecommendationsMutation.mutate();
-    }
-  }, [
-    recommendationsQuery.isSuccess,
-    recommendationsQuery.data,
-    generateRecommendationsMutation.isPending,
-  ]);
 
   useEffect(() => {
     const nextView = activeView === "nutrition" ? "workouts" : "nutrition";
@@ -74,9 +43,7 @@ export function useDashboard(range) {
   }, [activeView, range, queryClient]);
 
   const activeQuery =
-  activeView === "nutrition"
-  ? nutritionQuery
-  : workoutQuery;
+    activeView === "nutrition" ? nutritionQuery : workoutQuery;
 
   const handleActiveChange = (buttonValue) => {
     setActiveView(buttonValue);
@@ -86,6 +53,7 @@ export function useDashboard(range) {
     nutritionQuery,
     workoutQuery,
     activeQuery,
+    recommendationsQuery,
     activeView,
     handleActiveChange,
   };

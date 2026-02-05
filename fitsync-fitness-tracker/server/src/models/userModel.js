@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     promoConsent: { type: Boolean, required: true },
     agreeToTerms: { type: Boolean, required: true },
+    verified: { type: Boolean, default: false },
 
     // Structured profile inputs
     profile: {

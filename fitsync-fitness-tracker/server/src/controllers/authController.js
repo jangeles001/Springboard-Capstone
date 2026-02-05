@@ -28,12 +28,23 @@ export const createUser = async (req, res) => {
   }
 };
 
+export async function verifyController(req, res) {
+  try {
+    const { type, token } = req.params;
+    console.log(`type: ${type}, token: ${token}`);
+    await userService.verifyToken(token, type);
+    res.generateSuccessResponse(null, `User Verification Successful`, 200);
+  } catch (error) {
+    res.generateErrorResponse(error.message, error.status);
+  }
+}
+
 export async function login(req, res) {
   try {
     const { email, password } = req.validatedBody; // Pulls out email and password from validatedBody
     const validatedUser = await userService.validateCredentials(
       email,
-      password
+      password,
     );
 
     const successMessage = `${validatedUser.username} (ID: ${validatedUser.publicId}) Logged In!`;

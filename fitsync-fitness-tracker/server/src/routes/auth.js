@@ -9,6 +9,7 @@ import {
   logout,
   getUserController,
   refreshSessionTokens,
+  verifyController,
 } from "../controllers/authController.js";
 
 // Swagger and stellar for api documentation
@@ -29,6 +30,7 @@ router
   )
   .get("/logout", logout)
   .get("/refresh", refreshSessionTokens)
-  .get("/me", requireAuth, getUserController);
+  .get("/me", requireAuth, getUserController)
+  .patch("/verify/:type/:token", verifyController);
 
 export default router;

@@ -12,7 +12,6 @@ import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 import { getDateRange } from "../utils/getDateRange.js";
 import { calculateMacros } from "../utils/calculateMacros.js";
 import * as userRepo from "../repositories/userRepo.js";
-import * as workoutRepo from "../repositories/workoutRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
 import * as mealCollectionRepo from "../repositories/mealCollectionRepo.js";
@@ -43,7 +42,10 @@ export async function registerNewUser(userData) {
 
   // Creates new User document with the userData object
   const newUser = await userRepo.createNewUser(userData);
+  await redisClient.setEx();
   const { accessToken, refreshToken } = await generateTokens(newUser);
+
+  
 
   return {
     accessToken,
@@ -146,6 +148,17 @@ export async function revokeRefreshToken(refreshToken) {
   }
 }
 
+export async function verifyUserAccountToken(token, type) {
+  const user = await redisClient.getEx(`${type}VerificationToken:${token}`);
+  if (!user) throw UnauthorizedError();
+
+  await Promise.all([
+    redisClient.del(`${type}VerificationToken:${token}`),
+    userRepo.updateMultipleUserFieldsByUUID({ verified: true }, user.uuid),
+  ]);
+  return;
+}
+
 export async function getPublicUserInformation(userPublicId) {
   const user = await userRepo.findOneUserByPublicId(userPublicId);
   if (!user) throw new NotFoundError("USER");
@@ -211,19 +224,6 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
   if (offset > 0) hasPreviousPage = true;
 
   return { workouts, hasPreviousPage, hasNextPage };
-}
-
-export async function duplicateWorkout(publicId, workoutId) {
-  // Validates user exists
-  const user = await userRepo.findOneUserByPublicId(publicId);
-  if (!user) throw new NotFoundError("User");
-
-  // Validate workout exists
-  const workout = await workoutRepo.findOneWorkoutByUUID(workoutId);
-  if (!workout) throw new NotFoundError("Workout");
-
-  await workoutRepo.duplicateOneWorkoutByUUID(workoutId);
-  return;
 }
 
 export async function getUserMeals(userPublicId, offset, pageSize) {
