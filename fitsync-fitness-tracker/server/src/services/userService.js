@@ -61,7 +61,7 @@ export async function registerNewUser(userData) {
       <p>Click below:</p> <a href="${verifyUrl}">Here</a>
     `,
   });
-    
+
   return {
     accessToken,
     refreshToken,
@@ -89,7 +89,7 @@ export async function initiatePasswordReset(email) {
   // Checks if user email exists in database
   const user = await userRepo.findOneUserByEmail(email);
   if (!user) throw new NotFoundError("USER"); // throws error if email is not found
- 
+
   // Creates token if user is found
   const resetToken = uuidv4();
 
@@ -100,9 +100,9 @@ export async function initiatePasswordReset(email) {
     JSON.stringify({ uuid: user.uuid }),
   );
   // Sends email to user with password reset link containing the token
-  const resetUrl = `${getEnv("CLIENT_ORIGIN")}auth/change-password/${resetToken}`;
+  const resetUrl = `${getEnv("CLIENT_ORIGIN")}/auth/change-password/${resetToken}`;
   await transporter.sendMail({
-    from: '"FitSync" <noreply@.fitsync.com>',
+    from: '"FitSync" <fitsync43@gmail.com>',
     to: user.email,
     subject: "FitSync Password Reset",
     html: `

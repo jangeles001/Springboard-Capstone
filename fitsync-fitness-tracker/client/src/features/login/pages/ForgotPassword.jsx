@@ -2,13 +2,13 @@ import { useRouter, Link } from '@tanstack/react-router';
 import { FormField } from "../../../components/FormField"
 import { FormInput } from "../../../components/FormInput"
 import { useForgotPassword } from '../hooks/useForgotPassword'
+
 export default function ForgotPasswordPage() {
     
     const router = useRouter();
     const { 
         formDataEmail,
         formErrors,
-        error,
         isLoading,
         handleChange,
         handleSubmit
