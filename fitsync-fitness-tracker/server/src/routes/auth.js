@@ -9,6 +9,7 @@ import {
   logout,
   getUserController,
   refreshSessionTokens,
+  initiateResetPasswordController,
   resetPasswordController,
   verifyController,
 } from "../controllers/authController.js";
@@ -29,10 +30,11 @@ router
     verifyRecaptcha,
     login,
   )
-  .post("/reset-password", validate(newUserZodSchema.pick({ email: true }).strict()), resetPasswordController)
+  .post("/reset-password", validate(newUserZodSchema.pick({ email: true }).strict()), initiateResetPasswordController)
+  .patch("/reset-password/:token", validate(newUserZodSchema.pick({ password: true }).strict()), resetPasswordController)
   .get("/logout", logout)
   .get("/refresh", refreshSessionTokens)
   .get("/me", requireAuth, getUserController)
-  .patch("/verify/:type/:token", verifyController);
+  .patch("/verify/email/:token", verifyController);
 
 export default router;

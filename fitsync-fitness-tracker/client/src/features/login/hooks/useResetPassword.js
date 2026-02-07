@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { sendResetRequest } from "../services/sendResetRequest";
+import { sendResetPasswordRequest } from "../services/sendResetPasswordRequest";
 
-export function useResetPassword(onSuccess) {
+export function useResetPassword({token, onSuccess}) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formErrors, setFormErrors] = useState(null);
 
   const resetPasswordMutation = useMutation({
-    mutationFn: ({ password, confirmPassword }) =>
-      sendResetRequest(password, confirmPassword),
+    mutationFn: ({ token, password }) =>
+      sendResetPasswordRequest(token, password),
     onSuccess: (response) => {
       console.log("Password reset successful:", response);
       onSuccess();
@@ -53,7 +53,7 @@ export function useResetPassword(onSuccess) {
       });
     }
     if(formErrors) return;
-    resetPasswordMutation.mutate({ password, confirmPassword });
+    resetPasswordMutation.mutate({ token, password });
   };
 
   return {

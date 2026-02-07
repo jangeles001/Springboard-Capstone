@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const envConfigZodSchema = z.object({
   CLIENT_ORIGIN: z.string(),
+  NODE_ENV: z.enum(["production", "development", "test"]).default("development"),
   MONGO_URI: z
     .string()
     .startsWith("mongodb", "Mongodb url should start with mongodb:"),
@@ -15,7 +16,6 @@ export const envConfigZodSchema = z.object({
   REDIS_URL: z
     .string()
     .startsWith("redis", "Redis url should start with redis:"),
-  NODE_ENV: z.enum(["production", "test"]).default("test"),
   RECAPTCHA_SECRET_KEY: z
   .string()
   .min(1, "RECAPTCHA_SECRET_KEY is required"),

@@ -1,4 +1,4 @@
-import { useRouter, Link } from "@tanstack/react-router"
+import { useRouter, useParams, Link } from "@tanstack/react-router"
 import { useResetPassword } from '../hooks/useResetPassword'
 import { FormField } from '../../../components/FormField'
 import { FormInput } from '../../../components/FormInput'
@@ -6,6 +6,7 @@ import { FormInput } from '../../../components/FormInput'
 export function ResetPasswordPage() {
 
     const router = useRouter();
+    const { token } = useParams({ from: "/auth/reset-password/$token" });
     const { 
         password,
         confirmPassword,
@@ -13,7 +14,7 @@ export function ResetPasswordPage() {
         handleChange,
         handleSubmit,
         isLoading,
-        } = useResetPassword({ onSuccess: () => router.navigate({ to: '/dashboard/'}) });
+        } = useResetPassword({ token, onSuccess: () => router.navigate({ to: '/auth/login/'}) });
 
     return (
         <div className='flex flex-col items-center justify-center-safe my-auto mx-auto min-w-full'>

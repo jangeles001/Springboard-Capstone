@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
         handleChange,
         handleSubmit
     } = useForgotPassword({
-        onSuccessFunction: () => router.navigate({ to: '/change-password/'})
+        onSuccessFunction: () => router.navigate({ to: '/auth/reset-email-sent/'})
     });
 
     return (

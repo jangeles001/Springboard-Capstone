@@ -12,7 +12,6 @@ import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 import { getDateRange } from "../utils/getDateRange.js";
 import { calculateMacros } from "../utils/calculateMacros.js";
 import { mailjet } from "../config/nodeMailer.js";
-import { transporter } from "../config/nodeMailer.js";
 import * as userRepo from "../repositories/userRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
@@ -48,7 +47,6 @@ export async function registerNewUser(userData) {
 
   // Creates email verification token, stores in redis with 24 hour expiration, and sends verification email to user with link containing token
   const verificationToken = uuidv4();
-  const verifyUrl = `${getEnv("CLIENT_ORIGIN")}/auth/verify/${verificationToken}`;
 
   await redisClient.setEx(
     `emailVerificationToken:${verificationToken}`,
@@ -56,24 +54,27 @@ export async function registerNewUser(userData) {
     JSON.stringify({ uuid: newUser.uuid }),
   );
 
-  await mailjet
-    .post('send', { version: 'v3.1' })
-    .request({
-      Messages: [{
-        From: {
-          Email: getEnv("MAILJET_FROM_EMAIL"),
-          Name: getEnv("MAILJET_FROM_NAME")
-        },
-        To: [{
-          Email: newUser.email
-        }],
-        TemplateID: 7732849,
-        TemplateLanguage: true,
-        Variables: {
-          verifyLink: verifyUrl
-        }
-      }]
-  });
+  if (getEnv("NODE_ENV") !== "test") {
+    const verifyUrl = `${getEnv("CLIENT_ORIGIN")}/auth/verify/${verificationToken}`;
+    await mailjet
+      .post('send', { version: 'v3.1' })
+      .request({
+        Messages: [{
+          From: {
+            Email: getEnv("MAILJET_FROM_EMAIL"),
+            Name: getEnv("MAILJET_FROM_NAME")
+          },
+          To: [{
+            Email: newUser.email
+          }],
+          TemplateID: 7732849,
+          TemplateLanguage: true,
+          Variables: {
+            verifyLink: verifyUrl
+          }
+        }]
+    });
+  }
 
   return {
     accessToken,
@@ -103,35 +104,56 @@ export async function initiatePasswordReset(email) {
   const user = await userRepo.findOneUserByEmail(email);
   if (!user) throw new NotFoundError("USER"); // throws error if email is not found
 
+  console.log('User found for password reset:', user.email); // Logs the found user's email for debugging purposes
   // Creates token if user is found
   const resetToken = uuidv4();
 
   // Stores token in redis with 1 hour expiration time
   await redisClient.setEx(
-    `password-ResetVerificationToken:${resetToken}`,
+    `passwordResetVerificationToken:${resetToken}`,
     3600,
     JSON.stringify({ uuid: user.uuid }),
   );
-  // Sends email to user with password reset link containing the token
-  const resetUrl = `${getEnv("CLIENT_ORIGIN")}/auth/change-password/${resetToken}`;
-  await mailjet
-    .post('send', { version: 'v3.1' })
-    .request({
-      Messages: [{
-        From: {
-          Email: getEnv("MAILJET_FROM_EMAIL"),
-          Name: getEnv("MAILJET_FROM_NAME")
-        },
-        To: [{
-          Email: user.email
-        }],
-        TemplateID: 7732849,
-        TemplateLanguage: true,
-        Variables: {
-          resetLink: resetUrl
-        }
-      }]
-  });
+  console.log('Password reset token generated and stored in Redis:', resetToken); // Logs the generated token for debugging purposes
+  if(getEnv("NODE_ENV") !== "test"){
+    // Creates email verification token, stores in redis with 24 hour expiration, and sends verification email to user with link containing token
+    const resetUrl = `${getEnv("CLIENT_ORIGIN")}/auth/change-password/${resetToken}`;
+    await mailjet
+      .post('send', { version: 'v3.1' })
+      .request({
+        Messages: [{
+          From: {
+            Email: getEnv("MAILJET_FROM_EMAIL"),
+            Name: getEnv("MAILJET_FROM_NAME")
+          },
+          To: [{
+            Email: user.email
+          }],
+          TemplateID: 7733362,
+          TemplateLanguage: true,
+          Variables: {
+            resetLink: resetUrl
+          }
+        }]
+    });
+  }
+  return;
+}
+
+export async function resetPassword(token, newPassword) {
+  // Checks if token is valid by looking for it in cache
+  const user = await redisClient.get(`passwordResetVerificationToken:${token}`);
+  if (!user) throw new UnauthorizedError();
+
+  // If token is valid, hashes new password and updates user document with new password hash and deletes the token from redis
+  const uuid = JSON.parse(user).uuid;
+  const salt = await generateSalt();
+  const newPasswordHash = await hashPassword(newPassword, salt);
+  
+  await Promise.all([
+    redisClient.del(`passwordResetVerificationToken:${token}`),
+    userRepo.updateMultipleUserFieldsByUUID(uuid, { passwordHash: newPasswordHash }),
+  ]);
   return;
 }
 
@@ -151,11 +173,9 @@ export async function refreshTokens(refreshToken) {
   const timeElapsed = now - iat;
   if (timeElapsed > sevenDaysInMs) throw new UnauthorizedError();
 
-  await revokeRefreshToken(refreshToken); // Revokes refreshToken
-
-  // Gets user information from database **[Think about adding username to redis cache to avoid having to query db]**
+  await revokeRefreshToken(refreshToken); // Revokes refreshToken so it cannot be used again
+  
   const user = await userRepo.findOneUserByUUID(userUUID);
-
   const tokens = await generateTokens(user);
   const newAccessToken = tokens.accessToken;
   const newRefreshToken = tokens.refreshToken;
@@ -213,14 +233,17 @@ export async function revokeRefreshToken(refreshToken) {
   }
 }
 
-export async function verifyUserAccountToken(type, token) {
-  const user = await redisClient.get(`${type}VerificationToken:${token}`);
-  if (!user) throw new UnauthorizedError();
+export async function verifyUserAccount(type, token) {
+  const user = await redisClient.get(`emailVerificationToken:${token}`);
+  if (!user || type !== "email") throw new UnauthorizedError();
+
+  const uuid = JSON.parse(user).uuid;
 
   await Promise.all([
-    redisClient.del(`${type}VerificationToken:${token}`),
-    userRepo.updateMultipleUserFieldsByUUID(user, { verified: true }),
+    redisClient.del(`emailVerificationToken:${token}`),
+    userRepo.updateMultipleUserFieldsByUUID(uuid, { verified: true }),
   ]);
+
   return;
 }
 

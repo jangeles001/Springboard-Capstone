@@ -7,7 +7,7 @@ export function LoginPage() {
       <section className='text-3xl text-white mb-10'><h1>Welcome Back!</h1></section>
       <LoginForm />
       <div className='flex flex-row justify-between w-full min-w-full'>
-        <section className=''><Link to='/landing/' className='text-white hover:underline'>&lt; Back to landing page</Link></section>
+        <section className=''><Link to='/landing/' className='text-white hover:underline'>&lt; Back to home page</Link></section>
         <section className=''><Link to='/auth/forgot-password/' className='ml-auto text-white hover:underline'>Forgot Password?</Link></section>
       </div>
       <Link to='/auth/signup/' className='ml-auto text-white hover:underline'>Don't have an account?</Link>

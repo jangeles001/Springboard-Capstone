@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { sendResetRequest } from '../services/sendResetRequest';
+import { sendResetPasswordEmailRequest } from '../services/sendResetPasswordEmailRequest';
 
 export function useForgotPassword({ onSuccessFunction }) {
     const [formDataEmail, setFormDataEmail] = useState("");
@@ -8,7 +8,7 @@ export function useForgotPassword({ onSuccessFunction }) {
     const [error, setError] = useState(null);
 
     const resetPasswordMutation = useMutation({
-        mutationFn: (email) => sendResetRequest(email),
+        mutationFn: (email) => sendResetPasswordEmailRequest(email),
         onSuccess: (response) =>{
             console.log('Reset password request successful:', response);
             onSuccessFunction();

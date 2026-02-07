@@ -32,7 +32,7 @@ export const createUser = async (req, res) => {
 export async function verifyController(req, res) {
   try {
     const { type, token } = req.params;
-    await userService.verifyUserAccountToken(type, token);
+    await userService.verifyUserAccount(type, token);
     res.generateSuccessResponse(null, `User Verification Successful`, 200);
   } catch (error) {
     console.log(error);
@@ -80,11 +80,24 @@ export async function getUserController(req, res) {
   }
 }
 
-export async function resetPasswordController(req, res){
+export async function initiateResetPasswordController(req, res){
   try {
     const { email } = req.validatedBody;
+    console.log('Initiating password reset for email:', email);
     await userService.initiatePasswordReset(email);
-    return res.generateSuccessResponse(null, "Password reset initiated. Please check your email for further instructions.", 200);
+    return res.generateSuccessResponse(null, "Please check your email for further instructions.", 200);
+  } catch (error) {
+    return res.generateErrorResponse(error.message, error.statusCode); 
+  }
+}
+
+export async function resetPasswordController(req, res){
+  try {
+    const { token } = req.params;
+    const { password } = req.validatedBody;
+    console.log(`Setting new Password (${password}) with token: ${token}`);
+    await userService.resetPassword(token, password);
+    return res.generateSuccessResponse(null, "Password Reset Successful!", 200);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode); 
   }

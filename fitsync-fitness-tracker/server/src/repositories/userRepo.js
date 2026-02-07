@@ -18,6 +18,7 @@ export async function findOneUserByPublicId(userPublicId) {
 }
 
 export async function updateMultipleUserFieldsByUUID(userUUID, updatedFields) {
+  console.log(`Updating user with UUID: ${userUUID} with fields:`, updatedFields); // Logs the user's uuid and the fields being updated for debugging purposes
   return await User.findOneAndUpdate(
     { uuid: userUUID },
     { $set: updatedFields },

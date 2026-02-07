@@ -26,7 +26,7 @@ import { Route as DashboardWorkoutBuilderRouteImport } from './routes/dashboard/
 import { Route as DashboardMealsRouteImport } from './routes/dashboard/meals'
 import { Route as DashboardMealBuilderRouteImport } from './routes/dashboard/mealBuilder'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
-import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
+import { Route as AuthResetEmailSentRouteImport } from './routes/auth/reset-email-sent'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as DashboardWorkoutsIndexRouteImport } from './routes/dashboard/workouts.index'
@@ -34,6 +34,7 @@ import { Route as DashboardMealsIndexRouteImport } from './routes/dashboard/meal
 import { Route as DashboardWorkoutsWorkoutIdRouteImport } from './routes/dashboard/workouts.$workoutId'
 import { Route as DashboardMealsMealIdRouteImport } from './routes/dashboard/meals.$mealId'
 import { Route as AuthVerifyTokenRouteImport } from './routes/auth/verify.$token'
+import { Route as AuthResetPasswordTokenRouteImport } from './routes/auth/reset-password.$token'
 
 const LegalRouteRoute = LegalRouteRouteImport.update({
   id: '/legal',
@@ -120,9 +121,9 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const AuthResetEmailSentRoute = AuthResetEmailSentRouteImport.update({
+  id: '/reset-email-sent',
+  path: '/reset-email-sent',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -161,6 +162,11 @@ const AuthVerifyTokenRoute = AuthVerifyTokenRouteImport.update({
   path: '/verify/$token',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthResetPasswordTokenRoute = AuthResetPasswordTokenRouteImport.update({
+  id: '/reset-password/$token',
+  path: '/reset-password/$token',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -170,7 +176,7 @@ export interface FileRoutesByFullPath {
   '/legal': typeof LegalRouteRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/reset-email-sent': typeof AuthResetEmailSentRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/landing/': typeof LandingIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/auth/reset-password/$token': typeof AuthResetPasswordTokenRoute
   '/auth/verify/$token': typeof AuthVerifyTokenRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
   '/dashboard/workouts/$workoutId': typeof DashboardWorkoutsWorkoutIdRoute
@@ -193,7 +200,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/reset-email-sent': typeof AuthResetEmailSentRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
   '/dashboard/workoutBuilder': typeof DashboardWorkoutBuilderRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/landing': typeof LandingIndexRoute
   '/legal': typeof LegalIndexRoute
+  '/auth/reset-password/$token': typeof AuthResetPasswordTokenRoute
   '/auth/verify/$token': typeof AuthVerifyTokenRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
   '/dashboard/workouts/$workoutId': typeof DashboardWorkoutsWorkoutIdRoute
@@ -219,7 +227,7 @@ export interface FileRoutesById {
   '/legal': typeof LegalRouteRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/reset-email-sent': typeof AuthResetEmailSentRoute
   '/auth/signup': typeof AuthSignupRoute
   '/dashboard/mealBuilder': typeof DashboardMealBuilderRoute
   '/dashboard/meals': typeof DashboardMealsRouteWithChildren
@@ -232,6 +240,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/landing/': typeof LandingIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/auth/reset-password/$token': typeof AuthResetPasswordTokenRoute
   '/auth/verify/$token': typeof AuthVerifyTokenRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
   '/dashboard/workouts/$workoutId': typeof DashboardWorkoutsWorkoutIdRoute
@@ -248,7 +257,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/auth/forgot-password'
     | '/auth/login'
-    | '/auth/reset-password'
+    | '/auth/reset-email-sent'
     | '/auth/signup'
     | '/dashboard/mealBuilder'
     | '/dashboard/meals'
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/landing/'
     | '/legal/'
+    | '/auth/reset-password/$token'
     | '/auth/verify/$token'
     | '/dashboard/meals/$mealId'
     | '/dashboard/workouts/$workoutId'
@@ -271,7 +281,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/forgot-password'
     | '/auth/login'
-    | '/auth/reset-password'
+    | '/auth/reset-email-sent'
     | '/auth/signup'
     | '/dashboard/mealBuilder'
     | '/dashboard/workoutBuilder'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/legal'
+    | '/auth/reset-password/$token'
     | '/auth/verify/$token'
     | '/dashboard/meals/$mealId'
     | '/dashboard/workouts/$workoutId'
@@ -296,7 +307,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/auth/forgot-password'
     | '/auth/login'
-    | '/auth/reset-password'
+    | '/auth/reset-email-sent'
     | '/auth/signup'
     | '/dashboard/mealBuilder'
     | '/dashboard/meals'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/landing/'
     | '/legal/'
+    | '/auth/reset-password/$token'
     | '/auth/verify/$token'
     | '/dashboard/meals/$mealId'
     | '/dashboard/workouts/$workoutId'
@@ -445,11 +457,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/auth/reset-password': {
-      id: '/auth/reset-password'
-      path: '/reset-password'
-      fullPath: '/auth/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
+    '/auth/reset-email-sent': {
+      id: '/auth/reset-email-sent'
+      path: '/reset-email-sent'
+      fullPath: '/auth/reset-email-sent'
+      preLoaderRoute: typeof AuthResetEmailSentRouteImport
       parentRoute: typeof AuthRouteRoute
     }
     '/auth/login': {
@@ -501,24 +513,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyTokenRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/auth/reset-password/$token': {
+      id: '/auth/reset-password/$token'
+      path: '/reset-password/$token'
+      fullPath: '/auth/reset-password/$token'
+      preLoaderRoute: typeof AuthResetPasswordTokenRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
   }
 }
 
 interface AuthRouteRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
-  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthResetEmailSentRoute: typeof AuthResetEmailSentRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AuthIndexRoute: typeof AuthIndexRoute
+  AuthResetPasswordTokenRoute: typeof AuthResetPasswordTokenRoute
   AuthVerifyTokenRoute: typeof AuthVerifyTokenRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
-  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthResetEmailSentRoute: AuthResetEmailSentRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthIndexRoute: AuthIndexRoute,
+  AuthResetPasswordTokenRoute: AuthResetPasswordTokenRoute,
   AuthVerifyTokenRoute: AuthVerifyTokenRoute,
 }
 
