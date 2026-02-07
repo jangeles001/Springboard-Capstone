@@ -233,9 +233,9 @@ export async function revokeRefreshToken(refreshToken) {
   }
 }
 
-export async function verifyUserAccount(type, token) {
+export async function verifyUserAccount(token) {
   const user = await redisClient.get(`emailVerificationToken:${token}`);
-  if (!user || type !== "email") throw new UnauthorizedError();
+  if (!user) throw new UnauthorizedError();
 
   const uuid = JSON.parse(user).uuid;
 

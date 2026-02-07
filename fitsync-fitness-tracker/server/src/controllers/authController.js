@@ -31,8 +31,8 @@ export const createUser = async (req, res) => {
 
 export async function verifyController(req, res) {
   try {
-    const { type, token } = req.params;
-    await userService.verifyUserAccount(type, token);
+    const {token } = req.params;
+    await userService.verifyUserAccount(token);
     res.generateSuccessResponse(null, `User Verification Successful`, 200);
   } catch (error) {
     console.log(error);

@@ -52,6 +52,16 @@ const userSchema = new mongoose.Schema(
       calculatedAt: { type: Date, required: true },
       formulaVersion: { type: String, required: true },
     },
+    
+    lastAiRecommendations: {
+      type: Object,
+      default: null,
+    },
+
+    lastAiRecommendationAt: {
+      type: Date,
+      default: null,
+    }
   },
   { timestamps: true },
 );

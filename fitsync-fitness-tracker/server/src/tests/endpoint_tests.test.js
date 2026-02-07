@@ -56,6 +56,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         gender: "female",
         activityLevel: "moderate",
         goalType: "maintain",
+        lastAiRecommendationAt: null,
       },
     };
 
@@ -87,6 +88,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         gender: "male",
         activityLevel: "active",
         goalType: "bulk",
+        lastAiRecommendationAt: null,
       },
     };
 

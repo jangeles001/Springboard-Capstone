@@ -13,8 +13,10 @@ export async function findOneUserByUUID(userUUID) {
   return await User.findOne({ uuid: userUUID });
 }
 
-export async function findOneUserByPublicId(userPublicId) {
-  return User.findOne({ publicId: userPublicId });
+export async function findOneUserByPublicId(publicId) {
+  const user = await User.findOne({ publicId });
+  if (!user) return null;
+  return user.toJSON();
 }
 
 export async function updateMultipleUserFieldsByUUID(userUUID, updatedFields) {

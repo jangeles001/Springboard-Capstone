@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchNutritionReports } from "../services/fetchNutritionReports";
 import { fetchWorkoutReports } from "../services/fetchWorkoutReports";
-
-const REGEN_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours
+import { fetchRecommendations } from "../services/fetchRecommendations";
 
 export function useDashboard(range) {
   const queryClient = useQueryClient();
@@ -26,9 +25,8 @@ export function useDashboard(range) {
   const recommendationsQuery = useQuery({
     queryKey: ["dashboard", "recommendations"],
     queryFn: () => fetchRecommendations(),
-    staleTime: Infinity,
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
-
 
   useEffect(() => {
     const nextView = activeView === "nutrition" ? "workouts" : "nutrition";

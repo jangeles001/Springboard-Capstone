@@ -1,15 +1,26 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as workoutLogRepo from '../repositories/workoutLogRepo.js';
+import * as userRepo from '../repositories/userRepo.js';
 import { getEnv } from '../config/envConfig.js';
 
 const genAI = new GoogleGenerativeAI(getEnv('GEMINI_API_KEY'));
 
 export async function generateAiWorkoutRecommendations(userPublicId) {
+  // ✅ Get user profile first
+  const user = await userRepo.findOneUserByPublicId(userPublicId);
+  if (!user) throw new Error('User not found');
+
+  if(user.lastAiRecommendationAt) {
+    const daysSinceLast = (Date.now() - new Date(user.lastAiRecommendationAt).getTime()) / (1000 * 60 * 60 * 24);
+    
+    if(daysSinceLast < 14) { // Only allow new recommendations every 2 weeks
+      return user.lastAiRecommendations;
+    }
+  }
+
   // Get last 30 days of workout data
   const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.now() - 30);
-
-  await userService.updateUserLastAiRecommendationAt(userPublicId);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30); // ✅ Fixed: was thirtyDaysAgo.now()
 
   const workoutLogs = await workoutLogRepo.findAllWorkoutLogsByUserPublicId(
     userPublicId,
@@ -52,17 +63,17 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
   const prompt = createWorkoutPrompt(userData);
   
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     generationConfig: {
       temperature: 0.7,
-      maxOutputTokens: 2048,
+      maxOutputTokens: 4096,
     },
   });
 
   const result = await model.generateContent(prompt);
   const responseText = result.response.text();
   
-  // Clean and parse Ai response
+  // Clean and parse AI response
   const cleanedText = responseText
     .replace(/```json\n?/g, '')
     .replace(/```\n?/g, '')
@@ -70,6 +81,13 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
   
   try {
     const recommendations = JSON.parse(cleanedText);
+    
+    // Save the recommendations and timestamp to the user record
+    await userRepo.updateUserByPublicId(userPublicId, {
+      lastAiRecommendations: recommendations,
+      lastAiRecommendationAt: new Date(),
+    });
+
     return recommendations;
   } catch (error) {
     console.error('Failed to parse AI response:', responseText);
@@ -77,35 +95,11 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
   }
 }
 
-// Helper function to fetch user data
-async function getUserWorkoutData(userPublicId) {
-  // Need to implement functions to get recent workouts and user profile
-  const recentWorkouts = await getRecentWorkouts(userPublicId, 10);
-  const userProfile = await getUserProfile(userPublicId);
-  
-  return {
-    recentWorkouts: recentWorkouts.map(workout => ({
-      name: workout.workoutName,
-      exercises: workout.exercises.map(e => e.exerciseName),
-      duration: workout.workoutDuration,
-    })),
-    goals: userProfile.goals || 'general fitness',
-    experienceLevel: determineExperienceLevel(recentWorkouts),
-  };
-}
-
 function calculateAvgDuration(workoutLogs) {
   if (workoutLogs.length === 0) return 0;
   const totalDuration = workoutLogs.reduce((sum, log) => sum + (log.totalDuration || 0), 0);
   const totalWorkouts = workoutLogs.reduce((sum, log) => sum + (log.workoutCount || 0), 0);
   return totalWorkouts > 0 ? Math.round(totalDuration / totalWorkouts) : 0;
-}
-
-//Determine user experience level based on number of workouts
-function determineExperienceLevel(workouts) {
-  if (workouts.length < 5) return 'beginner';
-  if (workouts.length < 20) return 'intermediate';
-  return 'advanced';
 }
 
 // Aggregate muscle groups from distribution data
@@ -121,7 +115,7 @@ function aggregateMuscleGroups(muscleDistribution) {
   return aggregated;
 }
 
-// Create prompt for Ai model
+// Create prompt for AI model
 function createWorkoutPrompt(userData) {
   const muscleList = Object.entries(userData.muscleBalance)
     .sort((a, b) => b[1] - a[1])
@@ -130,50 +124,47 @@ function createWorkoutPrompt(userData) {
 
   return `You are a professional fitness coach creating personalized workout recommendations.
 
-    USER PROFILE:
-    - Age: ${userData.profile.age}
-    - Gender: ${userData.profile.gender}
-    - Goal: ${userData.profile.goalType}
-    - Activity Level: ${userData.profile.activityLevel}
+USER PROFILE:
+- Age: ${userData.profile.age}
+- Gender: ${userData.profile.gender}
+- Goal: ${userData.profile.goalType}
+- Activity Level: ${userData.profile.activityLevel}
 
-    RECENT ACTIVITY (Past 30 days):
-    - Total Workouts: ${userData.recentActivity.totalWorkouts}
-    - Average Duration: ${userData.recentActivity.avgDuration} minutes
-    - Total Volume: ${userData.recentActivity.totalVolume} lbs
+RECENT ACTIVITY (Past 30 days):
+- Total Workouts: ${userData.recentActivity.totalWorkouts}
+- Average Duration: ${userData.recentActivity.avgDuration} minutes
+- Total Volume: ${userData.recentActivity.totalVolume} lbs
 
-    MUSCLE GROUP DISTRIBUTION (Past 4 weeks):
-    ${muscleList}
+MUSCLE GROUP DISTRIBUTION (Past 4 weeks):
+${muscleList}
 
-    TASK: Generate 3 personalized workout recommendations for the next 2 weeks that:
-    1. Address any muscle imbalances (underworked muscle groups)
-    2. Align with the user's ${userData.profile.goalType} goal
-    3. Match their ${userData.profile.activityLevel} activity level
-    4. Progressive difficulty based on recent performance
+TASK: Generate 2 exercise recommendations for the next 2 weeks that:
+1. Address any muscle imbalances (underworked muscle groups)
+2. Align with the user's ${userData.profile.goalType} goal
+3. Match their ${userData.profile.activityLevel} activity level
+4. Progressive difficulty based on recent performance
 
-    Return ONLY valid JSON (no markdown, no code blocks) in this exact format:
+Return ONLY valid JSON (no markdown, no code blocks) in this exact format:
+{
+  "recommendations": [
     {
-    "recommendations": [
+      exerciseName: "string",
+      "description": "string (1 sentence summary of the exercise and why it's recommended)",
+      "targetMuscles": ["string"],
+      "estimatedDuration": number (in minutes),
+      "exercise": [
         {
-        "workoutName": "string",
-        "description": "string (1-2 sentences)",
-        "targetMuscles": ["string"],
-        "difficulty": "beginner|intermediate|advanced",
-        "estimatedDuration": number (in minutes),
-        "exercises": [
-            {
-            "exerciseName": "string",
-            "sets": number,
-            "reps": number,
-            "restSeconds": number,
-            "notes": "string (optional form cues)"
-            }
-        ],
-        "reasoning": "string (explain why this workout addresses their needs and imbalances)"
+          "sets": number,
+          "reps": number,
+          "restSeconds": number,
         }
-    ],
-    "insights": {
-        "muscleImbalances": ["string describing underworked areas"],
-        "progressionTips": "string with advice for next 2 weeks"
+      ],
+      "reasoning": "string (explain why this workout addresses their needs and imbalances in 1 sentence)"
     }
-    }`;
+  ],
+  "insights": {
+    "muscleImbalances": ["string describing underworked areas in 1 sentence"],
+    "progressionTips": "string with advice for next 2 weeks in 1 sentence"
+  }
+}`;
 }
