@@ -16,5 +16,22 @@ export const envConfigZodSchema = z.object({
     .string()
     .startsWith("redis", "Redis url should start with redis:"),
   NODE_ENV: z.enum(["production", "test"]).default("test"),
-  RECAPTCHA_SECRET_KEY: z.string(),
+  RECAPTCHA_SECRET_KEY: z
+  .string()
+  .min(1, "RECAPTCHA_SECRET_KEY is required"),
+  GEMINI_API_KEY: z
+  .string()
+  .min(1, "GEMINI_API_KEY is required"),
+  MAILJET_API_KEY: z
+  .string()
+  .min(1, "MAILJET_API_KEY is required"),
+  MAILJET_SECRET_KEY: z
+  .string()
+  .min(1, "MAILJET_SECRET_KEY is required") ,
+  MAILJET_FROM_NAME: z
+  .string()
+  .min(1, "MAILJET_FROM_NAME is required"), 
+  MAILJET_FROM_EMAIL: z
+  .string()
+  .email("MAILJET_FROM_EMAIL must be a valid email address"),
 });

@@ -33,6 +33,7 @@ import { Route as DashboardWorkoutsIndexRouteImport } from './routes/dashboard/w
 import { Route as DashboardMealsIndexRouteImport } from './routes/dashboard/meals.index'
 import { Route as DashboardWorkoutsWorkoutIdRouteImport } from './routes/dashboard/workouts.$workoutId'
 import { Route as DashboardMealsMealIdRouteImport } from './routes/dashboard/meals.$mealId'
+import { Route as AuthVerifyTokenRouteImport } from './routes/auth/verify.$token'
 
 const LegalRouteRoute = LegalRouteRouteImport.update({
   id: '/legal',
@@ -155,6 +156,11 @@ const DashboardMealsMealIdRoute = DashboardMealsMealIdRouteImport.update({
   path: '/$mealId',
   getParentRoute: () => DashboardMealsRoute,
 } as any)
+const AuthVerifyTokenRoute = AuthVerifyTokenRouteImport.update({
+  id: '/verify/$token',
+  path: '/verify/$token',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/landing/': typeof LandingIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/auth/verify/$token': typeof AuthVerifyTokenRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
   '/dashboard/workouts/$workoutId': typeof DashboardWorkoutsWorkoutIdRoute
   '/dashboard/meals/': typeof DashboardMealsIndexRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/landing': typeof LandingIndexRoute
   '/legal': typeof LegalIndexRoute
+  '/auth/verify/$token': typeof AuthVerifyTokenRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
   '/dashboard/workouts/$workoutId': typeof DashboardWorkoutsWorkoutIdRoute
   '/dashboard/meals': typeof DashboardMealsIndexRoute
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/landing/': typeof LandingIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/auth/verify/$token': typeof AuthVerifyTokenRoute
   '/dashboard/meals/$mealId': typeof DashboardMealsMealIdRoute
   '/dashboard/workouts/$workoutId': typeof DashboardWorkoutsWorkoutIdRoute
   '/dashboard/meals/': typeof DashboardMealsIndexRoute
@@ -252,6 +261,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/landing/'
     | '/legal/'
+    | '/auth/verify/$token'
     | '/dashboard/meals/$mealId'
     | '/dashboard/workouts/$workoutId'
     | '/dashboard/meals/'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/legal'
+    | '/auth/verify/$token'
     | '/dashboard/meals/$mealId'
     | '/dashboard/workouts/$workoutId'
     | '/dashboard/meals'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/landing/'
     | '/legal/'
+    | '/auth/verify/$token'
     | '/dashboard/meals/$mealId'
     | '/dashboard/workouts/$workoutId'
     | '/dashboard/meals/'
@@ -482,6 +494,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardMealsMealIdRouteImport
       parentRoute: typeof DashboardMealsRoute
     }
+    '/auth/verify/$token': {
+      id: '/auth/verify/$token'
+      path: '/verify/$token'
+      fullPath: '/auth/verify/$token'
+      preLoaderRoute: typeof AuthVerifyTokenRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
   }
 }
 
@@ -491,6 +510,7 @@ interface AuthRouteRouteChildren {
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AuthIndexRoute: typeof AuthIndexRoute
+  AuthVerifyTokenRoute: typeof AuthVerifyTokenRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
@@ -499,6 +519,7 @@ const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthIndexRoute: AuthIndexRoute,
+  AuthVerifyTokenRoute: AuthVerifyTokenRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(

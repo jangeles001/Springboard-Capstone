@@ -19,7 +19,7 @@ export default function ForgotPasswordPage() {
     return (
         <div className='flex flex-col items-center justify-center-safe my-auto mx-auto min-w-full'>
             <div className='flex flex-col items-center bg-white justify-center rounded-2xl shadow-xl p-8 w-full max-w-2xl'>
-                <h1 className='text-center mb-3'>Provide Email Linked To Your Account</h1>
+                <h1 className='text-center font-bold mb-3'>Provide Email Linked To Your Account</h1>
                 <form className='grid grid-cols-1 md:grid-cols-1 gap-3' onSubmit={handleSubmit}>
                     <div className="flex flex-col col-span-1 md:col-span-1">
                         <FormField name="email" label="Email" formError={formErrors?.email}>
@@ -38,7 +38,10 @@ export default function ForgotPasswordPage() {
                     </div>
                 </form>
             </div>
-            <section className='w-full max-w-2xl mt-4 flex justify-self-start'><Link to='/landing/' className='text-white hover:underline'>&lt; Back to landing page</Link></section>
+            <div className='flex w-full max-w-2xl  mt-4 gap-5'>
+                <section className='max-w-2xl '><Link to='/landing/' className='text-white hover:underline'>&lt; Back to home page</Link></section>
+                <section className='max-w-2xl ml-auto'><Link to='/auth/login/' className='text-white hover:underline'> Back to Login Page &gt;</Link></section>
+            </div>
         </div>
     )
 }

@@ -76,17 +76,17 @@ export default function Carousel({ items, interval = 3000 }){
             onTransitionEnd={handleTransitionEnd}>
 
                 <div className="flex w-full items-center justify-center pb-15 flex-shrink-0">
-                    <img src={items[totalSlides - 1]} alt="Clone last" />
+                    <img src={items[totalSlides - 1].src} alt="Clone last" />
                 </div>
 
                 {items.map((src, i) => (
                 <div key={i} className="flex w-full items-center justify-center pb-15 flex-shrink-0">
-                    <img key={src} src={src} alt={`Slide ${i}`} className="w-auto" />
+                    <img key={src.src} src={src.src} alt={`Slide ${i}`} className="w-auto" />
                 </div>
                 ))}
 
                 <div className="flex w-full items-center justify-center pb-15 flex-shrink-0">
-                    <img src={items[0]} alt="Clone first" />
+                    <img src={items[0].src} alt="Clone first" />
                 </div>
 
             </div>

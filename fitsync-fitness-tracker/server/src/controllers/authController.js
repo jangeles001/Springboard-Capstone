@@ -24,6 +24,7 @@ export const createUser = async (req, res) => {
 
     return res.generateSuccessResponse(null, message, 201);
   } catch (error) {
+    console.log(error);
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 };
@@ -31,10 +32,10 @@ export const createUser = async (req, res) => {
 export async function verifyController(req, res) {
   try {
     const { type, token } = req.params;
-    console.log(`type: ${type}, token: ${token}`);
-    await userService.verifyToken(token, type);
+    await userService.verifyUserAccountToken(type, token);
     res.generateSuccessResponse(null, `User Verification Successful`, 200);
   } catch (error) {
+    console.log(error);
     res.generateErrorResponse(error.message, error.status);
   }
 }

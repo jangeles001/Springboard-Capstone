@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
-import { getEnv } from "./envConfig";
+import Mailjet from "node-mailjet";
+import { getEnv } from "./envConfig.js";
+
 
 export const transporter = nodemailer.createTransport({
   host: "in-v3.mailjet.com",
@@ -10,3 +12,10 @@ export const transporter = nodemailer.createTransport({
     pass: getEnv("MAILJET_SECRET_KEY"),
   },
 });
+
+export const mailjet = Mailjet.apiConnect(
+  getEnv("MAILJET_API_KEY"),
+  getEnv("MAILJET_SECRET_KEY")
+);
+
+console.log("Email services configured");

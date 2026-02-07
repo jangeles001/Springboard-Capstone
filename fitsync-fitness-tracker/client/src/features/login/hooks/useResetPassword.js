@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { sendResetRequest } from "../services/sendResetRequest";
 
 export function useResetPassword(onSuccess) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [formErrors, setFormErrors] = useState({});
+  const [formErrors, setFormErrors] = useState(null);
 
   const resetPasswordMutation = useMutation({
     mutationFn: ({ password, confirmPassword }) =>
@@ -36,21 +37,22 @@ export function useResetPassword(onSuccess) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!password || !confirmPassword) {
+    if (!password) {
+      setFormErrors({...formErrors, password: ["Password is required"]});
+    }
+    if (!confirmPassword) {
       setFormErrors({
-        password: [
-          ...formErrors?.password,
-          "Both password fields are required",
-        ],
+        ...formErrors,
+        confirmPassword: ["Confirm password is required"]
       });
-      return;
     }
     if (password !== confirmPassword) {
       setFormErrors({
-        password: [...formErrors?.password, "Passwords do not match"],
+        ...formErrors,
+        confirmPassword: ["Passwords do not match"],
       });
-      return;
     }
+    if(formErrors) return;
     resetPasswordMutation.mutate({ password, confirmPassword });
   };
 

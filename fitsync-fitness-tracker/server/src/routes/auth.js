@@ -18,7 +18,7 @@ import {
 const router = express.Router();
 
 router
-  .post("/register", validate(newUserZodSchema.strict()), createUser)
+  .post("/register", validate(newUserZodSchema.omit({reCaptchaToken: true}).strict()), createUser)
   .post(
     "/login",
     validate(

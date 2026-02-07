@@ -2,7 +2,10 @@
   "name": "fitsync-capstone",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["client", "server"],
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "dev": "concurrently -n server,client,llm \"npm run dev --prefix server\" \"npm run dev --prefix client\" --kill-others",
     "build": "npm run build --prefix client && npm run build --prefix server",

@@ -45,6 +45,7 @@ export function ResetPasswordPage() {
                     <div className="col-span-1 md:col-span-1 flex justify-center mt-5 max-h-20">
                         <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100' disabled={isLoading}>Reset Password</button>
                     </div>
+                    <p className="text-red-500">{formErrors?.general?.[0]}</p>
                 </form>
             </div>
             <section className='w-full max-w-2xl mt-4 flex justify-self-start'><Link to='/landing/' className='text-white hover:underline'>&lt; Back to landing page</Link></section>

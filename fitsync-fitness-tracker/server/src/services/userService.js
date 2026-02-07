@@ -11,6 +11,8 @@ import { NotFoundError } from "../errors/NotFoundError.js";
 import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 import { getDateRange } from "../utils/getDateRange.js";
 import { calculateMacros } from "../utils/calculateMacros.js";
+import { mailjet } from "../config/nodeMailer.js";
+import { transporter } from "../config/nodeMailer.js";
 import * as userRepo from "../repositories/userRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
@@ -42,24 +44,35 @@ export async function registerNewUser(userData) {
 
   // Creates new User document with the userData object
   const newUser = await userRepo.createNewUser(userData);
-  await redisClient.setEx();
   const { accessToken, refreshToken } = await generateTokens(newUser);
 
+  // Creates email verification token, stores in redis with 24 hour expiration, and sends verification email to user with link containing token
   const verificationToken = uuidv4();
+  const verifyUrl = `${getEnv("CLIENT_ORIGIN")}/auth/verify/${verificationToken}`;
+
   await redisClient.setEx(
     `emailVerificationToken:${verificationToken}`,
     86400,
     JSON.stringify({ uuid: newUser.uuid }),
   );
 
-  await transporter.sendMail({
-    from: '"FitSync" <noreply@.fitsync.com>',
-    to: newUser.email,
-    subject: "Verify FitSync Account",
-    html: `
-      <h2>Verify Your Account</h2>
-      <p>Click below:</p> <a href="${verifyUrl}">Here</a>
-    `,
+  await mailjet
+    .post('send', { version: 'v3.1' })
+    .request({
+      Messages: [{
+        From: {
+          Email: getEnv("MAILJET_FROM_EMAIL"),
+          Name: getEnv("MAILJET_FROM_NAME")
+        },
+        To: [{
+          Email: newUser.email
+        }],
+        TemplateID: 7732849,
+        TemplateLanguage: true,
+        Variables: {
+          verifyLink: verifyUrl
+        }
+      }]
   });
 
   return {
@@ -95,21 +108,29 @@ export async function initiatePasswordReset(email) {
 
   // Stores token in redis with 1 hour expiration time
   await redisClient.setEx(
-    `passwordResetToken:${resetToken}`,
+    `password-ResetVerificationToken:${resetToken}`,
     3600,
     JSON.stringify({ uuid: user.uuid }),
   );
   // Sends email to user with password reset link containing the token
   const resetUrl = `${getEnv("CLIENT_ORIGIN")}/auth/change-password/${resetToken}`;
-  await transporter.sendMail({
-    from: '"FitSync" <fitsync43@gmail.com>',
-    to: user.email,
-    subject: "FitSync Password Reset",
-    html: `
-      <h2>Password Reset Request</h2>
-      <p>Click below to reset your password:</p> <a href="${resetUrl}">Reset Password</a>
-      <p>This link will expire in 1 hour.</p>
-    `,
+  await mailjet
+    .post('send', { version: 'v3.1' })
+    .request({
+      Messages: [{
+        From: {
+          Email: getEnv("MAILJET_FROM_EMAIL"),
+          Name: getEnv("MAILJET_FROM_NAME")
+        },
+        To: [{
+          Email: user.email
+        }],
+        TemplateID: 7732849,
+        TemplateLanguage: true,
+        Variables: {
+          resetLink: resetUrl
+        }
+      }]
   });
   return;
 }
@@ -192,13 +213,13 @@ export async function revokeRefreshToken(refreshToken) {
   }
 }
 
-export async function verifyUserAccountToken(token, type) {
-  const user = await redisClient.getEx(`${type}VerificationToken:${token}`);
-  if (!user) throw UnauthorizedError();
+export async function verifyUserAccountToken(type, token) {
+  const user = await redisClient.get(`${type}VerificationToken:${token}`);
+  if (!user) throw new UnauthorizedError();
 
   await Promise.all([
     redisClient.del(`${type}VerificationToken:${token}`),
-    userRepo.updateMultipleUserFieldsByUUID({ verified: true }, user.uuid),
+    userRepo.updateMultipleUserFieldsByUUID(user, { verified: true }),
   ]);
   return;
 }

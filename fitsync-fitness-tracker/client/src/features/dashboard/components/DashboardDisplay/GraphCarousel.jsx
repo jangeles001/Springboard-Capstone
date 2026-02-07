@@ -25,7 +25,6 @@ export default function GraphCarousel({
     }
   };
 
-
   // Auto-play
   useEffect(() => {
     startInterval();

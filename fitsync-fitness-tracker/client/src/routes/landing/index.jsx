@@ -7,18 +7,29 @@ export const Route = createFileRoute('/landing/')({
 
 function RouteComponent() {
 
-  const images = [
-    "https://picsum.photos/seed/5371/600/400",
-    "https://picsum.photos/seed/5850/600/400",
-    "https://picsum.photos/seed/7807/600/400",
-    "https://picsum.photos/seed/8223/600/400",
-    "https://picsum.photos/seed/2921/600/400",
-    "https://picsum.photos/seed/8185/600/400",
-    "https://picsum.photos/seed/2255/600/400",
-    "https://picsum.photos/seed/3851/600/400",
-    "https://picsum.photos/seed/6274/600/400",
-    "https://picsum.photos/seed/5881/600/400",
-  ];
+const images = [
+  {
+    src: "https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&fit=crop&w=500&h=500",
+    alt: "Woman doing push-ups at gym workout",
+  },
+  {
+    src: "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&fit=crop&w=500&h=500",
+    alt: "Person performing core exercise on mat",
+  },
+  {
+    src: "https://images.pexels.com/photos/4753988/pexels-photo-4753988.jpeg?auto=compress&fit=crop&w=500&h=500",
+    alt: "Man using battle ropes during intense gym workout",
+  }, 
+  {
+    src: "https://images.pexels.com/photos/6455903/pexels-photo-6455903.jpeg?auto=compress&fit=crop&w=500&h=500",
+    alt: "Man and woman training together with dumbbells in gym strength workout",
+  },
+  {
+    src: "https://images.pexels.com/photos/31818707/pexels-photo-31818707.jpeg?auto=compress&fit=crop&w=500&h=500",
+    alt: "Woman exercising with dumbbells in gym workout session",
+  },
+];
+
 
   return (
     <div>
