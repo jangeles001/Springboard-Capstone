@@ -20,7 +20,6 @@ export async function findOneUserByPublicId(publicId) {
 }
 
 export async function updateMultipleUserFieldsByUUID(userUUID, updatedFields) {
-  console.log(`Updating user with UUID: ${userUUID} with fields:`, updatedFields); // Logs the user's uuid and the fields being updated for debugging purposes
   return await User.findOneAndUpdate(
     { uuid: userUUID },
     { $set: updatedFields },
@@ -36,10 +35,10 @@ export async function updatePasswordHashByUUID(){
   );
 }
 
-export async function updateUserLastAiRecommendationAt(userPublicId) {
+export async function updateUserLastAiRecommendationAt(userPublicId, updatedFields) {
   return await User.findOneAndUpdate(
     { publicId: userPublicId },
-    { $set: { lastAiRecommendationAt: new Date() } },
+    { $set: updatedFields },
     { new: true },
   );
 }

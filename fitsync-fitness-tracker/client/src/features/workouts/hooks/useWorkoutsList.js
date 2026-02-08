@@ -37,6 +37,9 @@ export function useWorkoutsList({ limit }) {
         ? fetchUserWorkouts({ page: pages[active], limit })
         : fetchAllWorkouts({ page: pages[active], limit }),
     keepPreviousData: true,
+    refetchOnWindowFocus: false,
+    staleTime:  2 * 60 * 1000, // 2 minutes
+    refetchOnMount: "always",
   });
 
   const deleteWorkoutMutation = useMutation({

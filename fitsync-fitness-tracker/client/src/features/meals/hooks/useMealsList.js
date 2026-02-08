@@ -39,7 +39,8 @@ export function useMealsList({ limit }) {
         : fetchAllMeals({ page: pages[active], limit }),
     keepPreviousData: true,
     refetchOnWindowFocus: false,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime:  2 * 60 * 1000, // 2 minutes
+    refetchOnMount: "always",
   });
 
   const deleteMealMutation = useMutation({
