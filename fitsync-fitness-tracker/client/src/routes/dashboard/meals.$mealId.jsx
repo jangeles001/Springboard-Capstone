@@ -1,20 +1,6 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
-import { DisplayPage } from "../../components/DisplayPage/DisplayPage";
-import { MealDisplayCard } from "../../features/meals/components/MealDisplayCard";
-import { useMealId } from "../../features/meals/hooks/useMealId";
+import { createFileRoute } from "@tanstack/react-router";
+import { MealDisplayPage } from "../../features/meals/pages/MealDisplayPage";
 
 export const Route = createFileRoute('/dashboard/meals/$mealId')({
-    component: MealDisplayRoute,
+    component: MealDisplayPage,
 });
-
-function MealDisplayRoute() {
-    const { mealId } = useParams({ from: Route.id });
-    return (
-        <DisplayPage
-        hook={useMealId}
-        CardComponent={MealDisplayCard}
-        ResourceId={mealId}
-        type={"Meal"}
-        />
-    );
-}
