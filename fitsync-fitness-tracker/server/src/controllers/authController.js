@@ -24,14 +24,13 @@ export const createUser = async (req, res) => {
 
     return res.generateSuccessResponse(null, message, 201);
   } catch (error) {
-    console.log(error);
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 };
 
 export async function verifyController(req, res) {
   try {
-    const {token } = req.params;
+    const { token } = req.params;
     await userService.verifyUserAccount(token);
     res.generateSuccessResponse(null, `User Verification Successful`, 200);
   } catch (error) {
@@ -48,8 +47,6 @@ export async function login(req, res) {
       password,
     );
 
-    const successMessage = `${validatedUser.username} (ID: ${validatedUser.publicId}) Logged In!`;
-
     res.cookie("accessToken", validatedUser.accessToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
@@ -64,7 +61,7 @@ export async function login(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
 
-    return res.generateSuccessResponse(null, successMessage, 200);
+    return res.generateSuccessResponse(null, "Logged In", 200);
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);
   }
@@ -80,18 +77,22 @@ export async function getUserController(req, res) {
   }
 }
 
-export async function initiateResetPasswordController(req, res){
+export async function initiateResetPasswordController(req, res) {
   try {
     const { email } = req.validatedBody;
-    console.log('Initiating password reset for email:', email);
+    console.log("Initiating password reset for email:", email);
     await userService.initiatePasswordReset(email);
-    return res.generateSuccessResponse(null, "Please check your email for further instructions.", 200);
+    return res.generateSuccessResponse(
+      null,
+      "Please check your email for further instructions.",
+      200,
+    );
   } catch (error) {
-    return res.generateErrorResponse(error.message, error.statusCode); 
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
-export async function resetPasswordController(req, res){
+export async function resetPasswordController(req, res) {
   try {
     const { token } = req.params;
     const { password } = req.validatedBody;
@@ -99,7 +100,7 @@ export async function resetPasswordController(req, res){
     await userService.resetPassword(token, password);
     return res.generateSuccessResponse(null, "Password Reset Successful!", 200);
   } catch (error) {
-    return res.generateErrorResponse(error.message, error.statusCode); 
+    return res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 

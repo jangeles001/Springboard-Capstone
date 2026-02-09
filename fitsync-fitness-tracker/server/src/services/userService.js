@@ -30,11 +30,12 @@ export async function registerNewUser(userData) {
   const userPublicId = makePublicId(newUserUUID); // calls util function to create short public uuid for the newUser
   const nutritionGoals = calculateMacros(userData.profile);
 
-  delete userData.password; // Removes the unhashed password from the userData object
+  // Creates new object to avoid mutating the original
+  const { password, ...userDataWithoutPassword } = userData;
 
   // Constructs newUser data object with the required fields for a new user
   userData = {
-    ...userData,
+    ...userDataWithoutPassword,
     uuid: newUserUUID,
     publicId: userPublicId,
     passwordHash,
@@ -56,23 +57,25 @@ export async function registerNewUser(userData) {
 
   if (getEnv("NODE_ENV") !== "test") {
     const verifyUrl = `${getEnv("CLIENT_ORIGIN")}/auth/verify/${verificationToken}`;
-    await mailjet
-      .post('send', { version: 'v3.1' })
-      .request({
-        Messages: [{
+    await mailjet.post("send", { version: "v3.1" }).request({
+      Messages: [
+        {
           From: {
             Email: getEnv("MAILJET_FROM_EMAIL"),
-            Name: getEnv("MAILJET_FROM_NAME")
+            Name: getEnv("MAILJET_FROM_NAME"),
           },
-          To: [{
-            Email: newUser.email
-          }],
+          To: [
+            {
+              Email: newUser.email,
+            },
+          ],
           TemplateID: 7732849,
           TemplateLanguage: true,
           Variables: {
-            verifyLink: verifyUrl
-          }
-        }]
+            verifyLink: verifyUrl,
+          },
+        },
+      ],
     });
   }
 
@@ -104,7 +107,6 @@ export async function initiatePasswordReset(email) {
   const user = await userRepo.findOneUserByEmail(email);
   if (!user) throw new NotFoundError("USER"); // throws error if email is not found
 
-  console.log('User found for password reset:', user.email); // Logs the found user's email for debugging purposes
   // Creates token if user is found
   const resetToken = uuidv4();
 
@@ -114,27 +116,29 @@ export async function initiatePasswordReset(email) {
     3600,
     JSON.stringify({ uuid: user.uuid }),
   );
-  console.log('Password reset token generated and stored in Redis:', resetToken); // Logs the generated token for debugging purposes
-  if(getEnv("NODE_ENV") !== "test"){
+
+  if (getEnv("NODE_ENV") !== "test") {
     // Creates email verification token, stores in redis with 24 hour expiration, and sends verification email to user with link containing token
     const resetUrl = `${getEnv("CLIENT_ORIGIN")}/auth/change-password/${resetToken}`;
-    await mailjet
-      .post('send', { version: 'v3.1' })
-      .request({
-        Messages: [{
+    await mailjet.post("send", { version: "v3.1" }).request({
+      Messages: [
+        {
           From: {
             Email: getEnv("MAILJET_FROM_EMAIL"),
-            Name: getEnv("MAILJET_FROM_NAME")
+            Name: getEnv("MAILJET_FROM_NAME"),
           },
-          To: [{
-            Email: user.email
-          }],
+          To: [
+            {
+              Email: user.email,
+            },
+          ],
           TemplateID: 7733362,
           TemplateLanguage: true,
           Variables: {
-            resetLink: resetUrl
-          }
-        }]
+            resetLink: resetUrl,
+          },
+        },
+      ],
     });
   }
   return;
@@ -149,10 +153,12 @@ export async function resetPassword(token, newPassword) {
   const uuid = JSON.parse(user).uuid;
   const salt = await generateSalt();
   const newPasswordHash = await hashPassword(newPassword, salt);
-  
+
   await Promise.all([
     redisClient.del(`passwordResetVerificationToken:${token}`),
-    userRepo.updateMultipleUserFieldsByUUID(uuid, { passwordHash: newPasswordHash }),
+    userRepo.updateMultipleUserFieldsByUUID(uuid, {
+      passwordHash: newPasswordHash,
+    }),
   ]);
   return;
 }
@@ -174,7 +180,7 @@ export async function refreshTokens(refreshToken) {
   if (timeElapsed > sevenDaysInMs) throw new UnauthorizedError();
 
   await revokeRefreshToken(refreshToken); // Revokes refreshToken so it cannot be used again
-  
+
   const user = await userRepo.findOneUserByUUID(userUUID);
   const tokens = await generateTokens(user);
   const newAccessToken = tokens.accessToken;

@@ -2,6 +2,11 @@ import axios from "axios";
 import { getEnv } from "../config/envConfig.js";
 
 export async function verifyRecaptcha(req, res, next) {
+  // Skips if running a test
+  if (getEnv("NODE_ENV") === "test") {
+    return next();
+  }
+
   const { reCaptchaToken } = req.body;
 
   if (!reCaptchaToken) {

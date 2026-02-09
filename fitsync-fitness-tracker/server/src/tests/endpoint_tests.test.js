@@ -191,6 +191,831 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
     await mongoose.connection.close();
   });
 
+  // ========== AUTH TESTS ==========
+
+  describe("POST /api/v1/auth/register - User Registration", () => {
+    it("Should return 201 and register a new user with valid data", async () => {
+      const userData = {
+        firstName: "John",
+        lastName: "Doe",
+        username: "johndoe",
+        password: "securePassword123",
+        email: "john@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 70,
+          weightLbs: 180,
+          age: 25,
+          gender: "male",
+          activityLevel: "moderate",
+          goalType: "maintain",
+        },
+      };
+
+      const response = await userA.client.post(
+        `${BASE_URL}/api/v1/auth/register`,
+        userData,
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(201);
+      expect(response.data.message).to.equal("Registration Successful!");
+
+      // Verify user was created in database
+      const user = await User.findOne({ email: userData.email });
+      expect(user).to.exist;
+      expect(user.username).to.equal("johndoe");
+      expect(user.firstName).to.equal("John");
+      expect(user.verified).to.be.false; // Default unverified
+
+      // Verify cookies were set
+      const cookies = response.headers["set-cookie"];
+      expect(cookies).to.exist;
+      expect(cookies.some((c) => c.includes("accessToken"))).to.be.true;
+      expect(cookies.some((c) => c.includes("refreshToken"))).to.be.true;
+    });
+
+    it("Should return 400 for missing required fields", async () => {
+      const invalidUserData = {
+        firstName: "John",
+        lastName: "Doe",
+        // Missing username, password, email
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 70,
+          weightLbs: 180,
+          age: 25,
+          gender: "male",
+          activityLevel: "moderate",
+          goalType: "maintain",
+        },
+      };
+
+      const response = await userA.client.post(
+        `${BASE_URL}/api/v1/auth/register`,
+        invalidUserData,
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(400);
+      expect(response.data.error).to.exist;
+    });
+
+    it("Should return 409 for duplicate email", async () => {
+      const userData = {
+        firstName: "Jane",
+        lastName: "Smith",
+        username: "janesmith",
+        password: "password123",
+        email: "duplicate@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 65,
+          weightLbs: 130,
+          age: 28,
+          gender: "female",
+          activityLevel: "active",
+          goalType: "cut",
+        },
+      };
+
+      // Register first user
+      await registerNewUser(userData);
+
+      // Try to register with same email
+      const response = await userA.client.post(
+        `${BASE_URL}/api/v1/auth/register`,
+        userData,
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(409);
+      expect(response.data.message).to.include("EMAIL");
+    });
+
+    it("Should calculate nutrition goals automatically", async () => {
+      const userData = {
+        firstName: "Alex",
+        lastName: "Fitness",
+        username: "alexfit",
+        password: "password123",
+        email: "alex@fitness.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 68,
+          weightLbs: 160,
+          age: 30,
+          gender: "male",
+          activityLevel: "active",
+          goalType: "bulk",
+        },
+      };
+
+      await userA.client.post(`${BASE_URL}/api/v1/auth/register`, userData, {
+        headers: { "Content-Type": "application/json" },
+        validateStatus: () => true,
+      });
+
+      const user = await User.findOne({ email: userData.email });
+      expect(user.nutritionGoals).to.exist;
+      expect(user.nutritionGoals.calories).to.be.a("number");
+      expect(user.nutritionGoals.protein).to.be.a("number");
+      expect(user.nutritionGoals.carbs).to.be.a("number");
+      expect(user.nutritionGoals.fats).to.be.a("number");
+    });
+  });
+
+  describe("POST /api/v1/auth/login - User Login", () => {
+    beforeEach(async () => {
+      // Create a user for login tests
+      const userData = {
+        firstName: "Test",
+        lastName: "User",
+        username: "testuser",
+        password: "password123",
+        email: "test@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 70,
+          weightLbs: 170,
+          age: 27,
+          gender: "male",
+          activityLevel: "moderate",
+          goalType: "maintain",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      const user = await User.findOne({ email: userData.email });
+      newUserA = { username: user.username, publicId: user.publicId };
+    });
+
+    it("Should return 200 and log in with valid credentials", async () => {
+      const response = await userA.client.post(
+        `${BASE_URL}/api/v1/auth/login`,
+        {
+          email: "test@example.com",
+          password: "password123",
+          reCaptchaToken: "fkjldhsakljfhdkjsahfkljdshblajfjsda",
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(200);
+      expect(response.data.message).to.include("Logged In");
+
+      // Verify cookies were set
+      const cookies = response.headers["set-cookie"];
+      expect(cookies).to.exist;
+      expect(cookies.some((c) => c.includes("accessToken"))).to.be.true;
+      expect(cookies.some((c) => c.includes("refreshToken"))).to.be.true;
+    });
+
+    it("Should return 401 for invalid email", async () => {
+      const response = await userA.client.post(
+        `${BASE_URL}/api/v1/auth/login`,
+        {
+          email: "nonexistent@example.com",
+          password: "password123",
+          reCaptchaToken: "fkjldhsakljfhdkjsahfkljdshblajfjsda",
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(401);
+    });
+
+    it("Should return 401 for invalid password", async () => {
+      const response = await userA.client.post(
+        `${BASE_URL}/api/v1/auth/login`,
+        {
+          email: "test@example.com",
+          password: "wrongpassword",
+          reCaptchaToken: "fkjldhsakljfhdkjsahfkljdshblajfjsda",
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(401);
+    });
+  });
+
+  describe("GET /api/v1/auth/logout - User Logout", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Logout",
+        lastName: "Test",
+        username: "logouttest",
+        password: "password123",
+        email: "logout@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 68,
+          weightLbs: 150,
+          age: 26,
+          gender: "female",
+          activityLevel: "light",
+          goalType: "cut",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+    });
+
+    it("Should return 200 and clear cookies on logout", async () => {
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/auth/logout`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(200);
+      expect(response.data.message).to.equal("Log Out Successful!");
+
+      // Verify cookies were cleared
+      const cookies = response.headers["set-cookie"];
+      if (cookies) {
+        cookies.forEach((cookie) => {
+          if (
+            cookie.includes("accessToken") ||
+            cookie.includes("refreshToken")
+          ) {
+            expect(cookie).to.match(/(Max-Age=0|Expires=Thu, 01 Jan 1970)/);
+          }
+        });
+      }
+    });
+  });
+
+  describe("GET /api/v1/auth/me - Get Current User", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Current",
+        lastName: "User",
+        username: "currentuser",
+        password: "password123",
+        email: "current@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 66,
+          weightLbs: 140,
+          age: 29,
+          gender: "female",
+          activityLevel: "moderate",
+          goalType: "maintain",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+
+      const user = await User.findOne({ email: userData.email });
+      newUserA = { username: user.username, publicId: user.publicId };
+    });
+
+    it("Should return 200 and current user data when authenticated", async () => {
+      const response = await userA.client.get(`${BASE_URL}/api/v1/auth/me`, {
+        validateStatus: () => true,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.data.data).to.have.property("username");
+      expect(response.data.data).to.have.property("publicId");
+      expect(response.data.data.username).to.equal("currentuser");
+    });
+
+    it("Should return 401 when not authenticated", async () => {
+      await userA.jar.removeAllCookies();
+
+      const response = await userA.client.get(`${BASE_URL}/api/v1/auth/me`, {
+        validateStatus: () => true,
+      });
+
+      expect(response.status).to.equal(401);
+    });
+  });
+
+  describe("POST /api/v1/auth/reset-password - Initiate Password Reset", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Reset",
+        lastName: "Password",
+        username: "resetuser",
+        password: "oldpassword123",
+        email: "reset@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 72,
+          weightLbs: 190,
+          age: 35,
+          gender: "male",
+          activityLevel: "active",
+          goalType: "bulk",
+        },
+      };
+
+      await registerNewUser(userData);
+    });
+
+    it("Should return 200 and send reset email for valid email", async () => {
+      const response = await userA.client.post(
+        `${BASE_URL}/api/v1/auth/reset-password`,
+        { email: "reset@example.com" },
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(200);
+      expect(response.data.message).to.include("check your email");
+
+      // Verify token was stored in Redis (in test env, emails aren't sent)
+      const keys = await redisClient.keys("passwordResetVerificationToken:*");
+      expect(keys.length).to.be.greaterThan(0);
+    });
+
+    it("Should return 404 for non-existent email", async () => {
+      const response = await userA.client.post(
+        `${BASE_URL}/api/v1/auth/reset-password`,
+        { email: "nonexistent@example.com" },
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(404);
+    });
+  });
+
+  // ========== USER ENDPOINT TESTS ==========
+
+  describe("GET /api/v1/users/me - Get Private User Information", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Private",
+        lastName: "Info",
+        username: "privateuser",
+        password: "password123",
+        email: "private@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 67,
+          weightLbs: 145,
+          age: 24,
+          gender: "female",
+          activityLevel: "moderate",
+          goalType: "cut",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+
+      const user = await User.findOne({ email: userData.email });
+      newUserA = { username: user.username, publicId: user.publicId };
+    });
+
+    it("Should return 200 and private user information", async () => {
+      const response = await userA.client.get(`${BASE_URL}/api/v1/users/me`, {
+        validateStatus: () => true,
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.data.data).to.have.property("firstName");
+      expect(response.data.data).to.have.property("lastName");
+      expect(response.data.data).to.have.property("username");
+      expect(response.data.data).to.have.property("publicId");
+      expect(response.data.data.username).to.equal("privateuser");
+    });
+
+    it("Should return 401 when not authenticated", async () => {
+      await userA.jar.removeAllCookies();
+
+      const response = await userA.client.get(`${BASE_URL}/api/v1/users/me`, {
+        validateStatus: () => true,
+      });
+
+      expect(response.status).to.equal(401);
+    });
+  });
+
+  describe("PATCH /api/v1/users/me - Update Private User Information", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Update",
+        lastName: "Test",
+        username: "updateuser",
+        password: "password123",
+        email: "update@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 69,
+          weightLbs: 175,
+          age: 30,
+          gender: "male",
+          activityLevel: "moderate",
+          goalType: "maintain",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+    });
+
+    it("Should return 200 and update user information", async () => {
+      const updateData = {
+        firstName: "UpdatedFirst",
+        lastName: "UpdatedLast",
+      };
+
+      const response = await userA.client.patch(
+        `${BASE_URL}/api/v1/users/me`,
+        updateData,
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(200);
+      expect(response.data.message).to.equal(
+        "Information Updated Successfully!",
+      );
+      expect(response.data.data.firstName).to.equal("UpdatedFirst");
+      expect(response.data.data.lastName).to.equal("UpdatedLast");
+
+      // Verify in database
+      const user = await User.findOne({ email: "update@example.com" });
+      expect(user.firstName).to.equal("UpdatedFirst");
+      expect(user.lastName).to.equal("UpdatedLast");
+    });
+
+    it("Should return 401 when not authenticated", async () => {
+      await userA.jar.removeAllCookies();
+
+      const response = await userA.client.patch(
+        `${BASE_URL}/api/v1/users/me`,
+        { firstName: "Test" },
+        {
+          headers: { "Content-Type": "application/json" },
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(401);
+    });
+  });
+
+  describe("GET /api/v1/users/:userPublicId - Get Public User Information", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Public",
+        lastName: "User",
+        username: "publicuser",
+        password: "password123",
+        email: "public@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 71,
+          weightLbs: 185,
+          age: 28,
+          gender: "male",
+          activityLevel: "active",
+          goalType: "bulk",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+
+      const user = await User.findOne({ email: userData.email });
+      newUserA = { username: user.username, publicId: user.publicId };
+    });
+
+    it("Should return 200 and public user information", async () => {
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/${newUserA.publicId}`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(200);
+      expect(response.data.data).to.have.property("username");
+      expect(response.data.data).to.have.property("publicId");
+      expect(response.data.data).to.have.property("memberSince");
+      expect(response.data.data).to.not.have.property("email"); // Email is private
+      expect(response.data.data).to.not.have.property("passwordHash");
+    });
+
+    it("Should return 404 for non-existent user", async () => {
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/nonexistent-id`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(404);
+    });
+  });
+
+  describe("GET /api/v1/users/workouts - Get User Workouts", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Workout",
+        lastName: "User",
+        username: "workoutuser",
+        password: "password123",
+        email: "workout@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 68,
+          weightLbs: 160,
+          age: 26,
+          gender: "male",
+          activityLevel: "active",
+          goalType: "maintain",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+
+      const user = await User.findOne({ email: userData.email });
+      newUserA = { username: user.username, publicId: user.publicId };
+
+      // Create some workouts for the user
+      const workout1 = await Workout.create({
+        creatorPublicId: newUserA.publicId,
+        workoutName: "Chest Day",
+        workoutDuration: 45,
+        exercises: [],
+      });
+
+      await WorkoutCollection.create({
+        userPublicId: newUserA.publicId,
+        workoutUUID: workout1.uuid,
+      });
+    });
+
+    it("Should return 200 and user's workout collection", async () => {
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/workouts`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(200);
+      expect(response.data.data).to.have.property("workouts");
+      expect(response.data.data.workouts).to.be.an("array");
+    });
+
+    it("Should return 401 when not authenticated", async () => {
+      await userA.jar.removeAllCookies();
+
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/workouts`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(401);
+    });
+  });
+
+  describe("GET /api/v1/users/meals - Get User Meals", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Meal",
+        lastName: "User",
+        username: "mealuser",
+        password: "password123",
+        email: "meal@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 64,
+          weightLbs: 125,
+          age: 27,
+          gender: "female",
+          activityLevel: "moderate",
+          goalType: "cut",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+
+      const user = await User.findOne({ email: userData.email });
+      newUserA = { username: user.username, publicId: user.publicId };
+    });
+
+    it("Should return 200 and user's meal collection", async () => {
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/meals`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(200);
+      expect(response.data.data).to.have.property("meals");
+      expect(response.data.data.meals).to.be.an("array");
+    });
+
+    it("Should return 401 when not authenticated", async () => {
+      await userA.jar.removeAllCookies();
+
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/meals`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(401);
+    });
+  });
+
+  describe("GET /api/v1/users/reports/workouts - Generate Workout Reports", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Report",
+        lastName: "User",
+        username: "reportuser",
+        password: "password123",
+        email: "report@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 70,
+          weightLbs: 175,
+          age: 29,
+          gender: "male",
+          activityLevel: "active",
+          goalType: "maintain",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+
+      const user = await User.findOne({ email: userData.email });
+      newUserA = { username: user.username, publicId: user.publicId };
+    });
+
+    it("Should return 201 and workout report data", async () => {
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/reports/workouts?range=all`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(201);
+      expect(response.data.message).to.equal("Reports generated!");
+      expect(response.data.data).to.exist;
+    });
+
+    it("Should return 401 when not authenticated", async () => {
+      await userA.jar.removeAllCookies();
+
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/reports/workouts?range=all`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(401);
+    });
+  });
+
+  describe("GET /api/v1/users/reports/nutrition - Generate Nutrition Reports", () => {
+    beforeEach(async () => {
+      const userData = {
+        firstName: "Nutrition",
+        lastName: "User",
+        username: "nutritionuser",
+        password: "password123",
+        email: "nutrition@example.com",
+        promoConsent: true,
+        agreeToTerms: true,
+        profile: {
+          heightInches: 65,
+          weightLbs: 135,
+          age: 25,
+          gender: "female",
+          activityLevel: "moderate",
+          goalType: "maintain",
+        },
+      };
+
+      const tokens = await registerNewUser(userData);
+      await userA.jar.setCookie(`accessToken=${tokens.accessToken}`, BASE_URL);
+      await userA.jar.setCookie(
+        `refreshToken=${tokens.refreshToken}`,
+        BASE_URL,
+      );
+    });
+
+    it("Should return 201 and nutrition report data", async () => {
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/reports/nutrition?range=all`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(201);
+      expect(response.data.message).to.equal("Reports generated!");
+      expect(response.data.data).to.exist;
+      expect(response.data.data).to.have.property("nutritionGoals");
+    });
+
+    it("Should return 401 when not authenticated", async () => {
+      await userA.jar.removeAllCookies();
+
+      const response = await userA.client.get(
+        `${BASE_URL}/api/v1/users/reports/nutrition?range=all`,
+        {
+          validateStatus: () => true,
+        },
+      );
+
+      expect(response.status).to.equal(401);
+    });
+  });
+
   // ========== WORKOUT CREATION TESTS ==========
 
   describe("POST /api/v1/workouts/create - Create and Log Workout", () => {

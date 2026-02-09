@@ -19,7 +19,7 @@ export const newUserZodSchema = z.object({
     .min(4, "Username must be at least 4 characters!"),
   password: z
     .string({
-      required_error: "Username is required!",
+      required_error: "Password is required!",
     })
     .min(6, "Password must be at least 6 characters!"),
   profile: newUserProfileZodSchema,
