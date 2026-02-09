@@ -1,15 +1,7 @@
 import { useDashboardDisplayContext } from "../../hooks/useDashboardContext";
 
 export function DashboardDisplayFooter(){
-
   const { recommendationsQuery } = useDashboardDisplayContext();
-
-  console.log("Recommendations Query State:", {
-    isLoading: recommendationsQuery.isLoading,
-    isError: recommendationsQuery.isError,
-    data: recommendationsQuery.data,
-    error: recommendationsQuery.error,
-  });
   
   return (
     <div className="rounded-2xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6">

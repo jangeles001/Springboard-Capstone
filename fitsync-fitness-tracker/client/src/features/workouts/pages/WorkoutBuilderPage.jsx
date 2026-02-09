@@ -1,4 +1,4 @@
-import { ExerciseLibrary } from "../components/ExerciseLibrary";
+import ExerciseLibrary from "../components/WorkoutsBuilder/ExerciseLibrary";
 import { WorkoutsBuilderForm } from "../components/WorkoutsBuilderForm";
 import { useExercises } from "../hooks/useExercises";
 
