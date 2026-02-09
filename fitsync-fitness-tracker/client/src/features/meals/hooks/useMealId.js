@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { fetchMealById } from "../../../features/meals/services/fetchMealById";
 import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
+import { toast } from "react-hot-toast";
 
 export function useMealId(mealId) {
   // Global store state selector
@@ -25,6 +26,12 @@ export function useMealId(mealId) {
   // Mutate hook that sends duplication request to the duplication endpoint
   const addMealMutation = useMutation({
     mutationFn: (mealId) => api.post(`api/v1/meals/duplicate/${mealId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["meal"],
+      });
+      toast.success("Meal logged successfully!");
+    }
   });
 
   // Function that handles navigation to the meals display page

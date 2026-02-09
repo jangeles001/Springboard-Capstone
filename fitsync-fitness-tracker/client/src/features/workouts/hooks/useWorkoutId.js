@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { fetchWorkoutById } from "../../../features/workouts/services/fetchWorkoutById";
 import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
+import { toast } from "react-hot-toast";
 
 export function useWorkoutId(workoutId) {
   // Global store state selector
@@ -27,6 +28,12 @@ export function useWorkoutId(workoutId) {
   const addWorkoutMutation = useMutation({
     mutationFn: (workoutId) =>
       api.post(`api/v1/workouts/duplicate/${workoutId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["workout"],
+      });
+      toast.success("Workout logged successfully!");
+    },
   });
 
   // Function that handles navigation to the workouts display page
