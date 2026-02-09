@@ -80,7 +80,6 @@ export async function getUserController(req, res) {
 export async function initiateResetPasswordController(req, res) {
   try {
     const { email } = req.validatedBody;
-    console.log("Initiating password reset for email:", email);
     await userService.initiatePasswordReset(email);
     return res.generateSuccessResponse(
       null,
