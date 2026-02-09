@@ -14,7 +14,6 @@ export function MealDisplayCard({ data, handleDelete, isPersonal }) {
         Description: {data?.data?.mealDescription}
       </p>
 
-      {/* Ingredients */}
       <div className="mb-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-3">Ingredients</h3>
         <div className="flex flex-col gap-2">
@@ -31,7 +30,6 @@ export function MealDisplayCard({ data, handleDelete, isPersonal }) {
         </div>
       </div>
 
-      {/* Macros */}
       <div className="mb-6 grid grid-cols-3 gap-4 text-center">
         {Object.entries(data?.data?.mealMacros).map(([macro, value]) => (
           <div key={macro} className="bg-gray-100 rounded-xl p-3">
@@ -41,7 +39,6 @@ export function MealDisplayCard({ data, handleDelete, isPersonal }) {
         ))}
       </div>
 
-      {/* Delete Button */}
         <div className="w-max mx-auto">
           { isPersonal && 
             <button

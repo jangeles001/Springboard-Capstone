@@ -4,9 +4,13 @@ import { verifyEmail } from "../services/verifyEmail";
 import { useNavigate } from "@tanstack/react-router";
 
 export function useVerification(token) {
-  const [errorMessage, setErrorMessage] = useState(null);
-  const navigate = useNavigate();
+    // Local state to manage error messages
+    const [errorMessage, setErrorMessage] = useState(null);
+    
+    // Hook for navigation after successful verification
+    const navigate = useNavigate();
 
+    // Mutation hook to handle email verificaiton
     const verifyMutation = useMutation({
       mutationFn: (token) => verifyEmail(token),
       onSuccess: () => {
@@ -17,12 +21,14 @@ export function useVerification(token) {
       },
     });
 
+    // Effect to trigger email verification when token is available
     useEffect(() => {
         if (token) {
             verifyMutation.mutate(token);
         }
     }, [token]);
 
+    // Effect to handle navigation after successful verification
     useEffect(() => {
         if (verifyMutation.isSuccess) {
             // Redirects to login after successful verification

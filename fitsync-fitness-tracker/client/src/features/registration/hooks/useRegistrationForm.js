@@ -51,6 +51,7 @@ export function useRegistrationForm({ onSuccessFunction }) {
     if (Object.keys(formErrors).includes(name)) delete formErrors[name];
   };
 
+  // Toggles the visibility of the password input field
   const handlePasswordToggle = () => {
     setPasswordVisible(!passwordVisible);
   };

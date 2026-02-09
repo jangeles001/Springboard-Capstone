@@ -3,7 +3,10 @@ import { useUserActions } from "../../../store/UserStore.js";
 import { logout } from "../services/logoutService.js";
 
 export function useLogout({ onSuccess }) {
+  // Initializes the query client to invalidate user data after logout and the user actions to reset user state
   const queryClient = useQueryClient();
+
+  // Gets the resetUser action from the user store to clear user data on logout
   const { resetUser } = useUserActions();
 
   const handleLogout = async () => {

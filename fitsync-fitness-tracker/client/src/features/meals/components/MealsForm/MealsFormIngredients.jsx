@@ -14,7 +14,8 @@ export function MealsFormIngredients() {
             <div className="min-h-[100px] rounded-xl border bg-gray-50 p-4">
                 {ingredients?.map((item) => {
                     return (
-                        <IngredientItem 
+                        <IngredientItem
+                        key={`item-${item.ingredientId}`} 
                         item={item} 
                         getIngredientField={getIngredientField} 
                         handleRemoveClick={handleRemoveClick} 

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import LogoutButton from "../features/logout/components/LogoutButton"
+import HamburgerMenuLogoutButton from "../features/logout/components/hamburgerMenuLogOut"
 
 export default function HamburgerMenu({ links, setHamburgerOpen, username }){
    return ( 
@@ -16,9 +16,7 @@ export default function HamburgerMenu({ links, setHamburgerOpen, username }){
                 </Link>
               ))}
               {username ? (
-                <div className="px-2 py-2 hover:bg-gray-200">
-                  <LogoutButton />
-                </div>
+                  <HamburgerMenuLogoutButton />
               ) :
               (
                 <Link className="px-2 py-2 hover:underline" to={"/auth/login"}>

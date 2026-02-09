@@ -10,7 +10,6 @@ export function WorkoutDisplayCard({ data, isPersonal, handleDelete }) {
         Duration: {data?.data?.workoutDuration} minutes
       </p>
 
-      {/* Exercises */}
       <div className="space-y-4">
         {data?.data?.exercises.map((exercise) => (
           <div

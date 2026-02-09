@@ -8,7 +8,7 @@ export default function MealsBuilder() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
 
-      {/* Page Header */}
+
       <div className="mb-8">
         <h1 className="text-3xl font-semibold text-gray-900">
           Create Meal
@@ -18,7 +18,6 @@ export default function MealsBuilder() {
         </p>
       </div>
 
-      {/* Form Card */}
       <div className="max-w-3xl mx-auto">
         <MealsForm>
           <MealsForm.Header />

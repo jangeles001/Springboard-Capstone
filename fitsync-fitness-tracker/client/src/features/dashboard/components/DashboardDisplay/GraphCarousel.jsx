@@ -48,10 +48,6 @@ export default function GraphCarousel({
     setTimeout(() => setIsAnimating(false), 700);
   };
 
-  const restartInterval = () => {
-
-  }
-
   return (
     <div className="relative w-full h-full overflow-hidden">
       {/* Slides track */}

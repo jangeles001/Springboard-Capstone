@@ -2,7 +2,10 @@ import { useVerification } from "../hooks/useVerification";
 import { useParams } from "@tanstack/react-router";
 
 export function VerificationPage() {
+    // Extract the token from the URL parameters
     const { token } = useParams({ from: "/auth/verify/$token" });
+    
+    // Destructure the verification state from the custom hook and pass the token
     const { isLoading, isSuccess, errorMessage } = useVerification(token);
 
     return (

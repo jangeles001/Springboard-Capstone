@@ -3,10 +3,11 @@ import * as workoutLogRepo from '../repositories/workoutLogRepo.js';
 import * as userRepo from '../repositories/userRepo.js';
 import { getEnv } from '../config/envConfig.js';
 
+// Initializes the Google Generative AI client with the API key from environment variables
 const genAI = new GoogleGenerativeAI(getEnv('GEMINI_API_KEY'));
 
 export async function generateAiWorkoutRecommendations(userPublicId) {
-  // ✅ Get user profile first
+  // Gets user profile
   const user = await userRepo.findOneUserByPublicId(userPublicId);
   if (!user) throw new Error('User not found');
 
@@ -18,10 +19,11 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
     }
   }
 
-  // Get last 30 days of workout data
+  // Gets last 30 days of workout data
   const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30); // ✅ Fixed: was thirtyDaysAgo.now()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+  // Fetches workout logs for the user in the past 30 days, including total workouts, average duration, and total volume
   const workoutLogs = await workoutLogRepo.findAllWorkoutLogsByUserPublicId(
     userPublicId,
     {
@@ -31,7 +33,7 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
     }
   );
 
-  // Get muscle distribution for past 4 weeks
+  // Gets muscle distribution for past 4 weeks
   const fourWeeksAgo = new Date();
   fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
 
@@ -44,7 +46,7 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
     }
   );
 
-  // Prepare the data for AI
+  // Prepares the data for AI
   const userData = {
     profile: {
       age: user.profile.age,
@@ -60,8 +62,10 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
     muscleBalance: aggregateMuscleGroups(muscleDistribution),
   };
 
+  // Creates the prompt for the AI model based on the user's profile and recent activity
   const prompt = createWorkoutPrompt(userData);
   
+  // Calls the AI model to generate recommendations
   const model = genAI.getGenerativeModel({ 
     model: "gemini-2.5-flash",
     generationConfig: {
@@ -71,9 +75,9 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
     },
   });
 
+  // Generate content using the AI model and extract the JSON response
   const result = await model.generateContent(prompt);
   const rawText = result.response.text();
-  console.log('AI Response Raw Text:', rawText);
 
   const jsonText = extractJson(rawText);
   
@@ -93,6 +97,7 @@ export async function generateAiWorkoutRecommendations(userPublicId) {
   }
 }
 
+// Helper function to calculate average workout duration
 function calculateAvgDuration(workoutLogs) {
   if (workoutLogs.length === 0) return 0;
   const totalDuration = workoutLogs.reduce((sum, log) => sum + (log.totalDuration || 0), 0);
@@ -104,6 +109,7 @@ function calculateAvgDuration(workoutLogs) {
 function aggregateMuscleGroups(muscleDistribution) {
   const aggregated = {};
   
+  // Sums up the counts for each muscle group across all periods
   muscleDistribution.forEach(period => {
     Object.entries(period.muscleGroups || {}).forEach(([muscle, count]) => {
       aggregated[muscle] = (aggregated[muscle] || 0) + count;
@@ -113,7 +119,7 @@ function aggregateMuscleGroups(muscleDistribution) {
   return aggregated;
 }
 
-// Create prompt for AI model
+// Helper function that creates prompt for AI model
 function createWorkoutPrompt(userData) {
   const muscleList = Object.entries(userData.muscleBalance)
     .sort((a, b) => b[1] - a[1])
@@ -141,6 +147,7 @@ function createWorkoutPrompt(userData) {
   3. Match their ${userData.profile.activityLevel} activity level
   4. Progressive difficulty based on recent performance
   5. Each recommendation should include should be less than 4096 tokens in total when combined
+  6. Each exercise should exist in the wqer database and be appropriate for the user's profile and goals
 
   Return ONLY a JSON object with NO markdown, NO code blocks, and NO explanation.
    
@@ -171,6 +178,7 @@ function createWorkoutPrompt(userData) {
   }`;
 }
 
+// Helper function to extract JSON from AI response text
 function extractJson(text) {
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');

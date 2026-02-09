@@ -3,10 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { sendResetPasswordRequest } from "../services/sendResetPasswordRequest";
 
 export function useResetPassword({token, onSuccess}) {
+  // Local state for form data and form errors
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formErrors, setFormErrors] = useState(null);
 
+// Mutation hook for handling the reset password API call
   const resetPasswordMutation = useMutation({
     mutationFn: ({ token, password }) =>
       sendResetPasswordRequest(token, password),
@@ -22,6 +24,7 @@ export function useResetPassword({token, onSuccess}) {
       }),
   });
 
+  // Function handles form input changes and clears errors for the specific field
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (formErrors)
@@ -35,6 +38,7 @@ export function useResetPassword({token, onSuccess}) {
     setConfirmPassword(value);
   };
 
+  // Function to handle form submission, validate input, and trigger the mutation
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!password) {
