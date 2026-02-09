@@ -80,6 +80,7 @@ export function useLoginForm({ onSuccessFunction }) {
           onSuccessFunction();
         },
         onError: (error) => {
+          recaptchaRef.current?.reset();
           if (error.status === 400) {
             const details = error.response?.data?.details;
             if (details) {
