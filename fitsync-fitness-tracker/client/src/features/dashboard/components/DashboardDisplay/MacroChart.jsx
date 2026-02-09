@@ -27,16 +27,6 @@ ChartJS.register(
   Filler
 );
 
-// export function CaloriesChart({ data }) {
-//     const caloriesData = buildCaloriesChartData(data.dailyLogs, data.nutritionGoals);
-//     const options = buildCaloriesChartData(data.dailyLogs, data.nutritionGoals)
-//   return (
-//     <div className="w-full h-full">
-//       <Chart data={caloriesData} options={{...options}} />
-//     </div>
-//   );
-// }
-
 import { buildMacroChartData } from "../../utils/nutritionChartData";
 
 export function MacroChart({ title, logs, nutritionGoals, periodLength, type="line" }) {
@@ -52,9 +42,14 @@ export function MacroChart({ title, logs, nutritionGoals, periodLength, type="li
       <h3 className="text-center font-semibold mb-4">
         {title}
       </h3>
-      <Chart type={type} data={data} options={{responsive: true, plugins:{ legend: {
-        display: false,
-      }}}}/>
+      <Chart 
+      type={type} 
+      data={data} 
+      options={
+        { responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: { legend: { display: false }, },
+      }}/>
     </div>
   );
 }

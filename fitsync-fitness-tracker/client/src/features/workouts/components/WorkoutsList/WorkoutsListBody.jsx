@@ -4,9 +4,7 @@ import Loading from "../../../../components/Loading";
 import ThemedButton from "../../../../components/ThemedButton";
 
 export function WorkoutsListBody() {
-  
-  // Store state
-  const { data, isLoading, isError, error, workoutClick, deleteWorkout, publicId } = useWorkoutsListContext();
+  const { data, isLoading, isError, error, deleteWorkout, publicId } = useWorkoutsListContext();
 
   if(isLoading) return <Loading  type="skeleton"/>
   if(isError) return <>{console.log(error)}</>
@@ -30,12 +28,12 @@ export function WorkoutsListBody() {
               </h2>
 
               <div className="flex flex-col gap-3 mb-4">
-                {workout.exercises.slice(0,3).map((exercise) => ( // TODO: Limit to only 3 exercises and add total exercises and creation date to card.
+                {workout.exercises.slice(0,3).map((exercise) => ( // Slices exercises array to only display the first three exercises
                   <div key={exercise.exerciseId}>
                     <Exercise exercise={exercise}/>
                   </div>
                 ))}
-                {workout.exercises.length > 3 && (
+                {workout.exercises.length > 3 && ( // Remaining exercises displayed here if there are more than three
                   <p key={`workout${workout.uuid}`} className="text-sm text-gray-500">
                     + {workout.exercises.length - 3} more exercises
                   </p>

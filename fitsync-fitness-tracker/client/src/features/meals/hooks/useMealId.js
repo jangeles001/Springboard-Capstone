@@ -5,31 +5,39 @@ import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
 
 export function useMealId(mealId) {
+  // Global store state selector
   const publicId = usePublicId();
+
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  // Query hook fetches workout data for the given mealId and caches the result per mealtId and publicId
   const query = useQuery({
     queryKey: ["meal", mealId, publicId],
-    queryFn: () => fetchMealById({ mealId, publicId }),
+    queryFn: () => fetchMealById({ mealId }),
   });
+
+  // Mutate hook that sends delete request to the delete meals endpoint
   const deleteMealMutation = useMutation({
-    mutationFn: (mealId) =>
-      api.delete(`api/v1/meals/delete/${mealId}`),
+    mutationFn: (mealId) => api.delete(`api/v1/meals/delete/${mealId}`),
   });
 
+  // Mutate hook that sends duplication request to the duplication endpoint
   const addMealMutation = useMutation({
-    mutationFn: (mealId) =>
-      api.post(`api/v1/meals/duplicate/${mealId}`),
+    mutationFn: (mealId) => api.post(`api/v1/meals/duplicate/${mealId}`),
   });
 
+  // Function that handles navigation to the meals display page
   const handleReturn = () => {
     return navigate({ to: "/dashboard/meals" });
   };
 
-  const handleAddToPersonal = () => {
+  // Function calls add meal mutation to either add meal to the users personal collection and logs it or just logs it if it already exists in users collection
+  const handleLog = () => {
     addMealMutation.mutate(mealId);
   };
 
+  // Function calls delete meal mutation and removes any data associated with its key from the query client cache.
   const handleDelete = () => {
     deleteMealMutation.mutate(mealId);
     queryClient.invalidateQueries({
@@ -45,7 +53,7 @@ export function useMealId(mealId) {
     isError: query.isError,
     error: query.error,
     handleReturn,
-    handleAddToPersonal,
+    handleLog,
     handleDelete,
   };
 }

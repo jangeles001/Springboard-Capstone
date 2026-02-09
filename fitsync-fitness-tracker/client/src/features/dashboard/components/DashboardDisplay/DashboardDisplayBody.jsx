@@ -2,7 +2,7 @@ import { useDashboardDisplayContext } from "../../hooks/useDashboardContext";
 import Loading from "../../../../components/Loading";
 import GraphCarousel from "./GraphCarousel";
 import { MacroChart } from "./MacroChart";
-import { MetricChart } from "../MetricChart";
+import { MetricChart } from "./MetricChart";
 import { buildIntensityComboChart } from "../../utils/buildIntensityChart";
 import { buildTotalVolumeChart } from "../../utils/buildTotalVolumeChart";
 import { buildWorkoutFrequencyChart } from "../../utils/buildWorkoutFrequencyChart"

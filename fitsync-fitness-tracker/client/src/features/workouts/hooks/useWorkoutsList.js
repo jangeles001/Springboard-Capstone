@@ -7,16 +7,21 @@ import { usePublicId } from "../../../store/UserStore";
 import { useNavigate } from "@tanstack/react-router";
 
 export function useWorkoutsList({ limit }) {
-  const queryClient = useQueryClient();
+  // Global store state selector
   const publicId = usePublicId();
+
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+  // Hook local page state object
   const [pages, setPages] = useState({
     Personal: 1,
     All: 1,
   });
+  // State for current active page
   const [active, setActive] = useState("Personal");
 
+  // Prefetch query hook fetches personal or all workouts depending on the active value and caches the result per active value, page, and limit
   useEffect(() => {
     const nextTab = active === "Personal" ? "All" : "Personal";
     const nextPage = pages[nextTab];
@@ -30,6 +35,7 @@ export function useWorkoutsList({ limit }) {
     });
   }, [active, pages, limit, queryClient]);
 
+  // Query hook fetches workouts stored for the given user and caches the result per page and limit
   const query = useQuery({
     queryKey: ["workouts", active, pages[active], limit],
     queryFn: () =>
@@ -38,10 +44,11 @@ export function useWorkoutsList({ limit }) {
         : fetchAllWorkouts({ page: pages[active], limit }),
     keepPreviousData: true,
     refetchOnWindowFocus: false,
-    staleTime:  2 * 60 * 1000, // 2 minutes
+    staleTime: 2 * 60 * 1000, // 2 minutes
     refetchOnMount: "always",
   });
 
+  // Mutate hook that sends delete request to the delete workout endpoint
   const deleteWorkoutMutation = useMutation({
     mutationFn: (workoutId) =>
       api.delete(`api/v1/workouts/delete/${workoutId}`),
@@ -53,6 +60,7 @@ export function useWorkoutsList({ limit }) {
     },
   });
 
+  // Function navigates client to appropriate workout page when a workout name is clicked
   const handleWorkoutClick = (workoutId) => {
     return navigate({
       to: "/dashboard/workouts/$workoutId",
@@ -60,19 +68,17 @@ export function useWorkoutsList({ limit }) {
     });
   };
 
-  const handleExerciseClick = (exerciseId) => {
-    console.log(exerciseId);
-    // redirect to exercise page
-  };
-
+  // Function calls the delete workout mutation and provides the corresponding workout id to delete
   const handleDelete = (workoutId) => {
     deleteWorkoutMutation.mutate(workoutId);
   };
 
+  // Function that sets active page between personal and all workouts
   const handleActiveChange = (buttonValue) => {
     setActive(buttonValue);
   };
 
+  // Increments active page
   const handleNextPage = () => {
     setPages((state) => ({
       ...state,
@@ -80,6 +86,7 @@ export function useWorkoutsList({ limit }) {
     }));
   };
 
+  // Decrements active page
   const handlePreviousPage = () => {
     setPages((state) => ({
       ...state,
@@ -93,7 +100,6 @@ export function useWorkoutsList({ limit }) {
     publicId,
     active,
     handleWorkoutClick,
-    handleExerciseClick,
     handleActiveChange,
     handlePreviousPage,
     handleNextPage,

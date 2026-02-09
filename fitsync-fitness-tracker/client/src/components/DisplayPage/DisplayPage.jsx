@@ -1,18 +1,23 @@
 import { DisplayPageHeader } from "./DisplayPageHeader";
 import { DisplayPageBody } from "./DisplayPageBody";
 import { DisplayPageFooter } from "./DisplayPageFooter";
+import Breadcrumbs from "../Breadcrumbs"
 
 export function DisplayPage({ hook, CardComponent, ResourceId, type }) { 
-  const { data, isLoading, isError, error, handleDelete, publicId, handleReturn, handleAddToPersonal } = hook(ResourceId);
+  const { data, isLoading, isError, error, handleDelete, publicId, handleReturn, handleLog } = hook(ResourceId);
   const isPersonal = publicId === data?.data?.creatorPublicId;
-
+  const dynamicCrumb = data?.data?.uuid ?? type;
+  
   return (
-    <div className="mx-auto max-w-7xl px-6 py-22">
-
+    <>
+    <div className="font-semibold mx-auto max-w-7xl px-6 mt-5 py-5">
+      <Breadcrumbs dynamicCrumb={dynamicCrumb} />
+    </div>
+    <div className="mx-auto max-w-7xl px-6">
       <DisplayPageHeader
       type={type}
       handleReturn={handleReturn}
-      handleAddToPersonal={handleAddToPersonal}
+      handleLog={handleLog}
       resourceId={ResourceId}
       publicId={publicId}
       data={data}
@@ -31,5 +36,6 @@ export function DisplayPage({ hook, CardComponent, ResourceId, type }) {
       <DisplayPageFooter data={data} />
 
     </div>
+    </>
   );
 }

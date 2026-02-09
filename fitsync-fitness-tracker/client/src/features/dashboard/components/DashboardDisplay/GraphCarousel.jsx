@@ -4,6 +4,7 @@ export default function GraphCarousel({
   children,
   interval = 10000,
 }) {
+  // Checks if children are in an array if not places them in an array.
   const slides = Array.isArray(children) ? children : [children];
   const [index, setIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -78,7 +79,7 @@ export default function GraphCarousel({
                    rounded-full p-2 shadow-md transition"
         aria-label="Previous chart"
       >
-        ‹
+        &lt;
       </button>
 
       {/* Next button */}
@@ -89,7 +90,7 @@ export default function GraphCarousel({
                    rounded-full p-2 shadow-md transition"
         aria-label="Next chart"
       >
-        ›
+        &gt;
       </button>
     </div>
   );
