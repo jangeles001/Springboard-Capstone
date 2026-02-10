@@ -378,8 +378,6 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         },
       );
 
-      console.log(response);
-
       expect(response.status).to.equal(200);
       expect(response.data.message).to.include("Logged In");
 

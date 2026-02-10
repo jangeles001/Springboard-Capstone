@@ -27,29 +27,19 @@ ChartJS.register(
   Filler
 );
 
-import { buildMacroChartData } from "../../utils/nutritionChartData";
-
-export function MacroChart({ title, logs, nutritionGoals, periodLength, type="line" }) {
- if(!logs) return (
-    <div className="w-full h-[400px]">
-      <p>NO DATA</p>
-    </div>
-  )
-  const data = buildMacroChartData(logs, nutritionGoals, periodLength);
+export function MacroChart({ title, data, type = "bar" }) {
+  if (!data || !data.datasets.length) {
+    return <div className="w-full h-[400px]">NO DATA</div>;
+  }
 
   return (
-    <div className="w-full h-[400px] px-20">
-      <h3 className="text-center font-semibold mb-4">
-        {title}
-      </h3>
-      <Chart 
-      type={type} 
-      data={data} 
-      options={
-        { responsive: true, 
-          maintainAspectRatio: false, 
-          plugins: { legend: { display: false }, },
-      }}/>
+    <div className="w-full h-[400px] px-10">
+      <h3 className="text-center font-semibold mb-4">{title}</h3>
+      <Chart
+        type={type}
+        data={data}
+        options={{ responsive: true, maintainAspectRatio: false }}
+      />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import {
   useMealFormErrors,
   useMealsActions,
 } from "../store/MealsFormStore";
-import { getMacros } from "../utils/nutrition";
+import { getMacros } from "../utils/nutritionCalculations";
 import { api } from '../../../services/api';
 import { useNotification } from '../../../hooks/useNotification';
 import { usePublicId } from '../../../store/UserStore';
@@ -104,7 +104,6 @@ export function useMealsForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setHasErrors(false);
-    console.log(ingredients);
 
     const mealData = {
       mealName,

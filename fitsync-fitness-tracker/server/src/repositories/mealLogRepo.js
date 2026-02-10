@@ -44,7 +44,7 @@ export async function findAllMealLogsByUserPublicId(userPublicId, range) {
   const mealLogs = await MealLog.aggregate([
     {
       $match: {
-        userPublicId,
+        creatorPublicId: userPublicId,
         consumedAt: { $gte: start, $lt: end },
         isDeleted: false,
       },
@@ -79,10 +79,10 @@ export async function findAllMealLogsByUserPublicId(userPublicId, range) {
         _id: 0,
       },
     },
-    { $sort: { label: 1 } },
+    { $sort: {  "_id.year": 1, "_id.isoWeek": 1 } },
   ]);
 
-  return { mealLogs };
+  return mealLogs;
 }
 
 export async function updateDeletedMealLogStatus(

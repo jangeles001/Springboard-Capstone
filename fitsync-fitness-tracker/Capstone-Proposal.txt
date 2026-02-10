@@ -38,7 +38,8 @@ React efficiently builds modular, scalable interfaces. My app will benefit from:
 -Flexibility for integrating charts (e.g., using Chart.js for tracking and displaying various user metrics).
 
 State Management: Zustand
-Lightweight and lower learning curve than redux. A better fit for the size of my project.
+Lightweight and lower learning curve than redux. A better fit for the size of my project.I will use Zustand for scoped,
+component-level state in complex forms to centralize logic and avoid prop drilling.
 
 Routing: Tanstack Router
 File-based routing and integrated data fetching and caching. Seems to be easier to work with than React Router.
