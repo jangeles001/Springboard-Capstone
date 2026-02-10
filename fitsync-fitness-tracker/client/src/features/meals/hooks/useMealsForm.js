@@ -72,7 +72,7 @@ export function useMealsForm() {
   };
 
   const handleRemoveClick = (itemId) => {
-    removeIngredient(itemId);
+    removeIngredient(String(itemId));
     updateMacros();
   };
 

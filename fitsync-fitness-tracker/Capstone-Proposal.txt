@@ -1,15 +1,15 @@
 [🏋️ 3. Workout Manager]
 Purpose Statement:
-A fitness and diet management web app that recommends personalized plans and stores user data in a self-hosted database. A user will be able 
-to enter their login credentials to access their personalized diet and fitness plans. I intend to make an evenly focused full-stack web application
+A fitness and diet management web app that provides personalized reccomendations and stores user data in a self-hosted database. A user will be able 
+to enter their login credentials to access their personalized diet and fitness routines. I intend to make an evenly focused full-stack web application
 and I will implement full CRUD functionality across all core user activities, giving users control over their fitness and diet journey.
 
 Problem:
 Many workout tracking tools require users to adopt rigid plans without personalization.
-Users need a customizable platform that tailors workouts and diets based on their own health metrics and physical needs.
+Users need a customizable platform that tailors workouts based on their own health metrics and physical needs.
 
 Inputs/Data:
-User inputed health data. (e.g., weight, age, BMI, injuries)
+User inputed health data. (e.g., weight, age, height, lifestyle, weight goals)
 
 User base: Health-conscious individuals of any fitness level whom want to manage their workouts-
 and diet in one personalized, data-driven platform.
@@ -20,16 +20,21 @@ wger Workout Manager: https://wger.de/api/v2/
 -Muscle group info.
 -Pre-made workout templates.
 
-I will use this data with personalization engine to generate tailored plans for users.
+USDA: https://api.nal.usda.gov
+- ingredients for meal builder/logger
+- All macros information
 
-Tech Stack: [Arrange Dependacies, Types -> Service -> State Management -> Interface] {unit test{logic}, component {}, integration{smoke test/general functionanlity of page}}
+I will use this data with personalization engine to generate tailored recommendations for users.
+
+Tech Stack:
 1.) Authentication:  Crypto + JWT    Difficulty: Medium
-Crypto + Json WebToken will provide the tools I will need to authenticate users.
+BCrypt + Json WebToken will provide the tools I will need to authenticate users. I will pass a token to
+the client stored as a cookie and will verify the token before using the payload to identify the user.
 
 2.) Frontend: React.js          Difficulty: Medium
 React efficiently builds modular, scalable interfaces. My app will benefit from:
--Reusable Components for tracking, data forms, and plan displays.
--Hooks and Context API to manage UI state.
+-Reusable Components for tracking, data forms, and recommendation displays.
+-Hooks, Custom Hooks, and Context API to manage UI state.
 -Flexibility for integrating charts (e.g., using Chart.js for tracking and displaying various user metrics).
 
 State Management: Zustand
@@ -39,37 +44,44 @@ Routing: Tanstack Router
 File-based routing and integrated data fetching and caching. Seems to be easier to work with than React Router.
 
 UI: Tailwind
-More utilities and greater control of design customization.
+Easy to use for inline styling of elements, great utilities, and greater control of design customization.
 
 3.) Backend: Node.js + Express.js       Difficulty: Medium/Hard
 Node.js handles asynchronous operations, which will help with fetching data from the external API and managing the personalized recommendations.
-Express.js is lightweight and can manage user authentication, health data, and workout plans. AI Engine will also be plugged in here either via a microservice/middleware
+Express.js is lightweight and can manage user authentication, health data, and logged workouts. AI component uses Google gemini-2.5-flash to receive a
+structured prompt with user data and provide recommendations.
 
-Middleware: [CORS, Multer + Cloudinary [file uploads]]
+Middleware 
+CORS:CORS middleware is used to control and secure cross-origin HTTP requests between the client and server. It defines which domains are permitted 
+to access backend resources and which HTTP methods and headers are allowed. This is especially important for protecting sensitive endpoints 
+in a full-stack application where the frontend and backend are deployed on different origins.
 
-4.) AI Component: Recommendation Engine     Difficulty: Hard 
-Option 1: Simple Rule-based AI
-Use formulas and conditional logic to suggest plans based on age, BMI, activity level.
-Option 2: (MCP) [Stretch Goal]
-Use GPT for generating personalized diet and exercise plans based on user input data.
+Zod: Enforce strict data schemas for incoming requests. It ensures that payloads such as authentication credentials, form submissions, 
+and API inputs conform to expected types and formats before reaching business logic. This improves application reliability, prevents 
+malformed data from entering the system, and provides consistent, structured error responses.
+
+Recaptcha: Protect public-facing endpoints—such as registration, login, and password recovery—from automated abuse 
+and bot attacks. It verifies client-side reCAPTCHA tokens with Google’s API before allowing requests to proceed, adding an
+additional security layer that reduces spam, credential-stuffing attempts, and denial-of-service risks.
+
+4.) AI Component: Google Gemini Microservice     Difficulty: Hard 
+Prompt google gemini to provide recommendations from the collection 
 
 5.) Database: MongoDB       Difficulty: Easy/Medium
 Stores dynamic or evolving user data well (e.g., different combinations of health metrics). **No SQL**.
 Example Collections:
 users: 
-  { _id, username, role, createdAt, healthTraits[] }
+  { _id, uuid, firstName, lastName, username, passwordHash, email, promoConsent, agreeToTerms, verified,   createdAt, profile[] }
 
-healthTraits:
-  { height, weight, BMI, injuries[] }
+healthTraits: 
+{heightInches, weightLbs, age, gender, activityLevel, goalType}
 
-routines: 
+workouts: 
   { _id, userId, intensity, createdAt, exercises[] }
 
 exercises: 
   { _id, name, description, userId, type, intensity, createdAt }
 
-foodPlans: 
-  { _id, createdBy, planName, createdAt, meals[] }
 
 meals: 
   { _id, name, calories, createdAt, ingredients[] }
@@ -80,9 +92,6 @@ ingredients[] inside meals:
 ingredients: 
   { _id, name }
 
-progressPhotos: (Stretch Goal)
-  { userId, imageURL, timestamp }
-
 6.)Visualization: Chart.js     Difficulty: Medium
 Modern looking graphs and chart animations will provide unique and interesting ways to display graphs and
 compare metrics over time.
@@ -90,29 +99,27 @@ compare metrics over time.
 Security:
 - Crypto + JWT to handle secure sign-in. 
 - HTTPS for secure data transmission.
-- Firebase tokens for session management.
-- MongoDB access limited via role permissions.
+- JWT handles both authentication and user sessions. Each client is provided a jwt refresh and auth token. Once
+the short lived auth token expires, the user is redirected to the refresh endpoint automatically to be assigned a new auth
+and refresh token. If the refresh token expires or doesn't exits, the user is redirected to the log in page.
+- MongoDB access limited via JWT + token payload. If the user uuid or public Id is not present in the token, Authorization errors are thrown
+by the back end and returned to the user.
 
 Hosting:
 Vercel or Netlify for free website hosting.
 
-Content Management:     Difficulty: Hard (Stretch Goal) [Sentry?]
-Use something like Netlify CMS to manage user blog posts if implemented in the future.
-
 Actions/App Functions:
-Custom Workout Routines – Create flexible routines with automatic weight progression rules based on specific user needs.
-Comprehensive Tracking – Track diet plans, body weight, and custom measurements.
-Generates Charts - Generates charts based on tracked metrics.
-Nutrition Management – Log your calories with a food database from Open Food Facts. (Stretch Goal)
-Progress Gallery – Upload and track your fitness progress with photos. (Stretch Goal)
-Exercise Wiki – Access and contribute to the built-in exercises.(stretch goal - maybe)
+Custom Workout Recommendations – Create flexible routines with automatic weight progression rules based on specific user needs.
+Comprehensive Tracking – Tracks meals and workouts.
+Generates Charts - Generates charts based on the tracked metrics.
+Nutrition Management – Logs your macros with a food database from USDA API.
 
 User Flow: 
-1. User signs up or logs in via JWT Authentication. (Crypto + JWT)
-2. Enters personal health data through an onboarding form. (Privacy Banner: What is being collected and why?)
+1. Register by entering personal health data through an onboarding form. (Privacy Banner: What is being collected and why?)
+2. User logs in after registering or logs in via the log in page both provide the user with an JWT on success. (Bcrypt + JWT)
 3. Gets AI-generated workout/diet plan. (Stretch goal)
-4. Tracks workouts and logs food/calories.  (Link to privacy page)
-5. Reviews progress through charts and photo uploads + Weekly overview. [Offer advice based on progress] [ex. Airbuds]
+4. User logs workouts and meals via their respective builders/pages.
+5. Reviews progress through charts and provide Bi-weekly AI overview on areas to improve. [Offer advice based on progress]
 
 Desired Outcome:
 Help users achieve their health goals through personalized, data-driven fitness and diet plans.

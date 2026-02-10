@@ -10,11 +10,6 @@ import { login } from "../services/loginService";
 
 // Custom hook to manage login form state and behavior
 export function useLoginForm({ onSuccessFunction }) {
-  // Mutation hook
-  const loginMutation = useMutation({
-    mutationFn: (userCredentials) => login(userCredentials),
-  });
-
   // Login store state slices
   const formDataEmail = useFormDataEmail();
   const formDataPassword = useFormDataPassword();
@@ -29,6 +24,11 @@ export function useLoginForm({ onSuccessFunction }) {
   // Local State
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [hasErrors, setHasErrors] = useState(false); // Holds value for both client and mutation errors.
+
+  // Mutation hook for handling login API call
+  const loginMutation = useMutation({
+    mutationFn: (userCredentials) => login(userCredentials),
+  });
 
   // Updates a specific field in the form store when an input changes
   const handleChange = (e) => {
@@ -80,6 +80,7 @@ export function useLoginForm({ onSuccessFunction }) {
           onSuccessFunction();
         },
         onError: (error) => {
+          recaptchaRef.current?.reset();
           if (error.status === 400) {
             const details = error.response?.data?.details;
             if (details) {

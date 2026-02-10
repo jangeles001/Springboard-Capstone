@@ -11,12 +11,17 @@ export default function LogoutButton({ className = "" }) {
   });
 
   return (
-    <button
-      type="button"
-      onClick={handleLogout}
-      className={`hover:underline hover:cursor-pointer ${className}`}
+    <div
+    className="px-2 py-2 hover:bg-gray-200 cursor-pointer"
+    onClick={handleLogout}
     >
-      Logout
-    </button>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className={`hover:underline hover:cursor-pointer ${className}`}
+        >
+          Logout
+        </button>
+    </div>
   );
 }

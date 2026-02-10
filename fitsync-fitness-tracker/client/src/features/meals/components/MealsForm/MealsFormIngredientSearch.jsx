@@ -31,7 +31,8 @@ export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
                     >
                     {results?.map((item) => (
                         <ResultItem 
-                        item={item} 
+                        item={item}
+                        key={item.fdcId} 
                         onClick={ () => {
                             handleClick(item)
                             debouncedSetQuery("");

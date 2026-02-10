@@ -359,7 +359,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         },
       };
 
-      const tokens = await registerNewUser(userData);
+      await registerNewUser(userData);
       const user = await User.findOne({ email: userData.email });
       newUserA = { username: user.username, publicId: user.publicId };
     });
@@ -377,6 +377,8 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
           validateStatus: () => true,
         },
       );
+
+      console.log(response);
 
       expect(response.status).to.equal(200);
       expect(response.data.message).to.include("Logged In");

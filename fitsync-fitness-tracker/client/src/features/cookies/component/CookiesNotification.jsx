@@ -4,8 +4,10 @@ import { useCookiesStore } from '../store/CookiesStore'
 
 export default function CookiesNotification() {
     
+    // Local state for cookie consent using the useCookiesStore hook
     const { consent, setConsent } = useCookiesStore();
 
+    // Function to handle form submission and update cookie consent state
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -13,6 +15,7 @@ export default function CookiesNotification() {
         setConsent(choice);
     }
 
+    // If cookies are not enabled in the browser or if the user has already given consent, do not render the notification
     if(!navigator.cookieEnabled || consent) return null;
 
     return (

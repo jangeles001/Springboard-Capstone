@@ -34,8 +34,7 @@ export async function verifyController(req, res) {
     await userService.verifyUserAccount(token);
     res.generateSuccessResponse(null, `User Verification Successful`, 200);
   } catch (error) {
-    console.log(error);
-    res.generateErrorResponse(error.message, error.status);
+    res.generateErrorResponse(error.message, error.statusCode);
   }
 }
 
@@ -73,7 +72,8 @@ export async function getUserController(req, res) {
     const { publicId } = await userService.getPrivateUserInformation(sub);
     return res.generateSuccessResponse({ username, publicId }, "Success!", 200);
   } catch (error) {
-    return res.generateSuccessResponse(null, "Success!", 200); // Error is caught but we return success with null data.
+     // Error is caught but we return success with null data. This is to prevent malicious actors from being able to determine if a user exists based on the error message.
+    return res.generateSuccessResponse(null, "Success!", 200);
   }
 }
 

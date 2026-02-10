@@ -1,6 +1,7 @@
 import { api } from "../../../services/api";
 
 export async function fetchUserMeals({ page = 1, limit = 10 }) {
+  // Creates query parameters for pagination 
   const params = new URLSearchParams({
     page: String((page - 1) * 10),
     pageSize: String(limit),
