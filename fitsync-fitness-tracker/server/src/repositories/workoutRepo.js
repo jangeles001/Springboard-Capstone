@@ -55,7 +55,3 @@ export async function findAllWorkoutsByIds(workoutIds) {
     .lean();
   return workouts;
 }
-
-export async function duplicateOneWorkoutByUUID(workoutId) {
-  return;
-}

@@ -52,6 +52,9 @@ export function useWorkoutId(workoutId) {
     queryClient.invalidateQueries({
       queryKey: ["workout", workoutId, publicId],
     });
+    queryClient.invalidateQueries({
+      queryKey: ["workout", "All", 10],
+    });
     return navigate({ to: "/dashboard/workouts" });
   };
 
@@ -61,6 +64,7 @@ export function useWorkoutId(workoutId) {
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
+    isPending: deleteWorkoutMutation.isPending,
     handleDelete,
     handleReturn,
     handleLog,

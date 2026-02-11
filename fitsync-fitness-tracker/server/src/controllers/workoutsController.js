@@ -46,11 +46,16 @@ export async function deleteWorkoutController(req, res) {
 
 export async function getWorkoutInformationController(req, res) {
   try {
-    const workoutId = req.params.workoutId;
-    const workoutInformation =
-      await workoutService.getWorkoutInformation(workoutId);
+    const { workoutId } = req.params;
+    const { publicId } = req.user;
+    const workoutInformation = await workoutService.getWorkoutInformation(
+      publicId,
+      workoutId,
+    );
+    console.log(workoutInformation);
     return res.generateSuccessResponse(workoutInformation, "Success!", 200);
   } catch (error) {
+    console.log(error);
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 }

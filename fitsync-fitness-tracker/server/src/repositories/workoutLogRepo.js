@@ -15,6 +15,10 @@ export async function updateOneWorkoutLogEntryByUUID(workoutUUID, logId) {
   return;
 }
 
+export async function findOneWorkoutLogByWorkoutId(workoutId) {
+  return WorkoutLog.findOne({ sourceWorkoutUUID: workoutId });
+}
+
 export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
   const { start, end, type } = range;
 
@@ -93,7 +97,9 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
                 in: {
                   k: {
                     $cond: [
-                      { $gt: [{ $size: { $ifNull: ["$$ex.muscles", []] } }, 0] },
+                      {
+                        $gt: [{ $size: { $ifNull: ["$$ex.muscles", []] } }, 0],
+                      },
                       { $arrayElemAt: ["$$ex.muscles", 0] },
                       null,
                     ],
@@ -148,7 +154,12 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
                             "$$m.v",
                             {
                               $ifNull: [
-                                { $getField: { field: "$$m.k", input: "$$value" } },
+                                {
+                                  $getField: {
+                                    field: "$$m.k",
+                                    input: "$$value",
+                                  },
+                                },
                                 0,
                               ],
                             },
@@ -185,8 +196,8 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
               type === "daily"
                 ? "%Y-%m-%d"
                 : type === "weekly"
-                ? "%Y-'W'%V"
-                : "%Y-%m",
+                  ? "%Y-'W'%V"
+                  : "%Y-%m",
           },
         },
 
@@ -277,14 +288,10 @@ export async function findWorkoutMuscleDistributionByUserPublicId(
 }
 
 export async function updateDeletedWorkoutLogStatus(
-  publicId,
   sourceWorkoutUUID,
   isDeleted,
 ) {
-  await WorkoutLog.updateMany(
-    { creatorPublicId: publicId, sourceWorkoutUUID },
-    { $set: { isDeleted } },
-  );
-
+  await WorkoutLog.updateMany({ sourceWorkoutUUID }, { $set: { isDeleted } });
+5
   return;
 }

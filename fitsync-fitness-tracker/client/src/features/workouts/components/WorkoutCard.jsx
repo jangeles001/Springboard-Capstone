@@ -1,6 +1,6 @@
 import Exercise  from './WorkoutsList/exercise';
 
-export function WorkoutCard({ item: workout, onClick, handleDelete, active }) {
+export function WorkoutCard({ item: workout, onClick, handleDelete, active, isPending }) {
 
   return (
     <div className="flex flex-col bg-white rounded-2xl shadow-md p-6 border">
@@ -40,6 +40,7 @@ export function WorkoutCard({ item: workout, onClick, handleDelete, active }) {
         <button
           onClick={() => handleDelete(workout.uuid)}
           className="mt-auto bg-blue-500 text-white px-4 py-2 rounded-lg"
+          disabled={isPending}
         >
           Delete Workout
         </button>

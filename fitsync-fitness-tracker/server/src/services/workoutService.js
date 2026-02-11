@@ -67,7 +67,11 @@ export async function deleteWorkout(publicId, workoutId) {
   // Fetch workouts and collections entry in parallel
   const [workout, collectionEntries] = await Promise.all([
     workoutRepo.findOneWorkoutByUUID(workoutId),
-    workoutCollectionRepo.findWorkoutInCollectionById(publicId, workoutId),
+    workoutCollectionRepo.findWorkoutInCollectionById(
+      publicId,
+      workoutId,
+      true,
+    ),
   ]);
 
   const hasCollectionEntry = collectionEntries && collectionEntries.length > 0;
@@ -84,7 +88,7 @@ export async function deleteWorkout(publicId, workoutId) {
         publicId,
         workoutId,
       ),
-      workoutLogRepo.updateDeletedWorkoutLogStatus(publicId, workoutId, true),
+      workoutLogRepo.updateDeletedWorkoutLogStatus(workoutId, true),
     ]);
     return;
   }
@@ -96,7 +100,7 @@ export async function deleteWorkout(publicId, workoutId) {
         publicId,
         workoutId,
       ),
-      workoutLogRepo.updateDeletedWorkoutLogStatus(publicId, workoutId, true),
+      workoutLogRepo.updateDeletedWorkoutLogStatus(workoutId, true),
     ]);
     return;
   }
@@ -108,16 +112,26 @@ export async function deleteWorkout(publicId, workoutId) {
       workoutId,
     ),
     workoutCollectionRepo.updateDeletedWorkoutInCollection(workoutId, {
+      creatorPublicId: workout.creatorPublicId,
+      uuid: workout.uuid,
       workoutName: workout.workoutName,
       workoutDuration: workout.workoutDuration,
       exercises: workout.exercises,
     }),
     workoutRepo.deleteOneWorkoutById(workoutId),
-    workoutLogRepo.updateDeletedWorkoutLogStatus(publicId, workoutId, true),
+    workoutLogRepo.updateDeletedWorkoutLogStatus(workoutId, true),
   ]);
 }
 
-export async function getWorkoutInformation(workoutId) {
+export async function getWorkoutInformation(userPublicId, workoutId) {
+  const log = await workoutLogRepo.findOneWorkoutLogByWorkoutId(workoutId);
+  if (log && log.isDeleted) {
+    const collection = await workoutCollectionRepo.findWorkoutInCollectionById(
+      userPublicId,
+      workoutId,
+    );
+    return collection[0].snapshot;
+  }
   const workoutInformation = await workoutRepo.findOneWorkoutByUUID(workoutId);
   return workoutInformation;
 }
@@ -125,6 +139,7 @@ export async function getWorkoutInformation(workoutId) {
 export async function getAllWorkouts(offset = 0, pageSize = 10) {
   let hasNextPage = false;
   let hasPreviousPage = false;
+
   const { workouts, totalCount } = await workoutRepo.findAllWorkouts(
     offset,
     pageSize,

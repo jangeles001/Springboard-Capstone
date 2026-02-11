@@ -12,6 +12,7 @@ const workoutLogSchema = new mongoose.Schema(
     // Reference to a saved meal
     sourceWorkoutUUID: {
       type: String,
+      required: true,
     },
 
     // Snapshot data (DO NOT reference Meal dynamically)
@@ -48,7 +49,7 @@ const workoutLogSchema = new mongoose.Schema(
       ref: "WorkoutLog",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const WorkoutLog = mongoose.model("WorkoutLog", workoutLogSchema);

@@ -13,6 +13,7 @@ import { getDateRange } from "../utils/getDateRange.js";
 import { calculateMacros } from "../utils/calculateMacros.js";
 import { mailjet } from "../config/nodeMailer.js";
 import * as userRepo from "../repositories/userRepo.js";
+import { findOneWorkoutByUUID } from "../repositories/workoutRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
 import * as mealCollectionRepo from "../repositories/mealCollectionRepo.js";
@@ -240,11 +241,13 @@ export async function revokeRefreshToken(refreshToken) {
 }
 
 export async function verifyUserAccount(token) {
+  // Checks if user information is stored in redis client using their specific key string
   const user = await redisClient.get(`emailVerificationToken:${token}`);
   if (!user) throw new UnauthorizedError();
 
-  const uuid = JSON.parse(user).uuid;
+  const uuid = JSON.parse(user).uuid; // Parses the Json.stringify data for the specified key
 
+  // Delets key and updates verifid field for the user in parallel
   await Promise.all([
     redisClient.del(`emailVerificationToken:${token}`),
     userRepo.updateMultipleUserFieldsByUUID(uuid, { verified: true }),
@@ -306,12 +309,23 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
   let hasNextPage = null;
   let hasPreviousPage = null;
 
-  const { workouts, totalCount } =
+  const { collectionDocs, totalCount } =
     await workoutCollectionRepo.findWorkoutsInCollectionByUserPublicId(
       userPublicId,
       offset,
       pageSize,
     );
+
+  const workouts = await Promise.all(
+    collectionDocs.map(async (doc) => {
+      if (!doc.isDeleted) {
+        console.log(doc);
+        return await findOneWorkoutByUUID(doc.workoutUUID);
+      } else {
+        return await doc.snapshot;
+      }
+    }),
+  );
 
   if (offset + pageSize < totalCount - 1) hasNextPage = true;
 

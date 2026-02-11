@@ -32,6 +32,7 @@ export function useWorkoutsList({ limit }) {
         nextTab === "Personal"
           ? fetchUserWorkouts({ page: nextPage, limit })
           : fetchAllWorkouts({ page: nextPage, limit }),
+      refetchOnMount: true,
     });
   }, [active, pages, limit, queryClient]);
 
@@ -71,6 +72,9 @@ export function useWorkoutsList({ limit }) {
   // Function calls the delete workout mutation and provides the corresponding workout id to delete
   const handleDelete = (workoutId) => {
     deleteWorkoutMutation.mutate(workoutId);
+    queryClient.invalidateQueries({
+      queryKey: ["workouts", active, limit],
+    });
   };
 
   // Function that sets active page between personal and all workouts
