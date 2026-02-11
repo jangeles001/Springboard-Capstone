@@ -7,7 +7,7 @@ export async function createExerciseController(req, res) {
     return res.generateSuccessResponse(
       newExercise,
       "Exercise Created Successfully!",
-      201
+      201,
     );
   } catch (error) {
     return res.generateErrorResponse(error.message, error.statusCode);

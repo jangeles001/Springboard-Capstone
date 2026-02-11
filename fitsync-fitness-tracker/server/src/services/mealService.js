@@ -13,14 +13,14 @@ export async function createNewMeal(mealData, userPublicId) {
   await Promise.all([
     mealCollectionRepo.addMealToCollection(userPublicId, meal.uuid),
     mealLogRepo.createOneMealLogEntry({
-    creatorPublicId: userPublicId,
-    sourceMealUUID: meal.uuid,
-    mealNameSnapshot: meal.mealName,
-    mealDescriptionSnapshot: meal.mealDescription,
-    ingredientsSnapshot: meal.ingredients,
-    macrosSnapshot: meal.mealMacros,
-    consumedAt: new Date(),
-  }),
+      creatorPublicId: userPublicId,
+      sourceMealUUID: meal.uuid,
+      mealNameSnapshot: meal.mealName,
+      mealDescriptionSnapshot: meal.mealDescription,
+      ingredientsSnapshot: meal.ingredients,
+      macrosSnapshot: meal.mealMacros,
+      consumedAt: new Date(),
+    }),
   ]);
 
   return meal;
@@ -30,7 +30,7 @@ export async function duplicateMeal(publicId, mealId) {
   const meal = await mealRepo.findOneMealByUUID(mealId);
   if (!meal) throw new NotFoundError("MEAL");
 
-  const collection = await mealCollectionRepo.findMealInCollectionByMealId(
+  const collection = await mealCollectionRepo.findMealInCollectionById(
     publicId,
     mealId,
   );
@@ -107,15 +107,16 @@ export async function deleteMeal(publicId, mealId) {
   ]);
 }
 
-export async function getMealInformation(userPublicId, mealId) {
-  const log = await mealLogRepo.findOneMealLogByMealId(mealId);
-  if (log && log.isDeleted) {
-    const collection = await mealCollectionRepo.findMealInCollectionById(
-      mealId,
-    );
+export async function getMealInformation(mealId) {
+  const meal = await mealRepo.findOneMealByUUID(mealId);
+  if (!meal) {
+    const collection =
+      await mealCollectionRepo.findMealInCollectionById(mealId);
+
+    console.log(collection);
     return collection[0].snapshot;
   }
-  const meal = await mealRepo.findOneMealByUUID(mealId);
+
   return meal;
 }
 

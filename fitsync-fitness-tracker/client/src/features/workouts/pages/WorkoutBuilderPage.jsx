@@ -9,7 +9,7 @@ export function WorkoutBuilderPage() {
 
   return (
       <div className='  flex flex-col lg:flex-row w-full max-w-7xl mx-auto gap-8 px-6 py-10'>
-        <div className="flex-1 lg:flex-[1.2]">
+        <div className="flex-1 lg:flex-[2]">
           <WorkoutsBuilderForm />
         </div>
         <div className="flex-1 lg:flex-[1.8]">

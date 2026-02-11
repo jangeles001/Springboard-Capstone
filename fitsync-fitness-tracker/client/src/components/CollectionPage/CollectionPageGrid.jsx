@@ -24,7 +24,6 @@ export function CollectionPageGrid({
             </p>
         );
     }
-
     return (
         <div className="flex flex-row flex-wrap gap-20 justify-center p-0">
             {items.map((item) => (

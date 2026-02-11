@@ -19,7 +19,7 @@ export function WorkoutsBuilderSelectedExercises() {
       </h3>
 
       <div className="rounded-xl border bg-gray-50 p-4">
-        {/* Header row – desktop only */}
+
         <div className={`${GRID} hidden md:grid font-semibold text-sm`}>
           <div className="md:col-span-3 pl-2">Exercise</div>
           <div className="md:col-span-1 text-center">Reps</div>
@@ -27,7 +27,6 @@ export function WorkoutsBuilderSelectedExercises() {
           <div className="md:col-span-2">Weight / Duration</div>
         </div>
 
-        {/* Empty/Starting State */}
         {!createdWorkout?.exercises?.length && (
           <p className="text-center text-gray-500 py-12">
             Click on an exercise to add it to this window <br></br>
@@ -43,7 +42,7 @@ export function WorkoutsBuilderSelectedExercises() {
           return (
             <div key={exercise.id} className={GRID}>
 
-              {/* Exercise Column*/}
+
               <div className="md:col-span-3">
                 <span className="md:hidden text-xs font-semibold text-gray-500">
                   Exercise
@@ -57,11 +56,12 @@ export function WorkoutsBuilderSelectedExercises() {
                     onDoubleClick={() => handleRemove(exercise.id)}
                     className="
                       w-full
-                      mt-1
+                      mt-4
                       rounded-xl
                       border
                       shadow-sm
                       p-3
+                      ml-4
                       text-left
                       hover:bg-gray-50
                       hover:cursor-pointer
@@ -77,7 +77,6 @@ export function WorkoutsBuilderSelectedExercises() {
                 </PortalTooltip>
               </div>
 
-              {/* Reps Column */}
               <div className="md:col-span-1">
                 <span className="md:hidden text-xs font-semibold text-gray-500">
                   Reps
@@ -95,7 +94,6 @@ export function WorkoutsBuilderSelectedExercises() {
 
               {!isBodyWeight && (
                 <>
-                  {/* Measurement Type Column */}
                   <div className="md:col-span-2">
                     <span className="md:hidden text-xs font-semibold text-gray-500">
                       Measure Type
@@ -119,7 +117,6 @@ export function WorkoutsBuilderSelectedExercises() {
                     </select>
                   </div>
 
-                  {/* Measurement Column */}
                   <div className="md:col-span-2 grid grid-cols-2 gap-2">
                     <div>
                       <span className="md:hidden text-xs font-semibold text-gray-500">
@@ -128,7 +125,7 @@ export function WorkoutsBuilderSelectedExercises() {
                       <input
                         type="text"
                         className="w-full mt-1 p-2 border rounded-md"
-                        maxLength={3}
+                        maxLength={4}
                         placeholder="0"
                         onChange={(e) =>
                           handleExerciseInformationChange(

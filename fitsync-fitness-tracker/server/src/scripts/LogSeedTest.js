@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { MealLog } from "../models/mealLogModel.js"
-import { WorkoutLog } from "../models/workoutLogModel.js"
+import { MealLog } from "../models/mealLogModel.js";
+import { WorkoutLog } from "../models/workoutLogModel.js";
 import { getEnv } from "../config/envConfig.js";
 
-
-const TEST_USER_ID = "R0INCbFYZk"; // replace with a real user if needed
+const TEST_USER_ID = "LvTAPh11Rj"; // replace with a real user if needed
 const NUM_DAYS = 14; // number of days of data
 
 // Utility functions to generate past dates and random integers
@@ -24,7 +23,13 @@ function randomInt(min, max) {
 }
 
 // Builds meal logs with 2 ingredients each, random macros, and past dates
-const mealNames = ["Chicken Salad", "Beef Stir Fry", "Protein Smoothie", "Omelette", "Turkey Sandwich"];
+const mealNames = [
+  "Chicken Salad",
+  "Beef Stir Fry",
+  "Protein Smoothie",
+  "Omelette",
+  "Turkey Sandwich",
+];
 const mealDescriptions = [
   "A healthy mix of veggies and protein",
   "High protein stir fry with veggies",
@@ -45,11 +50,18 @@ function generateIngredient() {
     quantity: randomInt(50, 200),
     macros: { protein, fat, carbs, fiber, netCarbs: carbs - fiber, calories },
     caloriesPer100G: calories,
-    macrosPer100G: { protein, fat, carbs, fiber, netCarbs: carbs - fiber, calories },
+    macrosPer100G: {
+      protein,
+      fat,
+      carbs,
+      fiber,
+      netCarbs: carbs - fiber,
+      calories,
+    },
   };
 }
 
-const mealLogs = getPastDates(NUM_DAYS).map(date => {
+const mealLogs = getPastDates(NUM_DAYS).map((date) => {
   const ingredients = Array.from({ length: 2 }, () => generateIngredient());
 
   const totalMacros = ingredients.reduce(
@@ -61,14 +73,15 @@ const mealLogs = getPastDates(NUM_DAYS).map(date => {
       netCarbs: acc.netCarbs + ing.macros.netCarbs,
       calories: acc.calories + ing.macros.calories,
     }),
-    { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 }
+    { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
   );
 
   return {
     creatorPublicId: TEST_USER_ID,
     sourceMealUUID: uuidv4(),
     mealNameSnapshot: mealNames[randomInt(0, mealNames.length - 1)],
-    mealDescriptionSnapshot: mealDescriptions[randomInt(0, mealDescriptions.length - 1)],
+    mealDescriptionSnapshot:
+      mealDescriptions[randomInt(0, mealDescriptions.length - 1)],
     ingredientsSnapshot: ingredients,
     macrosSnapshot: totalMacros,
     consumedAt: date,
@@ -76,8 +89,21 @@ const mealLogs = getPastDates(NUM_DAYS).map(date => {
 });
 
 // Builds workout logs with 3 exercises each, random durations, and past dates
-const workoutNames = ["Full Body Strength", "Upper Body Blast", "Leg Day", "Cardio Session", "Core & Abs"];
-const exerciseNames = ["Squat", "Bench Press", "Deadlift", "Pull-up", "Plank", "Bicep Curl"];
+const workoutNames = [
+  "Full Body Strength",
+  "Upper Body Blast",
+  "Leg Day",
+  "Cardio Session",
+  "Core & Abs",
+];
+const exerciseNames = [
+  "Squat",
+  "Bench Press",
+  "Deadlift",
+  "Pull-up",
+  "Plank",
+  "Bicep Curl",
+];
 
 function generateExercise() {
   return {
@@ -93,7 +119,7 @@ function generateExercise() {
   };
 }
 
-const workoutLogs = getPastDates(NUM_DAYS).map(date => ({
+const workoutLogs = getPastDates(NUM_DAYS).map((date) => ({
   creatorPublicId: TEST_USER_ID,
   sourceWorkoutUUID: uuidv4(),
   workoutNameSnapshot: workoutNames[randomInt(0, workoutNames.length - 1)],

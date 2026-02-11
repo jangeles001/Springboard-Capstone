@@ -14,7 +14,7 @@ function RouteComponent() {
 
   return (
     <>
-      <DefaultNav links={navLinks} queryEnabled={false}/>
+      <DefaultNav links={navLinks} queryEnabled={false} homeURL={"/landing"}/>
     </>
   )
 }

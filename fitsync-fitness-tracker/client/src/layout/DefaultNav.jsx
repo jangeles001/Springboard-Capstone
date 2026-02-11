@@ -1,4 +1,4 @@
-import { Outlet, Link } from '@tanstack/react-router'
+import { Outlet, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import CookiesNotification from '../features/cookies/component/CookiesNotification'
 import logo from '../assets/Rebrand-2.svg'
@@ -7,22 +7,23 @@ import LogoutButton from '../features/logout/components/LogoutButton'
 import HamburgerMenu from '../components/HamburgerMenu'
 import { useUsername } from '../store/UserStore'
 import { useAuthUser } from '../hooks/useAuthUser'
+import Loading from '../components/Loading'
 
 
-export default function DefaultNav({ links, queryEnabled = true }) {
+export default function DefaultNav({ links, queryEnabled = true, homeURL}) {
   const { isLoading } = useAuthUser(queryEnabled);
   const username = useUsername();
-  const [hamburgerOpen, setHamburgerOpen] = useState(false)
+  const [hamburgerOpen, setHamburgerOpen] = useState(false);
 
-  if (isLoading && !username) return <div>Loading...</div>;
+  if (isLoading && !username) return <Loading type={full-page} />
 
   return (
     <div className="w-full border-b bg-gray-100">
       <header className="relative z-40 border-b">
         <div className="max-w-screen flex items-center px-4 py-4">
-          <div className="flex-shrink-0">
-            <img src={logo} alt="Logo" className="h-30" />
-          </div>
+          <Link to={homeURL} className="flex-shrink-0">
+            <img src={logo} alt="Logo" className="h-32"/>
+          </Link>
 
           <button
           className="lg:hidden mt-auto p-2 rounded-md hover:bg-gray-200"

@@ -33,7 +33,7 @@ export function MacroChart({ title, data, type = "bar" }) {
   }
 
   return (
-    <div className="rounded-xl border h-full bg-gray-50 p-6 shadow-sm">
+    <div className="rounded-xl border h-full bg-gray-50 p-10 shadow-sm">
       <h3 className="text-center font-semibold">{title}</h3>
       <Chart
         type={type}

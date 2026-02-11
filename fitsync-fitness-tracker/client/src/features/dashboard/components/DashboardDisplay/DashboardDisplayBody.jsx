@@ -9,15 +9,13 @@ import { buildWorkoutFrequencyChart } from "../../utils/buildWorkoutFrequencyCha
 import { buildDailyMacroChart } from "../../utils/buildDailyMacrosChart";
 import { buildWeeklyMacroChart } from "../../utils/buildWeeklyMacrosChart";
 import { buildMonthlyMacroChart } from "../../utils/buildMonthlyMacrosChart";
-import { baseOptions, comboOptions, FrequencyOptions, volumeOptions } from "../../utils/metricChartOptions"
+import { comboOptions, FrequencyOptions, volumeOptions } from "../../utils/metricChartOptions"
 
 export function DashboardDisplayBody(){
     const { activeView, activeQuery } = useDashboardDisplayContext();
 
     if(activeQuery.isLoading) return <Loading  type="skeleton" />
     if(activeQuery.isError) return <>{console.log(activeQuery.error)}</>
-
-  console.log(activeQuery.data.data);
 
   return (
     <div className="mb-10">
@@ -55,16 +53,19 @@ export function DashboardDisplayBody(){
           ) : (
           <GraphCarousel interval={15000}>
             <MetricChart
+            title="Daily Frequency"
             type="bar"
             data={buildWorkoutFrequencyChart(activeQuery.data.data.daily)}
             options={FrequencyOptions}
             />
             <MetricChart
+            title="Weekly Total Volume"
             type="line"
             data={buildTotalVolumeChart(activeQuery.data.data.weekly)}
             options={volumeOptions}
             />
             <MetricChart
+            title="Weekly Intensity"
             type="combo"
             data={buildIntensityComboChart(activeQuery.data.data.weekly)}
             options={comboOptions}

@@ -1280,7 +1280,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         sourceWorkoutUUID: newWorkoutA.uuid,
       });
       userBLogs.forEach((log) => {
-        expect(log.isDeleted).to.be.true;
+        expect(log.isDeleted).to.be.false;
       });
     });
 

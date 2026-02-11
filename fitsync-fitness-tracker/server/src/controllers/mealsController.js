@@ -52,7 +52,7 @@ export async function getMealInformationController(req, res) {
   try {
     const { mealId } = req.params;
     const { publicId } = req.user;
-    const mealInfo = await mealService.getMealInformation(publicId, mealId);
+    const mealInfo = await mealService.getMealInformation(mealId);
     return res.generateSuccessResponse(mealInfo, "Success!");
   } catch (error) {
     console.log(error);

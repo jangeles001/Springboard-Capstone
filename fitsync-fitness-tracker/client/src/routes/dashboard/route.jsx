@@ -33,7 +33,7 @@ function dashboard() {
 
   return (
     <>
-      <DefaultNav  links={navLinks}/>
+      <DefaultNav  links={navLinks} queryEnabled={true} homeURL={"/dashboard"}/>
     </>
   )
 }

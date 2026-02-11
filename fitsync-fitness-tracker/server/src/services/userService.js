@@ -14,6 +14,7 @@ import { calculateMacros } from "../utils/calculateMacros.js";
 import { mailjet } from "../config/nodeMailer.js";
 import * as userRepo from "../repositories/userRepo.js";
 import { findOneWorkoutByUUID } from "../repositories/workoutRepo.js";
+import { findOneMealByUUID } from "../repositories/mealRepo.js";
 import * as mealLogRepo from "../repositories/mealLogRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
 import * as mealCollectionRepo from "../repositories/mealCollectionRepo.js";
@@ -318,8 +319,7 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
 
   const workouts = await Promise.all(
     collectionDocs.map(async (doc) => {
-      if (!doc.isDeleted) {
-        console.log(doc);
+      if (doc.isDeleted === false) {
         return await findOneWorkoutByUUID(doc.workoutUUID);
       } else {
         return await doc.snapshot;
@@ -337,15 +337,29 @@ export async function getUserWorkouts(userPublicId, offset = 0, pageSize = 10) {
 export async function getUserMeals(userPublicId, offset, pageSize) {
   let hasNextPage = null;
   let hasPreviousPage = null;
-  const { meals, totalCount } =
+
+  // Looks for al the workouts in the user collection
+  const { collectionDocs, totalCount } =
     await mealCollectionRepo.findMealsInCollectionByUserPublicId(
       userPublicId,
       offset,
       pageSize,
     );
 
+  // Builds meals array with either the snapshot data stored in collection or the meal document
+  const meals = await Promise.all(
+    collectionDocs.map(async (doc) => {
+      if (doc.isDeleted === false) {
+        return await findOneMealByUUID(doc.mealUUID);
+      } else {
+        return await doc.snapshot;
+      }
+    }),
+  );
+
   if (offset + pageSize < totalCount - 1) hasNextPage = true;
   if (offset > 0) hasPreviousPage = true;
+
   return { meals, hasPreviousPage, hasNextPage };
 }
 
