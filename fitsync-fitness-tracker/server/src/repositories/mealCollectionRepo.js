@@ -1,6 +1,14 @@
 import { MealCollection } from "../models/mealCollectionModel.js";
 import { findAllMealsByIds } from "./mealRepo.js";
 
+export async function addMealToCollection(userPublicId, mealUUID) {
+  const newEntry = await MealCollection.create({
+    userPublicId,
+    mealUUID,
+  });
+  return newEntry.toJSON();
+}
+
 export async function findMealCollectionsByUserPublicId(userPublicId) {
   return await MealCollection.find({
     userPublicId,
@@ -9,20 +17,11 @@ export async function findMealCollectionsByUserPublicId(userPublicId) {
     .lean();
 }
 
-export async function findMealInCollectionByMealId(userPublicId, mealUUID) {
-  return await MealCollection.find({
+export async function findMealInCollectionById(userPublicId, mealUUID) {
+  return await MealCollection.findOne({
     userPublicId,
     mealUUID,
-    isDeleted: false,
   }).lean();
-}
-
-export async function addMealToCollection(userPublicId, mealUUID) {
-  const newEntry = await MealCollection.create({
-    userPublicId,
-    mealUUID,
-  });
-  return newEntry.toJSON();
 }
 
 export async function findMealsInCollectionByUserPublicId(
@@ -42,14 +41,8 @@ export async function findMealsInCollectionByUserPublicId(
     userPublicId
   });
 
-  // Pulls meal UUIDs
-  const mealUUIDs = collectionDocs.map(doc => doc.mealUUID);
-
-  // Fetches actual meals
-  const meals = await findAllMealsByIds(mealUUIDs);
-
   return {
-    meals,
+    collectionDocs,
     totalCount,
     };
 }
@@ -68,11 +61,14 @@ export async function updateDeletedMealInCollection(mealUUID, updateData) {
     },
     {
       $set: {
+        isDeleted: true,
         snapshot: {
+          creatorPublicId: updateData.creatorPublicId,
+          uuid: updateData.uuid,
           mealName: updateData.mealName,
           mealDescription: updateData.mealDescription,
           ingredients: updateData.ingredients,
-          mealMacros: updateData.exercises,
+          mealMacros: updateData.mealMacros,
         },
       },
     },

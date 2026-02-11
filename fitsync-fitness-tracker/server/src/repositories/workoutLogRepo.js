@@ -1,7 +1,5 @@
 import { WorkoutLog } from "../models/workoutLogModel.js";
 
-const PRIVATE_FIELDS_EXCLUSIONS = "-_id -createdAt -updatedAt";
-
 export async function createOneWorkoutLogEntry(workoutLogData) {
   await WorkoutLog.create(workoutLogData);
   return;
@@ -120,7 +118,7 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
       },
     },
 
-    // Group per period
+    // Groups per period
     {
       $group: {
         _id: "$periodStart",
@@ -132,7 +130,7 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
       },
     },
 
-    // Merge muscle maps
+    // Merges muscle maps
     {
       $addFields: {
         muscleVolume: {
@@ -292,6 +290,6 @@ export async function updateDeletedWorkoutLogStatus(
   isDeleted,
 ) {
   await WorkoutLog.updateMany({ sourceWorkoutUUID }, { $set: { isDeleted } });
-5
+
   return;
 }

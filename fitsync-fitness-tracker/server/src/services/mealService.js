@@ -9,7 +9,10 @@ export async function createNewMeal(mealData, userPublicId) {
     creatorPublicId: userPublicId,
   });
 
-  const mealLogData = {
+  // Add to collection and create log in parallel
+  await Promise.all([
+    mealCollectionRepo.addMealToCollection(userPublicId, meal.uuid),
+    mealLogRepo.createOneMealLogEntry({
     creatorPublicId: userPublicId,
     sourceMealUUID: meal.uuid,
     mealNameSnapshot: meal.mealName,
@@ -17,12 +20,7 @@ export async function createNewMeal(mealData, userPublicId) {
     ingredientsSnapshot: meal.ingredients,
     macrosSnapshot: meal.mealMacros,
     consumedAt: new Date(),
-  };
-
-  // Add to collection and create log in parallel
-  await Promise.all([
-    mealCollectionRepo.addMealToCollection(userPublicId, meal.uuid),
-    mealLogRepo.createOneMealLogEntry(mealLogData),
+  }),
   ]);
 
   return meal;
@@ -70,7 +68,7 @@ export async function deleteMeal(publicId, mealId) {
   // Fetch meals and collections entry in parallel
   const [meal, collectionEntries] = await Promise.all([
     mealRepo.findOneMealByUUID(mealId),
-    mealCollectionRepo.findMealInCollectionByMealId(publicId, mealId),
+    mealCollectionRepo.findMealInCollectionById(publicId, mealId),
   ]);
 
   const hasCollectionEntry = collectionEntries && collectionEntries.length > 0;
@@ -84,7 +82,7 @@ export async function deleteMeal(publicId, mealId) {
     // Remove from collection and mark logs as deleted in parallel
     await Promise.all([
       mealCollectionRepo.removeMealFromCollection(publicId, mealId),
-      mealLogRepo.updateDeletedMealLogStatus(publicId, mealId, true),
+      mealLogRepo.updateDeletedMealLogStatus(mealId, true),
     ]);
     return;
   }
@@ -93,7 +91,6 @@ export async function deleteMeal(publicId, mealId) {
   if (meal.creatorPublicId !== publicId) {
     await Promise.all([
       mealCollectionRepo.removeMealFromCollection(publicId, mealId),
-      mealLogRepo.updateDeletedMealLogStatus(publicId, mealId, true),
     ]);
     return;
   }
@@ -110,6 +107,18 @@ export async function deleteMeal(publicId, mealId) {
   ]);
 }
 
+export async function getMealInformation(userPublicId, mealId) {
+  const log = await mealLogRepo.findOneMealLogByMealId(mealId);
+  if (log && log.isDeleted) {
+    const collection = await mealCollectionRepo.findMealInCollectionById(
+      mealId,
+    );
+    return collection[0].snapshot;
+  }
+  const meal = await mealRepo.findOneMealByUUID(mealId);
+  return meal;
+}
+
 export async function getAllMeals(offset = 0, pageSize = 10) {
   let hasNextPage = null;
   let hasPreviousPage = null;
@@ -120,9 +129,4 @@ export async function getAllMeals(offset = 0, pageSize = 10) {
   if (offset > 0) hasPreviousPage = true;
 
   return { meals, hasPreviousPage, hasNextPage };
-}
-
-export async function getMeal(mealUUID) {
-  const meal = await mealRepo.findOneMealByUUID(mealUUID);
-  return meal;
 }

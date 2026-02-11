@@ -4,7 +4,7 @@ import validate from "../validators/authValidator.js";
 import {
   createMealController,
   getAllMealsController,
-  getMealController,
+  getMealInformationController,
   deleteMealController,
   duplicateMealController,
 } from "../controllers/mealsController.js";
@@ -22,6 +22,6 @@ router
   .delete("/delete/:mealId", requireAuth, deleteMealController)
   .post("/duplicate/:mealId", requireAuth, duplicateMealController)
   .get("/", requireAuth, getAllMealsController)
-  .get("/:mealId", requireAuth, getMealController);
+  .get("/:mealId", requireAuth, getMealInformationController);
 
 export default router;

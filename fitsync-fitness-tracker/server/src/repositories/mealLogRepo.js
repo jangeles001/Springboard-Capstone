@@ -1,7 +1,5 @@
 import { MealLog } from "../models/mealLogModel.js";
 
-const PRIVATE_FIELDS_EXCLUSIONS = "-_id -consumedAt -updatedAt";
-
 export async function createOneMealLogEntry(mealLogData) {
   await MealLog.create(mealLogData);
   return;
@@ -13,6 +11,10 @@ export async function updateOneMealLogEntryByUUID(mealUUID, logId) {
     { $set: { isDeleted: true, correctedFromLogId: logId } },
   );
   return;
+}
+
+export async function findOneMealLogByMealId(mealId) {
+  return MealLog.findOne({ sourceMealUUID: mealId });
 }
 
 export async function findAllMealLogsByUserPublicId(userPublicId, range) {
@@ -86,12 +88,11 @@ export async function findAllMealLogsByUserPublicId(userPublicId, range) {
 }
 
 export async function updateDeletedMealLogStatus(
-  publicId,
   sourceMealUUID,
   isDeleted,
 ) {
   await MealLog.updateMany(
-    { creatorPublicId: publicId, sourceMealUUID },
+    { sourceMealUUID },
     { $set: { isDeleted } },
   );
 

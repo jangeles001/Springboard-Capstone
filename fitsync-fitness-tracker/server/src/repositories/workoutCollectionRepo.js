@@ -1,12 +1,4 @@
 import { WorkoutCollection } from "../models/workoutCollectionModel.js";
-import { findAllWorkoutsByIds } from "./workoutRepo.js";
-
-export async function findWorkoutInCollectionById(userPublicId, workoutUUID) {
-  return await WorkoutCollection.find({
-    userPublicId,
-    workoutUUID,
-  }).lean();
-}
 
 export async function addWorkoutToCollection(userPublicId, workoutUUID) {
   const newEntry = await WorkoutCollection.create({
@@ -14,6 +6,13 @@ export async function addWorkoutToCollection(userPublicId, workoutUUID) {
     workoutUUID,
   });
   return newEntry.toJSON();
+}
+
+export async function findWorkoutInCollectionById(userPublicId, workoutUUID) {
+  return await WorkoutCollection.find({
+    userPublicId,
+    workoutUUID,
+  }).lean();
 }
 
 export async function findWorkoutsInCollectionByUserPublicId(
@@ -39,6 +38,14 @@ export async function findWorkoutsInCollectionByUserPublicId(
   };
 }
 
+export async function removeOneWorkoutFromUserCollection(
+  userPublicId,
+  workoutUUID,
+) {
+  await WorkoutCollection.deleteOne({ userPublicId, workoutUUID });
+  return;
+}
+
 export async function updateDeletedWorkoutInCollection(
   workoutUUID,
   updateData,
@@ -62,13 +69,5 @@ export async function updateDeletedWorkoutInCollection(
       },
     },
   );
-  return;
-}
-
-export async function removeOneWorkoutFromUserCollection(
-  userPublicId,
-  workoutUUID,
-) {
-  await WorkoutCollection.deleteOne({ userPublicId, workoutUUID });
   return;
 }

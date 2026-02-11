@@ -1,11 +1,9 @@
 import * as workoutRepo from "../repositories/workoutRepo.js";
 import * as workoutLogRepo from "../repositories/workoutLogRepo.js";
 import * as workoutCollectionRepo from "../repositories/workoutCollectionRepo.js";
-import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 
 export async function createAndLogWorkout(userPublicId, workoutData) {
-  // Create the workout template
   const newWorkout = await workoutRepo.createWorkout({
     ...workoutData,
     creatorPublicId: userPublicId,
@@ -100,12 +98,11 @@ export async function deleteWorkout(publicId, workoutId) {
         publicId,
         workoutId,
       ),
-      workoutLogRepo.updateDeletedWorkoutLogStatus(workoutId, true),
     ]);
     return;
   }
 
-  // Case 3: User IS the creator (delete the workout itself)
+  // User IS the creator (delete the workout itself)
   await Promise.all([
     workoutCollectionRepo.removeOneWorkoutFromUserCollection(
       publicId,
