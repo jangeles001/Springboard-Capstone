@@ -49,7 +49,7 @@ export default function GraphCarousel({
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="relative w-full h-full min-w-[300px] overflow-hidden">
       {/* Slides track */}
       <div
         className="flex h-full transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"

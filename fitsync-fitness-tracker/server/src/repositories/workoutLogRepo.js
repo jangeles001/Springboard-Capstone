@@ -18,43 +18,18 @@ export async function updateOneWorkoutLogEntryByUUID(workoutUUID, logId) {
 export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
   const { start, end, type } = range;
 
-  let groupId;
-  let label;
+  let truncUnit;
 
   switch (type) {
     case "daily":
-      groupId = {
-        day: { $dateToString: { format: "%Y-%m-%d", date: "$executedAt" } },
-      };
-      label = "$_id.day";
+      truncUnit = "day";
       break;
-
     case "weekly":
-      groupId = {
-        weekStart: {
-          $dateTrunc: {
-            date: "$executedAt",
-            unit: "week",
-            binSize: 1,
-            timezone: "UTC",
-          },
-        },
-      };
-      label = {
-        $dateToString: {
-          format: "%Y-'W'%V",
-          date: "$_id.weekStart",
-        },
-      };
+      truncUnit = "week";
       break;
-
     case "monthly":
-      groupId = {
-        month: { $dateToString: { format: "%Y-%m", date: "$executedAt" } },
-      };
-      label = "$_id.month";
+      truncUnit = "month";
       break;
-
     default:
       throw new Error(`Unsupported range type: ${type}`);
   }
@@ -68,7 +43,20 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
       },
     },
 
-    // 🔹 Compute per-workout totals FIRST
+    // Normalize to bucket date
+    {
+      $addFields: {
+        periodStart: {
+          $dateTrunc: {
+            date: "$executedAt",
+            unit: truncUnit,
+            timezone: "UTC",
+          },
+        },
+      },
+    },
+
+    // Per-workout calculations
     {
       $addFields: {
         workoutVolume: {
@@ -85,6 +73,7 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
             },
           },
         },
+
         workoutReps: {
           $sum: {
             $map: {
@@ -95,40 +84,122 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
           },
         },
         workoutDuration: "$workoutDuration",
+        muscleVolumePairs: {
+          $filter: {
+            input: {
+              $map: {
+                input: "$exercisesSnapshot",
+                as: "ex",
+                in: {
+                  k: {
+                    $cond: [
+                      { $gt: [{ $size: { $ifNull: ["$$ex.muscles", []] } }, 0] },
+                      { $arrayElemAt: ["$$ex.muscles", 0] },
+                      null,
+                    ],
+                  },
+                  v: {
+                    $multiply: [
+                      { $ifNull: ["$$ex.reps", 0] },
+                      { $ifNull: ["$$ex.weight", 0] },
+                    ],
+                  },
+                },
+              },
+            },
+            as: "pair",
+            cond: { $ne: ["$$pair.k", null] },
+          },
+        },
       },
     },
 
-    // 🔹 Group workouts into time buckets
+    // Group per period
     {
       $group: {
-        _id: groupId,
+        _id: "$periodStart",
         workoutCount: { $sum: 1 },
         totalVolume: { $sum: "$workoutVolume" },
         totalReps: { $sum: "$workoutReps" },
         totalDuration: { $sum: "$workoutDuration" },
+        muscleVolume: { $push: "$muscleVolumePairs" },
       },
     },
 
-    // 🔹 Shape for charts
+    // Merge muscle maps
     {
-      $project: {
-        _id: 0,
-        label,
-        workoutCount: 1,
-        totalVolume: 1,
-        totalReps: 1,
-        totalDuration: 1,
-        avgWorkoutVolume: {
+      $addFields: {
+        muscleVolume: {
+          $reduce: {
+            input: "$muscleVolume",
+            initialValue: {},
+            in: {
+              $mergeObjects: [
+                "$$value",
+                {
+                  $arrayToObject: {
+                    $map: {
+                      input: "$$this",
+                      as: "m",
+                      in: [
+                        "$$m.k",
+                        {
+                          $add: [
+                            "$$m.v",
+                            {
+                              $ifNull: [
+                                { $getField: { field: "$$m.k", input: "$$value" } },
+                                0,
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+
+        avgVolumePerMinute: {
           $cond: [
-            { $eq: ["$workoutCount", 0] },
+            { $eq: ["$totalDuration", 0] },
             0,
-            { $divide: ["$totalVolume", "$workoutCount"] },
+            { $divide: ["$totalVolume", "$totalDuration"] },
           ],
         },
       },
     },
 
-    { $sort: { label: 1 } },
+    // Final projection
+    {
+      $project: {
+        _id: 0,
+        periodStart: "$_id",
+        label: {
+          $dateToString: {
+            date: "$_id",
+            format:
+              type === "daily"
+                ? "%Y-%m-%d"
+                : type === "weekly"
+                ? "%Y-'W'%V"
+                : "%Y-%m",
+          },
+        },
+
+        workoutCount: 1,
+        totalVolume: 1,
+        totalReps: 1,
+        totalDuration: 1,
+        avgVolumePerMinute: 1,
+        muscleVolume: 1,
+      },
+    },
+
+    { $sort: { periodStart: 1 } },
   ]);
 }
 

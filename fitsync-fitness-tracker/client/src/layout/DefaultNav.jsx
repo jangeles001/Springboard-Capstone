@@ -24,7 +24,6 @@ export default function DefaultNav({ links, queryEnabled = true }) {
             <img src={logo} alt="Logo" className="h-30" />
           </div>
 
-          {/* Hamburger Menu */}
           <button
           className="lg:hidden mt-auto p-2 rounded-md hover:bg-gray-200"
           onClick={() => setHamburgerOpen((prev) => !prev)}
@@ -49,7 +48,6 @@ export default function DefaultNav({ links, queryEnabled = true }) {
             <HamburgerMenu links={links} setHamburgerOpen={setHamburgerOpen} username={username} />
           }
 
-          {/* Nav links */}
           <nav className="lg:flex mt-[40px] ml-auto gap-6 min-w-min">
             <div className='hidden lg:flex gap-6'>
               {links.map((link) => (

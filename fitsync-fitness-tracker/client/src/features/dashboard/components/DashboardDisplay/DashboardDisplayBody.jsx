@@ -6,13 +6,18 @@ import { MetricChart } from "./MetricChart";
 import { buildIntensityComboChart } from "../../utils/buildIntensityChart";
 import { buildTotalVolumeChart } from "../../utils/buildTotalVolumeChart";
 import { buildWorkoutFrequencyChart } from "../../utils/buildWorkoutFrequencyChart"
-import { baseOptions, comboOptions } from "../../utils/metricChartOptions"
+import { buildDailyMacroChart } from "../../utils/buildDailyMacrosChart";
+import { buildWeeklyMacroChart } from "../../utils/buildWeeklyMacrosChart";
+import { buildMonthlyMacroChart } from "../../utils/buildMonthlyMacrosChart";
+import { baseOptions, comboOptions, FrequencyOptions, volumeOptions } from "../../utils/metricChartOptions"
 
 export function DashboardDisplayBody(){
     const { activeView, activeQuery } = useDashboardDisplayContext();
 
     if(activeQuery.isLoading) return <Loading  type="skeleton" />
     if(activeQuery.isError) return <>{console.log(activeQuery.error)}</>
+
+  console.log(activeQuery.data.data);
 
   return (
     <div className="mb-10">
@@ -29,20 +34,20 @@ export function DashboardDisplayBody(){
           <GraphCarousel interval={15000}>
             <MacroChart
             title="Daily Macros"
-            logs={activeQuery.data.data.daily.mealLogs}
+            data={buildDailyMacroChart(activeQuery.data.data.daily)}
             nutritionGoals={activeQuery.data.data.nutritionGoals}
             periodLength={1}
             type="bar"
             />
             <MacroChart
             title="Weekly Macros"
-            logs={activeQuery.data.data.weekly.mealLogs}
+            data={buildWeeklyMacroChart(activeQuery.data.data.weekly)}
             nutritionGoals={activeQuery.data.data.nutritionGoals}
             periodLength={7}
             />
             <MacroChart
             title="Monthly Macros"
-            logs={activeQuery.data.data.monthly.mealLogs}
+            data={buildMonthlyMacroChart(activeQuery.data.data.monthly)}
             nutritionGoals={activeQuery.data.data.nutritionGoals}
             periodLength={30}
             />
@@ -52,12 +57,12 @@ export function DashboardDisplayBody(){
             <MetricChart
             type="bar"
             data={buildWorkoutFrequencyChart(activeQuery.data.data.daily)}
-            options={baseOptions}
+            options={FrequencyOptions}
             />
             <MetricChart
             type="line"
             data={buildTotalVolumeChart(activeQuery.data.data.weekly)}
-            options={baseOptions}
+            options={volumeOptions}
             />
             <MetricChart
             type="combo"
