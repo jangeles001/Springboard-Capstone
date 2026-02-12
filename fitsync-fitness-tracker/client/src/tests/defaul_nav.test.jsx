@@ -66,12 +66,7 @@ describe("DefaultNav Component", () => {
       useAuthUser.mockReturnValue({ isLoading: true });
       useUsername.mockReturnValue(null);
 
-      render(<DefaultNav links={mockLinks} />);
-
-      
-      console.log('useAuthUser was called with:', useAuthUser.mock.calls);
-      console.log('useUsername returned:', useUsername());
-      console.log('Rendered HTML:', container.innerHTML);
+      render(<DefaultNav links={mockLinks} queryEnabled={true} homeURL={"/"}/>);
 
       expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
@@ -188,7 +183,7 @@ describe("DefaultNav Component", () => {
       // Click to open
       await user.click(hamburgerButton);
 
-      // Menu should now be visible
+      // Menu should now be visible 
       expect(screen.getByTestId("hamburger-menu")).toBeInTheDocument();
 
       // Click to close

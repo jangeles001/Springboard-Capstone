@@ -15,7 +15,7 @@ export default function DefaultNav({ links, queryEnabled = true, homeURL}) {
   const username = useUsername();
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
 
-  if (isLoading && !username) return <Loading type={full-page} />
+  if (isLoading && !username) return <Loading type={"full-page"} />
 
   return (
     <div className="w-full border-b bg-gray-100">

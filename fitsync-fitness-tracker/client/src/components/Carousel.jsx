@@ -71,6 +71,7 @@ export default function Carousel({ items, interval = 3000 }){
     return (
         <div className="flex relative w-full h-auto items-center overflow-hidden">
             <div
+            data-testid="carousel-track"
             className={`flex ${isTransitioning ? "transition-transform duration-500" : ""}`}
             style={{ transform: `translateX(-${activeIndex * 100}%)` }}
             onTransitionEnd={handleTransitionEnd}>
@@ -94,12 +95,14 @@ export default function Carousel({ items, interval = 3000 }){
             <button
             onClick={prevSlide}
             className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-gray-700 text-white"
+            aria-label="Previous slide"
             >
                 Prev
             </button>
             <button
             onClick={nextSlide}
             className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-gray-700 text-white"
+            aria-label="Next slide"
             >
                 Next
             </button>
