@@ -1,7 +1,7 @@
 import { useLogout } from "../hooks/useLogout";
 import { useNavigate } from "@tanstack/react-router";
 
-export default function LogoutButton({ className = "" }) {
+export default function HamburgerMenuLogoutButton({ className = "" }) {
   // Initializes the router for navigation after logout
   const navigate = useNavigate();
 
