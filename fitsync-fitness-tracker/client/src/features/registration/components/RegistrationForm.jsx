@@ -103,6 +103,7 @@ export default function RegistrationForm() {
                                 name='gender'
                                 value={gender}
                                 onChange={handleChange}
+                                aria-label='gender'
                                 >
                                     <option value="">--Please Select A Gender--</option>
                                     <option value="male">Male</option>
@@ -223,6 +224,7 @@ export default function RegistrationForm() {
                             name='promoConsent'
                             checked={promoConsent}
                             onChange={handleChange}
+                            aria-label='promoConsent'
                             />
                             <label htmlFor="promoConsent" className={`form-label`}>Agree to receive occasional promotional emails</label>
                         </div>
@@ -233,6 +235,7 @@ export default function RegistrationForm() {
                             name='agreeToTerms'
                             checked={agreeToTerms}
                             onChange={handleChange}
+                            aria-label='agreeToTerms'
                             />
                             <label htmlFor="agreeToTerms" className={`form-label ${formErrors?.agreeToTerms && !agreeToTerms && 'text-red-700'}`}>Agree to our <Link to="/legal/terms" className='hover:underline'>Terms of Service&#129133;</Link></label>
                             {hasErrors && formErrors.agreeToTerms &&
