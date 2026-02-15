@@ -32,21 +32,21 @@ export function DashboardDisplayBody(){
           <GraphCarousel interval={15000}>
             <MacroChart
             title="Daily Macros"
-            data={buildDailyMacroChart(activeQuery.data.data.daily)}
-            nutritionGoals={activeQuery.data.data.nutritionGoals}
+            data={buildDailyMacroChart(activeQuery?.data?.data?.daily ?? [])}
+            nutritionGoals={activeQuery?.data?.data?.nutritionGoals ?? []}
             periodLength={1}
             type="bar"
             />
             <MacroChart
             title="Weekly Macros"
-            data={buildWeeklyMacroChart(activeQuery.data.data.weekly)}
-            nutritionGoals={activeQuery.data.data.nutritionGoals}
+            data={buildWeeklyMacroChart(activeQuery?.data?.data?.weekly ?? [])}
+            nutritionGoals={activeQuery?.data?.data?.nutritionGoals ?? []}
             periodLength={7}
             />
             <MacroChart
             title="Monthly Macros"
-            data={buildMonthlyMacroChart(activeQuery.data.data.monthly)}
-            nutritionGoals={activeQuery.data.data.nutritionGoals}
+            data={buildMonthlyMacroChart(activeQuery?.data?.data?.monthly ?? [])}
+            nutritionGoals={activeQuery?.data?.data?.nutritionGoals ?? []}
             periodLength={30}
             />
           </GraphCarousel>
@@ -55,19 +55,19 @@ export function DashboardDisplayBody(){
             <MetricChart
             title="Daily Frequency"
             type="bar"
-            data={buildWorkoutFrequencyChart(activeQuery.data.data.daily)}
+            data={buildWorkoutFrequencyChart(activeQuery?.data?.data?.daily ?? [])}
             options={FrequencyOptions}
             />
             <MetricChart
             title="Weekly Total Volume"
             type="line"
-            data={buildTotalVolumeChart(activeQuery.data.data.weekly)}
+            data={buildTotalVolumeChart(activeQuery?.data?.data?.weekly ?? [])}
             options={volumeOptions}
             />
             <MetricChart
             title="Weekly Intensity"
             type="combo"
-            data={buildIntensityComboChart(activeQuery.data.data.weekly)}
+            data={buildIntensityComboChart(activeQuery?.data?.data?.weekly ?? [])}
             options={comboOptions}
             />
           </GraphCarousel>
