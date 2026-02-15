@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Dashboard from '../features/dashboard/components/Dashboard';
 import { DashboardDisplayHeader } from '../features/dashboard/components/DashboardDisplay/DashboardDisplayHeader';
@@ -373,27 +373,29 @@ describe('GraphCarousel Component', () => {
     expect(screen.getByLabelText('Next chart')).toBeInTheDocument();
   });
 
-  it('should advance to next slide when next button clicked', async () => {
-    // Use userEvent with no delay to ensure state updates happen immediately
-    const user = userEvent.setup({ delay: null });
+    it('should advance to next slide when next button clicked', async () => {
+      vi.useRealTimers();
+      const user = userEvent.setup();
 
-    render(
-      <GraphCarousel>
-        <div>Slide 1</div>
-        <div>Slide 2</div>
-      </GraphCarousel>
-    );
+      render(
+        <GraphCarousel>
+          <div>Slide 1</div>
+          <div>Slide 2</div>
+        </GraphCarousel>
+      );
 
-    const nextButton = screen.getByLabelText('&lt;');
-    await user.click(nextButton);
+      const track = document.querySelector('[style*="translateX"]');
+      expect(track.style.transform).toBe('translateX(-0%)');
 
-    // Both slides are always in DOM, just transformed
-    expect(screen.getByText('Slide 1')).toBeInTheDocument();
-    expect(screen.getByText('Slide 2')).toBeInTheDocument();
-  });
+      const nextButton = screen.getByLabelText('Next chart');
+      await user.click(nextButton);
+
+      expect(track.style.transform).toBe('translateX(-100%)');
+    });
 
   it('should go to previous slide when prev button clicked', async () => {
-    const user = userEvent.setup({ delay: null });
+    vi.useRealTimers();
+		const user = userEvent.setup();
 
     render(
       <GraphCarousel>
@@ -402,10 +404,21 @@ describe('GraphCarousel Component', () => {
       </GraphCarousel>
     );
 
-    const prevButton = screen.getByLabelText("&gt;");
-    await user.click(prevButton);
+  	const track = document.querySelector('[style*="translateX"]');
+  	expect(track.style.transform).toBe('translateX(-0%)');
 
-    expect(screen.getByText('Slide 1')).toBeInTheDocument();
+  	// Move to slide 1 first
+  	const nextButton = screen.getByLabelText('Next chart');
+  	await user.click(nextButton);
+  	expect(track.style.transform).toBe('translateX(-100%)');
+
+		await act( async ()=> await new Promise(resolve => setTimeout(resolve, 700)));
+
+  	const prevButton = screen.getByLabelText('Previous chart');
+  	await user.click(prevButton);
+
+  	// Now we should be back at slide 0
+  	expect(track.style.transform).toBe('translateX(-0%)');
   });
 
   it('should handle single child', () => {
@@ -427,7 +440,7 @@ describe('GraphCarousel Component', () => {
     );
 
     // Advance timers by interval
-    vi.advanceTimersByTime(1000);
+    act(() => vi.advanceTimersByTime(1000));
 
     // Both slides still in DOM
     expect(screen.getByText('Slide 1')).toBeInTheDocument();
