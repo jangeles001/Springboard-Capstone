@@ -31,7 +31,9 @@ export default function CookiesNotification() {
                         className='form-radio text-blue w-4 h-4'
                         id='All'
                         name='consent'
-                        value='All' />
+                        value='All'
+                        aria-label='allCookies' 
+                        />
                         Allow all cookies
                     </label>
                     <label htmlFor='Essential'>
@@ -40,7 +42,9 @@ export default function CookiesNotification() {
                         className='form-radio text-blue w-4 h-4'
                         id='Essential'
                         name='consent'
-                        value='Essential' />
+                        value='Essential' 
+                        aria-label='essentialCookies' 
+                        />
                         Allow only essential cookies
                     </label>
                     <label htmlFor='Decline'>
@@ -49,7 +53,9 @@ export default function CookiesNotification() {
                         className='form-radio text-blue w-4 h-4'
                         id='Decline'
                         name='consent'
-                        value='Decline' />
+                        value='Decline' 
+                        aria-label='declineCookies' 
+                        />
                         Decline all cookies
                     </label><br></br>
                     <button className="border-2 hover:border-blue-800" type='submit'>Continue</button>

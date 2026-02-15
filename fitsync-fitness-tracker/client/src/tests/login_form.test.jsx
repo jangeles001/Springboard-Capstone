@@ -55,7 +55,10 @@ describe('LoginForm Component', () => {
     it('should render email input field', () => {
       render(<LoginForm />);
 
+      // Get the email input by its placeholder text
       const emailInput = screen.getByPlaceholderText('Email');
+
+      // Check that the email input is rendered and has the correct type
       expect(emailInput).toBeInTheDocument();
       expect(emailInput).toHaveAttribute('type', 'text');
     });
@@ -63,12 +66,16 @@ describe('LoginForm Component', () => {
     it('should render password input field', () => {
       render(<LoginForm />);
 
+      // Get the password input by its placeholder text
       const passwordInput = screen.getByPlaceholderText('Password');
+
+      // Check that the password input is rendered and has the correct type (password)
       expect(passwordInput).toBeInTheDocument();
       expect(passwordInput).toHaveAttribute('type', 'password');
     });
 
     it('should render password as text when passwordVisible is true', () => {
+      // Update the mock to set passwordVisible to true
       useLoginForm.mockReturnValue({
         ...mockFormData,
         passwordVisible: true,
@@ -76,50 +83,64 @@ describe('LoginForm Component', () => {
 
       render(<LoginForm />);
 
+      // Get the password input by its placeholder text
       const passwordInput = screen.getByPlaceholderText('Password');
+
+      // Check that the password input type changes to text when passwordVisible is true
       expect(passwordInput).toHaveAttribute('type', 'text');
     });
 
     it('should render password visibility toggle button', () => {
       render(<LoginForm />);
 
+      // Get the toggle button by finding the button that contains an SVG (the eye icon)
       const buttons = screen.getAllByRole('button');
       const toggleButton = buttons.find(btn => btn.querySelector('svg'));
 
+      // Check that the toggle button is rendered and has the correct aria-label
       expect(toggleButton).toBeInTheDocument();
+      expect(toggleButton).toHaveAttribute('aria-label', 'Toggle password visibility');
     });
 
     it('should render ReCAPTCHA component', () => {
       render(<LoginForm />);
 
+      // Check that the mocked ReCAPTCHA component is rendered by looking for the test ID
       expect(screen.getByTestId('recaptcha-mock')).toBeInTheDocument();
     });
 
     it('should render login submit button', () => {
       render(<LoginForm />);
 
+      // Get the login button by its role and name
       const loginButton = screen.getByRole('button', { name: /login/i });
+
+      // Check that the login button is rendered
       expect(loginButton).toBeInTheDocument();
     });
 
     it('should render Email label', () => {
       render(<LoginForm />);
 
+      // Check that the Email label is rendered
       expect(screen.getByText('Email')).toBeInTheDocument();
     });
 
     it('should render Password label', () => {
       render(<LoginForm />);
 
+      // Check that the Password label is rendered
       expect(screen.getByText('Password')).toBeInTheDocument();
     });
   });
 
   describe('User Interactions', () => {
     it('should call handleChange when typing in email field', async () => {
+      // Set up user event and mock handleChange function
       const user = userEvent.setup();
       const mockHandleChange = vi.fn();
 
+      // Update the mock to use the mock handleChange function
       useLoginForm.mockReturnValue({
         ...mockFormData,
         handleChange: mockHandleChange,
@@ -127,9 +148,13 @@ describe('LoginForm Component', () => {
 
       render(<LoginForm />);
 
+      // Get the email input and type into it
       const emailInput = screen.getByPlaceholderText('Email');
+
+      // Simulate typing an email address into the input field
       await user.type(emailInput, 'test@example.com');
 
+      // Check that the mock handleChange function was called
       expect(mockHandleChange).toHaveBeenCalled();
     });
 

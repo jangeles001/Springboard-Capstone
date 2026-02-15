@@ -56,6 +56,7 @@ export default function LoginForm() {
                                 className={passwordVisible ? 
                                     `bg-gray-200 border h-min mt-auto rounded-md shadow-sm hover:opacity-90 transition p-2` : 
                                     `border rounded-md h-min mt-auto shadow-sm p-2 hover:bg-gray-200 hover:opacity-90 transition`}
+                                aria-label="Toggle password visibility"
                                 >
                                     <svg
                                     className="h-6 w-6"

@@ -40,7 +40,7 @@ describe('CookiesNotification Component', () => {
     // Mock navigator.cookieEnabled
     Object.defineProperty(navigator, 'cookieEnabled', {
       writable: true,
-      value: true,
+      value: true,  
     });
   });
 
@@ -53,9 +53,9 @@ describe('CookiesNotification Component', () => {
     render(<CookiesNotification />);
 
     expect(screen.getByText(/This website uses cookies/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Allow all cookies/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Allow only essential cookies/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Decline all cookies/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/allCookies/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/essentialCookies/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/declineCookies/i)).toBeInTheDocument();
   });
 
   it('should not render if consent already given', () => {
@@ -97,7 +97,7 @@ describe('CookiesNotification Component', () => {
     render(<CookiesNotification />);
 
     // Select "Allow all cookies"
-    const allRadio = screen.getByLabelText(/Allow all cookies/i);
+    const allRadio = screen.getByLabelText(/allCookies/i);
     await user.click(allRadio);
 
     // Submit form
