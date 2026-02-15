@@ -33,7 +33,7 @@ export function DashboardDisplayFooter(){
                 <h4 key={rec.exerciseName} className="font-bold">{rec.exerciseName}</h4>
                 <p key={`rec.description-${rec.exerciseName}`}><span className="font-semibold">Description: </span>{`${rec.description}`}</p>
                 <p key={`rec.reasoning-${rec.exerciseName}`}><span className="font-semibold">Reasoning: </span>{`${rec.reasoning}`}</p>
-                <p key={`rec.index-${rec.exerciseName}`}><span className="font-semibold">Target Muscles: </span>{rec.targetMuscles.join(', ')}</p>
+                <p key={`rec.index-${rec.exerciseName}`} aria-label="target-muscles"><span className="font-semibold">Target Muscles: </span>{rec.targetMuscles.join(', ')}</p>
                 <br></br>
               </div>
             ))}

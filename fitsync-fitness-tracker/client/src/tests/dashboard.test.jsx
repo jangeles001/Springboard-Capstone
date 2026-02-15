@@ -198,22 +198,20 @@ describe('DashboardDisplayHeader Component', () => {
 describe('DashboardDisplayFooter Component', () => {
   const mockRecommendations = {
     data: {
-      data: {
-        insights: {
-          muscleImbalances: 'Your chest is underdeveloped',
-          progressionTips: 'Focus on compound movements',
-        },
-        recommendations: [
-          {
-            exerciseName: 'Bench Press',
-            description: 'Great for chest development',
-            reasoning: 'Targets your weak area',
-            targetMuscles: ['chest', 'triceps'],
-          },
-        ],
+      insights: {
+        muscleImbalances: 'Your chest is underdeveloped',
+        progressionTips: 'Focus on compound movements',
       },
+      recommendations: [
+        {
+          exerciseName: 'Bench Press',
+          description: 'Great for chest development',
+          reasoning: 'Targets your weak area',
+          targetMuscles: ['chest', 'triceps'],
+        },
+      ],
     },
-  };
+  }
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -287,6 +285,7 @@ describe('DashboardDisplayFooter Component', () => {
 
     render(<DashboardDisplayFooter />);
 
+    expect(screen.getByText(/target muscles:/i)).toBeInTheDocument();
     expect(screen.getByText(/chest, triceps/i)).toBeInTheDocument();
   });
 
@@ -375,6 +374,7 @@ describe('GraphCarousel Component', () => {
   });
 
   it('should advance to next slide when next button clicked', async () => {
+    // Use userEvent with no delay to ensure state updates happen immediately
     const user = userEvent.setup({ delay: null });
 
     render(
@@ -384,7 +384,7 @@ describe('GraphCarousel Component', () => {
       </GraphCarousel>
     );
 
-    const nextButton = screen.getByLabelText('Next chart');
+    const nextButton = screen.getByLabelText('&lt;');
     await user.click(nextButton);
 
     // Both slides are always in DOM, just transformed
@@ -402,7 +402,7 @@ describe('GraphCarousel Component', () => {
       </GraphCarousel>
     );
 
-    const prevButton = screen.getByLabelText('Previous chart');
+    const prevButton = screen.getByLabelText("&gt;");
     await user.click(prevButton);
 
     expect(screen.getByText('Slide 1')).toBeInTheDocument();
