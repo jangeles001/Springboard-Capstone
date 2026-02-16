@@ -4,10 +4,12 @@ export function DashboardDisplayHeader(){
     const { activeView, handleActiveChange, workoutQuery, nutritionQuery } = useDashboardDisplayContext();
 
   return (
-    <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm border">
+    <div 
+    className="mb-8 rounded-2xl bg-white p-6 shadow-sm border"
+    data-testid="dashboard-display-header"
+    >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-        {/* Title */}
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">
             Progress Insights
@@ -17,7 +19,6 @@ export function DashboardDisplayHeader(){
           </p>
         </div>
 
-        {/* Toggle Buttons between Nutrition and Workouts */}
         <div className="flex gap-2">
           <button
             disabled={nutritionQuery.isLoading}

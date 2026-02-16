@@ -18,7 +18,10 @@ export function DashboardDisplayBody(){
     if(activeQuery.isError) return <>{console.log(activeQuery.error)}</>
 
   return (
-    <div className="mb-10">
+    <div 
+    className="mb-10"
+    data-testid="dashboard-display-body"
+    >
       <div className="rounded-2xl border bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">

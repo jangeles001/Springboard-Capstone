@@ -4,7 +4,10 @@ export function DashboardDisplayFooter(){
   const { recommendationsQuery } = useDashboardDisplayContext();
   
   return (
-    <div className="rounded-2xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+    <div 
+    className="rounded-2xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6"
+    data-testid="dashboard-display-footer"
+    >
       <h3 className="text-lg font-semibold text-gray-900 mb-2">
         AI Coach Insights
       </h3>
