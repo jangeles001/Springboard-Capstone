@@ -504,6 +504,7 @@ describe('GraphCarousel Component', () => {
       </GraphCarousel>
     );
 
+    // Select the track element that has the translateX style for slide movement
     const track = screen.getByTestId('graph-carousel-track');
     
     // Check initial position is at the first slide
