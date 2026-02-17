@@ -29,8 +29,9 @@ export default function IngredientItem({ item, getIngredientField, handleRemoveC
                             if(e.target.value.length === 3 && e.code !== "Backspace")
                                 e.preventDefault();
                             return;
-                        }
+                        }   
                     }
+                    data-testid={`quantity-input-${item.ingredientId}`}
                     />
                     </FormField>
                 </span>

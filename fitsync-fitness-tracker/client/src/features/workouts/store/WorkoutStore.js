@@ -11,12 +11,12 @@ const validators = {
   workoutName: [
     (value) => (!value ? "A workout name is required!" : ""),
     (value) =>
-      (value?.length < 2 ? "Workout names must be at least 2 characters!" : ""),
+      (value?.length < 4 ? "Workout names must be at least 4 characters!" : ""),
   ],
   workoutDuration: [
     (value) => (!value ? "Workout duration is required!" : "")],
   exercises: [
-    (value) => value.length < 0 ? "Workout must have at least one exercise" : "",
+    (value) => value.length < 1 ? "Workout must have at least one exercise" : "",
   ],
 };
 
@@ -27,6 +27,7 @@ const useWorkoutStore = create((set, get) => ({
   totalWorkouts: null, // grab total user workouts count from api.
   formErrors: {},
   isValid: false,
+
   actions: {
     setFormField: (field, value) => 
       set((state) => ({
@@ -34,7 +35,14 @@ const useWorkoutStore = create((set, get) => ({
           ...state.createdWorkout,
           [field]: value
         }
-      })),
+      }
+    )),
+    // Sets formErrors state via updater function or direct value
+    setFormErrors: (updater) =>
+      set((state) => ({
+        formErrors:
+          typeof updater === "function" ? updater(state.formErrors) : updater
+    })),
     setExerciseInformation: (id, fields) => 
       set((state) => ({
         createdWorkout: {
@@ -79,7 +87,7 @@ const useWorkoutStore = create((set, get) => ({
 
       set({ formErrors, isValid });
 
-      return { isValid, formErrors };
+      return { isValid };
     },
     resetCreatedWorkout: () => set({ createdWorkout: initialWorkoutData }),
   },

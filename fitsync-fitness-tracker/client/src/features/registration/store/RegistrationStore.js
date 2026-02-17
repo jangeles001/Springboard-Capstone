@@ -107,8 +107,12 @@ const useRegisterFormStore = create((set, get) => ({
           [field]: value,
         },
       })),
-    // Sets formErrors array to equal the provided errors
-    setFormErrors: (errors) => set({ formErrors: errors }),
+    // Sets formErrors state via updater function or direct value
+    setFormErrors: (updater) =>
+      set((state) => ({
+        formErrors:
+          typeof updater === "function" ? updater(state.formErrors) : updater
+    })),
     // Resets fields in the form that contains errors
     resetFormData: (formErrors) => {
       set((state) => {

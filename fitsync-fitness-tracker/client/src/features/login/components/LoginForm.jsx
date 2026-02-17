@@ -18,6 +18,7 @@ export default function LoginForm() {
         isLoading,
         handleChange,
         handlePasswordToggle,
+        handleRecaptchaChange,
         handleSubmit
     } = useLoginForm({
         onSuccessFunction: () => router.navigate({ to: '/dashboard/'})
@@ -94,13 +95,18 @@ export default function LoginForm() {
                                     {error.response.data.message}
                                 </p>
                         }
+                        { formErrors?.reCaptchaError &&
+                            <p className='text-red-700 text-sm mt-5'>
+                                {formErrors.reCaptchaError}
+                            </p>
+                        }
                     </div>
                     <ReCAPTCHA
                     sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                     ref={recaptchaRef}
-                    onChange={(value) => setCaptchaValue(value)}
+                    onChange={(value) => handleRecaptchaChange(value)}
                     className='mt-[10px]'
-                    /> 
+                    />
                     <div className="col-span-1 md:col-span-1 flex justify-center mt-5 max-h-20">
                         <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100' disabled={isLoading}>Login</button>
                     </div>

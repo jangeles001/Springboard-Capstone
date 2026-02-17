@@ -3,8 +3,9 @@ import { FormField }  from "../../../../components/FormField"
 import { FormInput } from "../../../../components/FormInput"
 
 export function WorkoutsBuilderHeader() {
-  const { nameError, workoutName, workoutDuration, handleFieldChange } = useWorkoutsBuilderContext();
+  const { workoutName, formErrors, workoutDuration, handleFieldChange } = useWorkoutsBuilderContext();
 
+  console.log(formErrors);
   return (
     <div className="border-b pb-6">
       <h2 className="mb-4 text-xl font-semibold text-gray-900">
@@ -15,13 +16,13 @@ export function WorkoutsBuilderHeader() {
         <FormField
           name="workoutName"
           label="Workout Name"
-          formError={nameError}
+          formError={formErrors?.workoutName}
         >
           <FormInput
           name="workoutName"
           inputType="text"
           inputValue={workoutName}
-          inputErrors={nameError}
+          inputErrors={formErrors?.workoutName}
           handleChange={handleFieldChange}
           placeholder="Push Day, Leg Day..."
           maxLength="25"
@@ -30,13 +31,13 @@ export function WorkoutsBuilderHeader() {
         <FormField
           name="workoutDuration"
           label="Duration (min)"
-          formError={nameError}
+          formError={formErrors?.workoutDuration}
         >
           <FormInput
             name="workoutDuration"
             inputType="number"
             inputValue={workoutDuration}
-            inputErrors={nameError}
+            inputErrors={formErrors?.workoutDuration}
             handleChange={handleFieldChange}
             placeholder="0"
           />

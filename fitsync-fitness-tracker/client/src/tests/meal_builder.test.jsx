@@ -598,6 +598,7 @@ describe('IngredientItem Component', () => {
     handleRemoveClick: vi.fn(),
     handleIngredientQuantityChange: vi.fn(),
     formErrors: null,
+    dataTestId: `quantity-input-${mockItem.ingredientId}`,
   };
 
   beforeEach(() => {
@@ -635,19 +636,33 @@ describe('IngredientItem Component', () => {
   });
 
   it('should call handleIngredientQuantityChange when quantity changes', async () => {
+    // Set up user event and mock handleIngredientQuantityChange function
     const user = userEvent.setup();
-    const mockQuantityChange = vi.fn();
 
+    // Simulate the parent state update that would occur when handleIngredientQuantityChange is called
+    let value = 200;
+    const getIngredientField = vi.fn(() => value);
+    const mockQuantityChange = vi.fn((id, newValue) => {
+      value = newValue; // simulate parent state update
+    });
+
+    // Re-render component with updated getIngredientField to reflect state change
     render(
       <IngredientItem
         {...defaultProps}
+        getIngredientField={getIngredientField}
         handleIngredientQuantityChange={mockQuantityChange}
       />
     );
 
-    const quantityInput = screen.getByPlaceholderText('');
+    // Find the quantity input using the data-testid
+    const quantityInput = screen.getByTestId(`quantity-input-${mockItem.ingredientId}`);
+
+    // Clear the input and type a new value
+    await user.clear(quantityInput);
     await user.type(quantityInput, '5');
 
+    // Check that handleIngredientQuantityChange was called with the correct arguments
     expect(mockQuantityChange).toHaveBeenCalled();
   });
 

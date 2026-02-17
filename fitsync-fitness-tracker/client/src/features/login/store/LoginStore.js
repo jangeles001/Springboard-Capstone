@@ -24,9 +24,12 @@ const useLoginFormStore = create((set, get) => ({
           [field]: value,
         },
       })),
-    // Sets formErrors state
-    setFormErrors: (errors) => 
-      set({formErrors: errors}),
+    // Sets formErrors state via updater function or direct value
+    setFormErrors: (updater) =>
+      set((state) => ({
+        formErrors:
+          typeof updater === "function" ? updater(state.formErrors) : updater
+    })),
     // Resets form data and errors
     resetForm: () => {
       set({

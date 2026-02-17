@@ -45,6 +45,7 @@ describe('LoginForm Component', () => {
     handleChange: vi.fn(),
     handlePasswordToggle: vi.fn(),
     handleSubmit: vi.fn((e) => e.preventDefault()),
+    handleRecaptchaChange: vi.fn(),
   };
 
   beforeEach(() => {
@@ -204,25 +205,21 @@ describe('LoginForm Component', () => {
       expect(mockPasswordToggle).toHaveBeenCalled(1);
     });
 
-    it('should call setCaptchaValue when ReCAPTCHA is completed', async () => {
-      // Set up user event and mock setCaptchaValue function
+    it('should call handleRecaptchaChange when ReCAPTCHA is completed', async () => {
       const user = userEvent.setup();
-      const mockSetCaptchaValue = vi.fn();
-
-      // Update the mock to use the mock setCaptchaValue function
+    
+      const mockHandleRecaptchaChange = vi.fn();
+    
       useLoginForm.mockReturnValue({
         ...mockFormData,
-        setCaptchaValue: mockSetCaptchaValue,
+        handleRecaptchaChange: mockHandleRecaptchaChange,
       });
-
+    
       render(<LoginForm />);
-
-      // Simulate completing the ReCAPTCHA by clicking the trigger button
-      const captchaTrigger = screen.getByTestId('recaptcha-trigger');
-      await user.click(captchaTrigger);
-
-      // Check that the mock setCaptchaValue function was called with the expected token
-      expect(mockSetCaptchaValue).toHaveBeenCalledWith('mock-captcha-token');
+    
+      await user.click(screen.getByTestId('recaptcha-trigger'));
+    
+      expect(mockHandleRecaptchaChange).toHaveBeenCalledWith('mock-captcha-token');
     });
 
     it('should call handleSubmit when form is submitted', async () => {

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import {
   useCreatedWorkout,
@@ -5,13 +6,11 @@ import {
   useWorkoutActions,
 } from "../store/WorkoutStore";
 import { api } from "../../../services/api";
-import { usePublicId } from "../../../store/UserStore";
 
 export default function useWorkouts() {
   // Store state selector
   const createdWorkout = useCreatedWorkout();
   const formErrors = useFormErrors();
-  const publicId = usePublicId();
 
   // Store actions selector
   const {
@@ -20,6 +19,7 @@ export default function useWorkouts() {
     removeFromCreatedWorkout,
     resetCreatedWorkout,
     validateCreatedWorkout,
+    setFormErrors,
   } = useWorkoutActions();
 
   // Local State
@@ -27,6 +27,7 @@ export default function useWorkouts() {
     Weight: ["lbs"],
     Duration: ["sec"],
   };
+  const [hasErrors, setHasErrors] = useState(false); // Holds value for both client and mutation errors.
 
   const mutation = useMutation({
     mutationFn: (workout) => {
@@ -40,11 +41,18 @@ export default function useWorkouts() {
     },
   });
 
-  // Changes the workout name
+  // Changes the value of the workout name and duration fields in the store
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
     setFormField(name, value);
-    if (Object.keys(formErrors).includes(name)) delete formErrors[name];
+
+    // If there is an error message for the field being updated, remove it from the formErrors state
+    if (Object.keys(formErrors).includes(name)) {
+      setFormErrors(prev => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+    })};
   };
 
   const handleExerciseInformationChange = (e, id, field) => {
@@ -57,12 +65,15 @@ export default function useWorkouts() {
     removeFromCreatedWorkout(id);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!createdWorkout.exercises) return;
 
-    const { isValid } = validateCreatedWorkout();
-    if (!isValid) return;
+    // Runs validation logic from the store
+    const { isValid } = await validateCreatedWorkout();
+    if (!isValid) {
+      setHasErrors(true);
+      return;
+    }
 
     const normalizedeExercises = createdWorkout.exercises.map((exercise) => {
       return {
@@ -95,6 +106,7 @@ export default function useWorkouts() {
     workoutName: createdWorkout.workoutName,
     workoutDuration: createdWorkout.workoutDuration,
     UNIT_OPTIONS,
+    formErrors,
     handleFieldChange,
     handleExerciseInformationChange,
     handleRemove,

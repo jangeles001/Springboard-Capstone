@@ -34,8 +34,14 @@ export function useLoginForm({ onSuccessFunction }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormField(name, value);
-    if (formErrors)
-      if (Object.keys(formErrors).includes(name)) delete formErrors[name];
+
+    // If there is an error message for the field being updated, remove it from the formErrors state
+    if (Object.keys(formErrors).includes(name)) {
+      setFormErrors(prev => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+    })};
   };
 
   // Handles password visibility toggle
@@ -43,6 +49,17 @@ export function useLoginForm({ onSuccessFunction }) {
     e.preventDefault();
     setPasswordVisible((state) => !state);
   };
+
+  const handleRecaptchaChange = (value) => {
+    setCaptchaValue(value);
+    if (formErrors?.reCaptchaError) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next.reCaptchaError;
+        return next;
+      });
+    }
+  }
 
   // Validates and submit the form
   const handleSubmit = async (e) => {
@@ -58,10 +75,11 @@ export function useLoginForm({ onSuccessFunction }) {
     }
 
     if (!captchaValue) {
-      setFormErrors((prev) => ({
-        ...prev,
-        reCaptchaError: "Please complete the reCAPTCHA verification.",
-      }));
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        next.reCaptchaError = "Please complete the reCAPTCHA verification.";
+        return next;
+      });
       setHasErrors(true);
       return;
     }
@@ -105,6 +123,7 @@ export function useLoginForm({ onSuccessFunction }) {
     hasErrors,
     handleChange,
     handlePasswordToggle,
+    handleRecaptchaChange,
     handleSubmit,
   };
 }

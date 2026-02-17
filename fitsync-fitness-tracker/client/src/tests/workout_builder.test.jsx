@@ -36,25 +36,50 @@ vi.mock('../../../../components/CategoryDropdown', () => ({
 
 import { useExercises } from '../features/workouts/hooks/useExercises';
 import useWorkouts from '../features/workouts/hooks/useWorkouts';
-import { useWorkoutsBuilderContext } from '../features/workouts/hooks/useWorkoutsBuilder';
+import { WorkoutsBuilderContext } from '../features/workouts/components/WorkoutsBuilder/WorkoutsBuilderContext';
 
 describe('WorkoutBuilderPage Component', () => {
   // Clear all mocks and reset mock values before each test
   beforeEach(() => {
     vi.clearAllMocks();
+
     useExercises.mockReturnValue({
       error: null,
-			nameError: null,
+      nameError: null,
       response: [],
       status: 'success',
       loadData: vi.fn(),
       loadByCategory: vi.fn(),
       handleSubmit: vi.fn(),
     });
+
+    useWorkouts.mockReturnValue({
+      createdWorkout: {
+        workoutName: '',
+        workoutDuration: '',
+        exercises: [],
+      },
+      workoutName: '',
+      workoutDuration: '',
+      UNIT_OPTIONS: { Weight: ['lbs'], Duration: ['sec'] },
+
+      handleFieldChange: vi.fn(),
+      handleExerciseInformationChange: vi.fn(),
+      handleRemove: vi.fn(),
+      handleSubmit: vi.fn(),
+   });
   });
 
+  function renderPage() {
+  return render(
+    <WorkoutsBuilderContext.Provider>
+      <WorkoutBuilderPage />
+    </WorkoutsBuilderContext.Provider>
+  );
+}
+
   it('should render both main sections', () => {
-    render(<WorkoutBuilderPage />);
+    renderPage();
 
 		// Gets container 
     const containers = screen.getAllByRole('generic');

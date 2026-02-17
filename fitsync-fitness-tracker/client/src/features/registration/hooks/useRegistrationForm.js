@@ -44,11 +44,17 @@ export function useRegistrationForm({ onSuccessFunction }) {
     mutationFn: (formData) => register(formData),
   });
 
-  // Updates a specific field in the form store when an input changes
   const handleChange = (e) => {
-    const { name, type, value, checked } = e.target;
-    setFormField(name, type === "checkbox" ? checked : value);
-    if (Object.keys(formErrors).includes(name)) delete formErrors[name];
+    const { name, value } = e.target;
+    setFormField(name, value);
+
+    // If there is an error message for the field being updated, remove it from the formErrors state
+    if (Object.keys(formErrors).includes(name)) {
+      setFormErrors(prev => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+    })};
   };
 
   // Toggles the visibility of the password input field
