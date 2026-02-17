@@ -39,21 +39,24 @@ import useWorkouts from '../features/workouts/hooks/useWorkouts';
 import { useWorkoutsBuilderContext } from '../features/workouts/hooks/useWorkoutsBuilder';
 
 describe('WorkoutBuilderPage Component', () => {
+  // Clear all mocks and reset mock values before each test
   beforeEach(() => {
     vi.clearAllMocks();
     useExercises.mockReturnValue({
       error: null,
+			nameError: null,
       response: [],
       status: 'success',
       loadData: vi.fn(),
       loadByCategory: vi.fn(),
-      handleClick: vi.fn(),
+      handleSubmit: vi.fn(),
     });
   });
 
   it('should render both main sections', () => {
     render(<WorkoutBuilderPage />);
 
+		// Gets container 
     const containers = screen.getAllByRole('generic');
     expect(containers.length).toBeGreaterThan(0);
   });

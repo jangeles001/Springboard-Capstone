@@ -8,7 +8,7 @@ export function WorkoutsBuilderComposer({ children }) {
           <div className="flex h-min flex-col rounded-2xl border bg-white shadow-sm">
 
             <form
-              onSubmit={workouts.handleSubmit}
+              onSubmit={workouts?.handleSubmit}
               className="flex flex-1 flex-col gap-6 p-6"
             >
               {children}

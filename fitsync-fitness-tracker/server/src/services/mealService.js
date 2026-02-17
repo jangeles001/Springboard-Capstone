@@ -103,7 +103,7 @@ export async function deleteMeal(publicId, mealId) {
       mealMacros: meal.mealMacros,
     }),
     mealRepo.deleteOneMealById(mealId),
-    mealLogRepo.updateDeletedMealLogStatus(publicId, mealId, true),
+    mealLogRepo.updateDeletedMealLogStatus(mealId, true),
   ]);
 }
 

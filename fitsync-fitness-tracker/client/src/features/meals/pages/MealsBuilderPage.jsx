@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { MealsForm } from './MealsForm/index'
+import { MealsForm } from '../components/MealsForm/index'
 
-export default function MealsBuilder() {
+export default function MealsBuilderPage() {
 
-    const [ isOpen, setIsOpen ] = useState(false); // State for dropdown
+  const [ isOpen, setIsOpen ] = useState(false); // State for dropdown
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
@@ -31,7 +31,6 @@ export default function MealsBuilder() {
           <MealsForm.Footer />
         </MealsForm>
       </div>
-
     </div>
   );
 }
