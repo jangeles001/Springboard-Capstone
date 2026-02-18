@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WorkoutBuilderPage } from '../features/workouts/pages/WorkoutBuilderPage';
-import { WorkoutsBuilderForm } from '../features/workouts/components/WorkoutsBuilderForm';
 import ExerciseLibrary from '../features/workouts/components/WorkoutsBuilder/ExerciseLibrary';
 import { WorkoutsBuilderHeader } from '../features/workouts/components/WorkoutsBuilder/WorkoutsBuilderHeader';
 import { WorkoutsBuilderSubmitButton } from '../features/workouts/components/WorkoutsBuilder/WorkoutsBuilderSubmitButton';

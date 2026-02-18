@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginForm from '../features/login/components/LoginForm';
-import React from 'react';
 
 // Mock dependencies
 vi.mock('@tanstack/react-router', () => ({
