@@ -1,5 +1,5 @@
 import { useExercises } from "../../hooks/useExercises";
-import CategoryDropdown  from '../../../../components/CategoryDropdown'
+import CategoryDropdown  from './CategoryDropdown'
 import Loading from "../../../../components/Loading";
 
 export default function ExerciseLibrary() {
@@ -15,14 +15,20 @@ export default function ExerciseLibrary() {
         } = useExercises();
 
     return (
-      <div className='  flex flex-col flex-[2] rounded-2xl border shadow-sm bg-white p-5'>
+      <div 
+      className='flex flex-col flex-[2] rounded-2xl border shadow-sm bg-white p-5'
+      data-testid='library-container'
+      >
         <div className='flex flex-col md:flex-row items-center'>
           <h2 className="text-2xl font-semibold text-gray-900">
             Exercise Library
           </h2>
           <CategoryDropdown onChange={loadByCategory} isLoading={status} style='ml-auto'/>
         </div>
-        <div className='flex flex-col items-center w-full gap-6 pt-4 hover:cursor-pointer'>
+        <div 
+        className='flex flex-col items-center w-full gap-6 pt-4 hover:cursor-pointer'
+        data-testid='library'
+        >
           {status !== "success" ? <Loading type='content-only' /> : response?.map((exercise) => {
             return (
               <div key={exercise.id}
@@ -31,7 +37,7 @@ export default function ExerciseLibrary() {
               >
                 <h1 className='font-bold'>{exercise?.translations?.[0]?.name?.toUpperCase() || `Exercise #${exercise.id}`}</h1>
                 <h2>Exercise Category: {exercise?.category?.name}</h2>
-                <p>{exercise.translations?.[0]?.description.replace(/<[^>]*>/g, "") || "No Description Provided"}</p>
+                <p>{exercise.translations?.[0]?.description?.replace(/<[^>]*>/g, "") || "No Description Provided"}</p>
               </div> 
             )})
           }

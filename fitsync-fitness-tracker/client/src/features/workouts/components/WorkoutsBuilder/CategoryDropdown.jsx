@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useCategories, useCategoriesError, useCategoryActions, useCategoriesStatus } from '../store/CategoryStore'
+import { useCategories, useCategoriesError, useCategoryActions, useCategoriesStatus } from '../../store/CategoryStore'
 
 export default function CategoryDropdown({ onChange, isLoading, style}) {
     // Store state slices
@@ -21,15 +21,19 @@ export default function CategoryDropdown({ onChange, isLoading, style}) {
     }
 
     return (
-        <div className={style}>
+        <div 
+        className={style}
+        data-testid='category-dropdown'
+        >
             <label htmlFor='categories' className='p-2'>Category Filter:</label>
             <select
-            disabled={state !== "success" && isLoading !== "success"}
+            id='categories'
+            name='categories'
+            disabled={state !== "success" || isLoading === true || error}
             onChange={(e) => {
                 setAndFetch(e.target.value);
             }}
             type='text'
-            name='categories'
             className='ml-auto border-1 rounded w-30 p-1'
             >
                 <option value="">

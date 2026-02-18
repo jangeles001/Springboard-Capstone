@@ -1,6 +1,8 @@
 export default function Loading({ type }){
     return (
-        <>
+        <div
+        data-testid='loading'
+        >
             { type === 'skeleton' && 
                 <div 
                 className="animate-pulse space-y-4 p-6 bg-white shadow rounded-2xl h-full w-full"
@@ -57,7 +59,7 @@ export default function Loading({ type }){
                     </div>
                 </div>
             }
-        </>
+        </div>
 
         
 

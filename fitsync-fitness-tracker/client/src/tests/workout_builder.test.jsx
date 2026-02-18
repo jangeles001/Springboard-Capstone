@@ -24,66 +24,75 @@ vi.mock('../../../../components/Loading', () => ({
   default: ({ type }) => <div data-testid="loading">Loading...</div>,
 }));
 
-vi.mock('../../../../components/CategoryDropdown', () => ({
-  default: ({ onChange, isLoading, style }) => (
-    <select data-testid="category-dropdown" onChange={onChange} disabled={isLoading}>
-      <option value="">All Categories</option>
-      <option value="10">Arms</option>
-      <option value="8">Legs</option>
-    </select>
-  ),
+vi.mock('../features/workouts/store/CategoryStore.js', () => ({
+  useCategories: vi.fn(),
+  useCategoriesStatus: vi.fn(),
+  useCategoriesError: vi.fn(),
+  useCategoryActions: vi.fn(),
 }));
 
+import CategoryDropdown from '../features/workouts/components/WorkoutsBuilder/CategoryDropdown';
+import {
+  useCategories,
+  useCategoriesStatus,
+  useCategoriesError,
+  useCategoryActions,
+} from '../features/workouts/store/CategoryStore';
 import { useExercises } from '../features/workouts/hooks/useExercises';
 import useWorkouts from '../features/workouts/hooks/useWorkouts';
-import { WorkoutsBuilderContext } from '../features/workouts/components/WorkoutsBuilder/WorkoutsBuilderContext';
+import { useWorkoutsBuilderContext } from '../features/workouts/hooks/useWorkoutsBuilder';
 
-describe('WorkoutBuilderPage Component', () => {
-  // Clear all mocks and reset mock values before each test
-  beforeEach(() => {
-    vi.clearAllMocks();
+// ✅ GLOBAL beforeEach - applies to ALL tests in this file
+beforeEach(() => {
+  vi.clearAllMocks();
 
-    useExercises.mockReturnValue({
-      error: null,
-      nameError: null,
-      response: [],
-      status: 'success',
-      loadData: vi.fn(),
-      loadByCategory: vi.fn(),
-      handleSubmit: vi.fn(),
-    });
-
-    useWorkouts.mockReturnValue({
-      createdWorkout: {
-        workoutName: '',
-        workoutDuration: '',
-        exercises: [],
-      },
-      workoutName: '',
-      workoutDuration: '',
-      UNIT_OPTIONS: { Weight: ['lbs'], Duration: ['sec'] },
-
-      handleFieldChange: vi.fn(),
-      handleExerciseInformationChange: vi.fn(),
-      handleRemove: vi.fn(),
-      handleSubmit: vi.fn(),
-   });
+  // Default store mocks for ALL tests
+  useCategories.mockReturnValue([
+    { id: 1, name: 'Arms' },
+    { id: 2, name: 'Legs' },
+    { id: 3, name: 'Chest' },
+  ]);
+  useCategoriesStatus.mockReturnValue('success');
+  useCategoriesError.mockReturnValue(null);
+  useCategoryActions.mockReturnValue({
+    fetchCategories: vi.fn(),
   });
 
-  function renderPage() {
-  return render(
-    <WorkoutsBuilderContext.Provider>
-      <WorkoutBuilderPage />
-    </WorkoutsBuilderContext.Provider>
-  );
-}
+  useExercises.mockReturnValue({
+    error: null,
+    response: [],
+    status: 'success',
+    loadData: vi.fn(),
+    loadByCategory: vi.fn(),
+    handleClick: vi.fn(),
+  });
 
+  useWorkouts.mockReturnValue({
+    workoutName: '',
+    workoutDuration: '',
+    formErrors: {},
+    handleFieldChange: vi.fn(),
+    handleSubmit: vi.fn(),
+    createdWorkout: { exercises: [] },
+  });
+
+  useWorkoutsBuilderContext.mockReturnValue({
+    workoutName: '',
+    workoutDuration: '',
+    formErrors: {},
+    handleFieldChange: vi.fn(),
+    handleSubmit: vi.fn(),
+    createdWorkout: { exercises: [] },
+  });
+});
+
+describe('WorkoutBuilderPage Component', () => {
   it('should render both main sections', () => {
-    renderPage();
+    render(<WorkoutBuilderPage />);
 
-		// Gets container 
-    const containers = screen.getAllByRole('generic');
-    expect(containers.length).toBeGreaterThan(0);
+    // Check existence of both divs
+    expect(screen.getByTestId('builder')).toBeInTheDocument();
+    expect(screen.getByTestId('exercises')).toBeInTheDocument();
   });
 
   it('should display error message when useExercises returns error', () => {
@@ -95,34 +104,84 @@ describe('WorkoutBuilderPage Component', () => {
 
     render(<WorkoutBuilderPage />);
 
-    expect(screen.getByText(/Error: Failed to fetch exercises/i)).toBeInTheDocument();
+    expect(screen.getByTestId('exercise-error-message')).toBeInTheDocument();
   });
 
   it('should render WorkoutsBuilderForm', () => {
-    useWorkouts.mockReturnValue({
-      handleSubmit: vi.fn(),
-      workoutName: '',
-      workoutDuration: '',
-    });
-
-    const { container } = render(<WorkoutBuilderPage />);
+    render(<WorkoutBuilderPage />);
     
-    expect(container.querySelector('.flex-1')).toBeInTheDocument();
+    expect(screen.getByTestId('builder-form')).toBeInTheDocument();
   });
 
   it('should render ExerciseLibrary', () => {
-    const { container } = render(<WorkoutBuilderPage />);
+    render(<WorkoutBuilderPage />);
     
-    // Check for the library container with specific classes
-    const libraryContainer = container.querySelector('.flex-\\[2\\]');
-    expect(libraryContainer || container.querySelector('.flex-1')).toBeInTheDocument();
+    expect(screen.getByTestId('library-container')).toBeInTheDocument();
+  });
+});
+
+describe('CategoryDropdown Component', () => {
+  it('should render category dropdown', () => {
+    render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
+
+    expect(screen.getByTestId('category-dropdown')).toBeInTheDocument();
   });
 
-  it('should apply responsive layout classes', () => {
-    const { container } = render(<WorkoutBuilderPage />);
+  it('should render all categories as options', () => {
+    render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
 
-    const mainContainer = container.querySelector('.flex.flex-col.lg\\:flex-row');
-    expect(mainContainer).toBeInTheDocument();
+    expect(screen.getByText('Arms')).toBeInTheDocument();
+    expect(screen.getByText('Legs')).toBeInTheDocument();
+    expect(screen.getByText('Chest')).toBeInTheDocument();
+  });
+
+  it('should call fetchCategories on mount', () => {
+    const mockFetchCategories = vi.fn();
+    
+    useCategoryActions.mockReturnValue({
+      fetchCategories: mockFetchCategories,
+    });
+
+    render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
+
+    expect(mockFetchCategories).toHaveBeenCalled();
+  });
+
+  it('should call onChange when category is selected', async () => {
+    const user = userEvent.setup();
+    const mockOnChange = vi.fn();
+
+    render(<CategoryDropdown onChange={mockOnChange} isLoading={false} />);
+
+    const select = screen.getByLabelText(/category filter/i);
+    await user.selectOptions(select, '1');
+
+    expect(mockOnChange).toHaveBeenCalledWith('1');
+  });
+
+  it('should disable dropdown when status is not success', () => {
+    useCategoriesStatus.mockReturnValue('loading');
+
+    render(<CategoryDropdown onChange={vi.fn()} isLoading={true} />);
+
+    const select = screen.getByLabelText(/category filter/i);
+    expect(select).toBeDisabled();
+  });
+
+  it('should disable categories when error exists', () => {
+    useCategoriesError.mockReturnValue('Failed to load');
+    useCategories.mockReturnValue([]);
+
+    render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
+
+    const select = screen.getByLabelText(/category filter/i);
+    expect(select).toBeDisabled();
+  });
+
+  it('should render "All" option', () => {
+    render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
+
+    expect(screen.getByText('All')).toBeInTheDocument();
   });
 });
 
@@ -150,36 +209,10 @@ describe('ExerciseLibrary Component', () => {
     },
   ];
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should render exercise library title', () => {
-    useExercises.mockReturnValue({
-      response: [],
-      status: 'success',
-      loadData: vi.fn(),
-      loadByCategory: vi.fn(),
-      handleClick: vi.fn(),
-    });
-
     render(<ExerciseLibrary />);
 
-    expect(screen.getByText('Exercise Library')).toBeInTheDocument();
-  });
-
-  it('should render category dropdown', () => {
-    useExercises.mockReturnValue({
-      response: [],
-      status: 'success',
-      loadData: vi.fn(),
-      loadByCategory: vi.fn(),
-      handleClick: vi.fn(),
-    });
-
-    render(<ExerciseLibrary />);
-
-    expect(screen.getByTestId('category-dropdown')).toBeInTheDocument();
+    expect(screen.getByText(/Exercise Library/i)).toBeInTheDocument();
   });
 
   it('should display loading state', () => {
@@ -330,8 +363,8 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
-    const dropdown = screen.getByTestId('category-dropdown');
-    await user.selectOptions(dropdown, '10');
+    const select = screen.getByRole('combobox');
+    await user.selectOptions(select, '1');
 
     expect(mockLoadByCategory).toHaveBeenCalled();
   });
@@ -379,14 +412,13 @@ describe('ExerciseLibrary Component', () => {
 
 describe('WorkoutsBuilderHeader Component', () => {
   const mockContext = {
-    nameError: null,
     workoutName: '',
     workoutDuration: '',
+    formErrors: {},
     handleFieldChange: vi.fn(),
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     useWorkoutsBuilderContext.mockReturnValue(mockContext);
   });
 
@@ -471,7 +503,7 @@ describe('WorkoutsBuilderHeader Component', () => {
   it('should display name error when present', () => {
     useWorkoutsBuilderContext.mockReturnValue({
       ...mockContext,
-      nameError: ['A workout name is required!'],
+      formErrors: { workoutName: ['A workout name is required!'] },
     });
 
     render(<WorkoutsBuilderHeader />);
@@ -483,7 +515,7 @@ describe('WorkoutsBuilderHeader Component', () => {
     useWorkoutsBuilderContext.mockReturnValue({
       ...mockContext,
       workoutName: '',
-      nameError: ['A workout name is required!'],
+      formErrors: { workoutName: ['A workout name is required!'] },
     });
 
     render(<WorkoutsBuilderHeader />);

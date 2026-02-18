@@ -10,6 +10,7 @@ export function WorkoutsBuilderComposer({ children }) {
             <form
               onSubmit={workouts?.handleSubmit}
               className="flex flex-1 flex-col gap-6 p-6"
+              data-testid="builder-form"
             >
               {children}
             </form>

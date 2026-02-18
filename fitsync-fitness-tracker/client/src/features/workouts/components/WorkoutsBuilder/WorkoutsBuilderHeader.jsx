@@ -5,7 +5,6 @@ import { FormInput } from "../../../../components/FormInput"
 export function WorkoutsBuilderHeader() {
   const { workoutName, formErrors, workoutDuration, handleFieldChange } = useWorkoutsBuilderContext();
 
-  console.log(formErrors);
   return (
     <div className="border-b pb-6">
       <h2 className="mb-4 text-xl font-semibold text-gray-900">
