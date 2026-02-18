@@ -12,6 +12,7 @@ import { getMacros } from "../utils/nutritionCalculations";
 import { api } from '../../../services/api';
 import { useNotification } from '../../../hooks/useNotification';
 import { usePublicId } from '../../../store/UserStore';
+import toast from 'react-hot-toast';
 
 export function useMealsForm() {
   // Store State and Action Selectors
@@ -78,7 +79,7 @@ export function useMealsForm() {
 
   const handleIngredientQuantityChange = (e, id) => {
     if(e.target.value < 0) return; // Prevents negative quantities  
-    if(e.target.value > 999) return; // Prevents quantities over 999g
+    if(e.target.value > 999) return; // Prevents quantities over 999
     if(e.target.value === "") {
       changeIngredientField(id, "quantity", "");
       changeIngredientField(id, "macros", { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 });
@@ -124,7 +125,7 @@ export function useMealsForm() {
       {
         onSuccess: (message) => {
           resetForm();
-          notify(message);
+          toast.success(message);
         },
         onError: (error) => {
           if (error.status === 400) {
@@ -149,6 +150,7 @@ export function useMealsForm() {
     message,
     formErrors,
     hasErrors,
+    isPending: mealMutation.isPending,
     handleChange,
     handleClick,
     handleRemoveClick,

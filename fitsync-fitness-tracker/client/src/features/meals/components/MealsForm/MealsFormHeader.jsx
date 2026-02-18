@@ -14,15 +14,16 @@ export function MealsFormHeader() {
             <FormField
             name="mealName"
             label="Meal Name"
-            formError={formErrors.mealName}
+            formError={formErrors?.mealName}
             >
                 <FormInput
                 name="mealName"
                 type="text"
                 inputValue={mealName}
-                inputErrors={formErrors.mealName}
+                inputErrors={formErrors?.mealName}
                 handleChange={handleChange}
                 placeholder="Chicken bowl, protein shake..."
+                data-testid="meal-name-input"
                 />
             </FormField>
         </div>

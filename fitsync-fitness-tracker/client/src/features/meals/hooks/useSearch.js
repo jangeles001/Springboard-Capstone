@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import fetchIngredients from "../services/fetchIngredients";
@@ -6,6 +6,8 @@ import { shouldLoadMore } from "../../../utils/shouldLoadMore";
 import { useMealFormDataIngredients } from "../store/MealsFormStore";
 
 export default function useSearch(initialQuery = "", delay = 700) {
+  // Local state for the input value (updates instantly)
+  const [inputValue, setInputValue] = useState(initialQuery);
   // Local state for the search query
   const [query, setQuery] = useState(initialQuery);
 
@@ -16,21 +18,14 @@ export default function useSearch(initialQuery = "", delay = 700) {
     [ingredients]
   );
 
-  // Debouncer reference to manage the timeout for the search input
-  const debounceRef = useRef(null);
+  // debounce effect: updates the search query after a delay when the input value changes
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setQuery(inputValue);
+    }, delay);
 
-  const debouncedSetQuery = useCallback(
-    (value) => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-
-      debounceRef.current = setTimeout(() => {
-        setQuery(value);
-      }, delay);
-    },
-    [delay]
-  );
+    return () => clearTimeout(handler);
+  }, [inputValue, delay]);
 
   // Determines if the search query is a string and is not empty after trimming whitespace
   const isQueryEnabled =
@@ -86,7 +81,7 @@ export default function useSearch(initialQuery = "", delay = 700) {
 
   return {
     query,
-    debouncedSetQuery,
+    setInputValue,
     handleScroll,
     results,
     data,

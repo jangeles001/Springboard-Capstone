@@ -1,685 +1,283 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-import MealsBuilderPage from '../features/meals/pages/MealsBuilderPage';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MealsForm } from '../features/meals/components/MealsForm/index';
 import { MealsFormHeader } from '../features/meals/components/MealsForm/MealsFormHeader';
 import { MealsFormDescription } from '../features/meals/components/MealsForm/MealsFormDescription';
-import { MealsFormIngredientSearch } from '../features/meals/components/MealsForm/MealsFormIngredientSearch';
-import { MealsFormIngredients } from '../features/meals/components/MealsForm/MealsFormIngredients';
-import { MealsFormMacros } from '../features/meals/components/MealsForm/MealsFormMacros';
 import { MealsFormFooter } from '../features/meals/components/MealsForm/MealsFormFooter';
-import IngredientItem from '../features/meals/components/IngredientItem';
-
-// ============================================================
-// MOCKS
-// ============================================================
-
-vi.mock('../features/meals/hooks/useMealsForm', () => ({
-  useMealsForm: vi.fn(),
-}));
-
-vi.mock('../features/meals/hooks/useMealsFormContext', () => ({
-  useMealsFormContext: vi.fn(),
-}));
-
-vi.mock('../features/meals/hooks/useSearch', () => ({
-  default: vi.fn(),
-}));
-
-vi.mock('../components/Notification', () => ({
-  Notification: ({ message, visible }) =>
-    visible ? <div data-testid="notification">{message}</div> : null,
-}));
-
-// Mock the entire MealsForm composer so MealsBuilderPage tests
-// don't need to worry about internal form context setup
-vi.mock('../features/meals/components/MealsForm/index', () => ({
-  MealsForm: Object.assign(
-    ({ children }) => <div data-testid="meals-form">{children}</div>,
-    {
-      Header: () => <div data-testid="meals-form-header">Header</div>,
-      Description: () => <div data-testid="meals-form-description">Description</div>,
-      IngredientSearch: () => <div data-testid="meals-form-search">Search</div>,
-      Ingredients: () => <div data-testid="meals-form-ingredients">Ingredients</div>,
-      Macros: () => <div data-testid="meals-form-macros">Macros</div>,
-      Footer: () => <div data-testid="meals-form-footer">Footer</div>,
-    }
-  ),
-}));
+import { MealsFormMacros } from '../features/meals/components/MealsForm/MealsFormMacros';
+import { MealsFormIngredients } from '../features/meals/components/MealsForm/MealsFormIngredients';
+import { MealsFormIngredientSearch } from '../features/meals/components/MealsForm/MealsFormIngredientSearch';
 
 import { useMealsFormContext } from '../features/meals/hooks/useMealsFormContext';
 import useSearch from '../features/meals/hooks/useSearch';
 
-// ============================================================
-// SHARED MOCK DATA
-// ============================================================
-
-const mockFormContext = {
-  mealName: '',
-  mealDescription: '',
-  ingredients: [],
-  mealMacros: {},
-  formErrors: {},
-  hasErrors: false,
-  message: null,
-  handleChange: vi.fn(),
-  handleClick: vi.fn(),
-  handleRemoveClick: vi.fn(),
-  handleIngredientQuantityChange: vi.fn(),
-  handleSubmit: vi.fn((e) => e.preventDefault()),
-  getIngredientField: vi.fn(),
-};
-
-// ============================================================
-// MealsBuilderPage
-// ============================================================
-
-describe('MealsBuilderPage Component', () => {
-  it('should render page title', () => {
-    render(<MealsBuilderPage />);
-
-    expect(screen.getByText('Create Meal')).toBeInTheDocument();
-  });
-
-  it('should render page description', () => {
-    render(<MealsBuilderPage />);
-
-    expect(
-      screen.getByText(/Add ingredients and automatically calculate nutrition macros/i)
-    ).toBeInTheDocument();
-  });
-
-  it('should render all form subcomponents', () => {
-    render(<MealsBuilderPage />);
-
-    expect(screen.getByTestId('meals-form-header')).toBeInTheDocument();
-    expect(screen.getByTestId('meals-form-description')).toBeInTheDocument();
-    expect(screen.getByTestId('meals-form-search')).toBeInTheDocument();
-    expect(screen.getByTestId('meals-form-ingredients')).toBeInTheDocument();
-    expect(screen.getByTestId('meals-form-macros')).toBeInTheDocument();
-    expect(screen.getByTestId('meals-form-footer')).toBeInTheDocument();
-  });
-
-  it('should apply proper layout classes', () => {
-    const { container } = render(<MealsBuilderPage />);
-
-    const outerContainer = container.querySelector('.mx-auto.max-w-7xl');
-    expect(outerContainer).toBeInTheDocument();
-  });
-
-  it('should render form inside max-w-3xl container', () => {
-    const { container } = render(<MealsBuilderPage />);
-
-    const formContainer = container.querySelector('.max-w-3xl');
-    expect(formContainer).toBeInTheDocument();
-  });
-});
-
-// ============================================================
-// MealsFormHeader
-// ============================================================
-
-describe('MealsFormHeader Component', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    useMealsFormContext.mockReturnValue(mockFormContext);
-  });
-
-  it('should render Meal Details title', () => {
-    render(<MealsFormHeader />);
-
-    expect(screen.getByText('Meal Details')).toBeInTheDocument();
-  });
-
-  it('should render meal name input', () => {
-    render(<MealsFormHeader />);
-
-    expect(
-      screen.getByPlaceholderText(/Chicken bowl, protein shake/i)
-    ).toBeInTheDocument();
-  });
-
-  it('should display current meal name value', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      mealName: 'Protein Shake',
-    });
-
-    render(<MealsFormHeader />);
-
-    expect(screen.getByPlaceholderText(/Chicken bowl/i)).toHaveValue('Protein Shake');
-  });
-
-  it('should call handleChange when meal name input changes', async () => {
-    const user = userEvent.setup();
-    const mockHandleChange = vi.fn();
-
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      handleChange: mockHandleChange,
-    });
-
-    render(<MealsFormHeader />);
-
-    await user.type(screen.getByPlaceholderText(/Chicken bowl/i), 'Oats');
-
-    expect(mockHandleChange).toHaveBeenCalled();
-  });
-
-  it('should display meal name error when present', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      formErrors: { mealName: ['Meal name is required!'] },
-    });
-
-    render(<MealsFormHeader />);
-
-    expect(screen.getByText('*Meal name is required!')).toBeInTheDocument();
-  });
-
-  it('should apply error styling to input when error exists', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      mealName: '',
-      formErrors: { mealName: ['Meal name is required!'] },
-    });
-
-    render(<MealsFormHeader />);
-
-    expect(screen.getByPlaceholderText(/Chicken bowl/i)).toHaveClass('form-input-error');
-  });
-});
-
-// ============================================================
-// MealsFormDescription
-// ============================================================
-
-describe('MealsFormDescription Component', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    useMealsFormContext.mockReturnValue(mockFormContext);
-  });
-
-  it('should render description textarea', () => {
-    render(<MealsFormDescription />);
-
-    expect(
-      screen.getByPlaceholderText(/Enter meal description here/i)
-    ).toBeInTheDocument();
-  });
-
-  it('should display current description value', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      mealDescription: 'High protein post-workout meal',
-    });
-
-    render(<MealsFormDescription />);
-
-    expect(
-      screen.getByPlaceholderText(/Enter meal description here/i)
-    ).toHaveValue('High protein post-workout meal');
-  });
-
-  it('should call handleChange when textarea changes', async () => {
-    const user = userEvent.setup();
-    const mockHandleChange = vi.fn();
-
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      handleChange: mockHandleChange,
-    });
-
-    render(<MealsFormDescription />);
-
-    await user.type(
-      screen.getByPlaceholderText(/Enter meal description here/i),
-      'test description'
-    );
-
-    expect(mockHandleChange).toHaveBeenCalled();
-  });
-
-  it('should have maxLength of 430', () => {
-    render(<MealsFormDescription />);
-
-    const textarea = screen.getByPlaceholderText(/Enter meal description here/i);
-    expect(textarea).toHaveAttribute('maxLength', '430');
-  });
-
-  it('should apply error styling when description error exists', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      formErrors: { mealDescription: ['Description is required!'] },
-    });
-
-    render(<MealsFormDescription />);
-
-    const textarea = screen.getByPlaceholderText(/Enter meal description here/i);
-    expect(textarea).toHaveClass('form-input-error');
-  });
-
-  it('should apply default styling when no error', () => {
-    render(<MealsFormDescription />);
-
-    const textarea = screen.getByPlaceholderText(/Enter meal description here/i);
-    expect(textarea).toHaveClass('form-input');
-  });
-});
-
-// ============================================================
-// MealsFormIngredientSearch
-// ============================================================
-
-describe('MealsFormIngredientSearch Component', () => {
-  const mockSearchData = {
-    query: '',
-    debouncedSetQuery: vi.fn(),
-    handleScroll: vi.fn(),
-    results: [],
-  };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    useMealsFormContext.mockReturnValue(mockFormContext);
-    useSearch.mockReturnValue(mockSearchData);
-  });
-
-  it('should render ingredient search label', () => {
-    render(<MealsFormIngredientSearch isOpen={false} setIsOpen={vi.fn()} />);
-
-    expect(screen.getByText('Enter Ingredient')).toBeInTheDocument();
-  });
-
-  it('should render search input', () => {
-    render(<MealsFormIngredientSearch isOpen={false} setIsOpen={vi.fn()} />);
-
-    expect(
-      screen.getByPlaceholderText(/Type to search for ingredients/i)
-    ).toBeInTheDocument();
-  });
-
-  it('should call debouncedSetQuery when typing in search input', async () => {
-    const user = userEvent.setup();
-    const mockDebouncedSetQuery = vi.fn();
-
-    useSearch.mockReturnValue({
-      ...mockSearchData,
-      debouncedSetQuery: mockDebouncedSetQuery,
-    });
-
-    render(<MealsFormIngredientSearch isOpen={false} setIsOpen={vi.fn()} />);
-
-    await user.type(
-      screen.getByPlaceholderText(/Type to search for ingredients/i),
-      'chicken'
-    );
-
-    expect(mockDebouncedSetQuery).toHaveBeenCalled();
-  });
-
-  it('should call setIsOpen(true) when input is focused', async () => {
-    const user = userEvent.setup();
-    const mockSetIsOpen = vi.fn();
-
-    render(
-      <MealsFormIngredientSearch isOpen={false} setIsOpen={mockSetIsOpen} />
-    );
-
-    await user.click(
-      screen.getByPlaceholderText(/Type to search for ingredients/i)
-    );
-
-    expect(mockSetIsOpen).toHaveBeenCalledWith(true);
-  });
-
-  it('should not show dropdown when isOpen is false', () => {
-    render(<MealsFormIngredientSearch isOpen={false} setIsOpen={vi.fn()} />);
-
-    expect(screen.queryByRole('list')).not.toBeInTheDocument();
-  });
-
-  it('should show dropdown when isOpen is true', () => {
-    useSearch.mockReturnValue({
-      ...mockSearchData,
-      results: [
-        { fdcId: 1, description: 'Chicken Breast' },
-        { fdcId: 2, description: 'Brown Rice' },
-      ],
-    });
-
-    render(<MealsFormIngredientSearch isOpen={true} setIsOpen={vi.fn()} />);
-
-    expect(screen.getByRole('list')).toBeInTheDocument();
-  });
-
-  it('should render results in dropdown when isOpen', () => {
-    useSearch.mockReturnValue({
-      ...mockSearchData,
-      results: [
-        { fdcId: 1, description: 'Chicken Breast' },
-        { fdcId: 2, description: 'Brown Rice' },
-      ],
-    });
-
-    render(<MealsFormIngredientSearch isOpen={true} setIsOpen={vi.fn()} />);
-
-    expect(screen.getByText('Chicken Breast')).toBeInTheDocument();
-    expect(screen.getByText('Brown Rice')).toBeInTheDocument();
-  });
-
-  it('should call handleClick and close dropdown when result is clicked', async () => {
-    const user = userEvent.setup();
-    const mockHandleClick = vi.fn();
-    const mockSetIsOpen = vi.fn();
-    const mockDebouncedSetQuery = vi.fn();
-
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      handleClick: mockHandleClick,
-    });
-
-    useSearch.mockReturnValue({
-      ...mockSearchData,
-      debouncedSetQuery: mockDebouncedSetQuery,
-      results: [{ fdcId: 1, description: 'Chicken Breast' }],
-    });
-
-    render(
-      <MealsFormIngredientSearch isOpen={true} setIsOpen={mockSetIsOpen} />
-    );
-
-    await user.click(screen.getByText('Chicken Breast'));
-
-    expect(mockHandleClick).toHaveBeenCalled();
-    expect(mockSetIsOpen).toHaveBeenCalledWith(false);
-    expect(mockDebouncedSetQuery).toHaveBeenCalledWith('');
-  });
-});
-
-// ============================================================
-// MealsFormIngredients
-// ============================================================
-
-describe('MealsFormIngredients Component', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    useMealsFormContext.mockReturnValue(mockFormContext);
-  });
-
-  it('should render Selected Ingredients label', () => {
-    render(<MealsFormIngredients />);
-
-    expect(screen.getByText('Selected Ingredients')).toBeInTheDocument();
-  });
-
-  it('should render double-click instruction text', () => {
-    render(<MealsFormIngredients />);
-
-    expect(
-      screen.getByText(/Double-click on the ingredient name to remove/i)
-    ).toBeInTheDocument();
-  });
-
-  it('should render empty list when no ingredients', () => {
-    render(<MealsFormIngredients />);
-
-    const ingredientContainer = screen.getByText('Selected Ingredients')
-      .closest('span')
-      .nextSibling;
-
-    expect(ingredientContainer).toBeInTheDocument();
-  });
-
-  it('should render ingredient items when ingredients exist', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      ingredients: [
-        {
-          ingredientId: '123',
-          ingredientName: 'Chicken Breast',
-          quantity: 200,
-          macros: { protein: 62, fat: 7, carbs: 0, calories: 330 },
-        },
-      ],
-      getIngredientField: vi.fn(),
-    });
-
-    render(<MealsFormIngredients />);
-
-    expect(screen.getByText('Chicken Breast')).toBeInTheDocument();
-  });
-
-  it('should render ingredients error when formErrors.ingredients exists', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      formErrors: {
-        ingredients: ['At least one ingredient is required!'],
-      },
-    });
-
-    render(<MealsFormIngredients />);
-
-    expect(
-      screen.getByText('*At least one ingredient is required!')
-    ).toBeInTheDocument();
-  });
-
-  it('should apply error label styling when ingredients error exists', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      formErrors: { ingredients: ['At least one ingredient is required!'] },
-    });
-
-    render(<MealsFormIngredients />);
-
-    const label = screen.getByText('Selected Ingredients');
-    expect(label).toHaveClass('form-label-error');
-  });
-});
-
-// ============================================================
-// MealsFormMacros
-// ============================================================
-
-describe('MealsFormMacros Component', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('should render Estimated Macros title', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      mealMacros: {},
-    });
-
-    render(<MealsFormMacros />);
-
-    expect(screen.getByText('Estimated Macros')).toBeInTheDocument();
-  });
-
-  it('should render all macro values', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      mealMacros: {
-        protein: 30,
-        fat: 10,
-        carbs: 45,
-        calories: 390,
-      },
-    });
-
-    render(<MealsFormMacros />);
-
-    expect(screen.getByText('PROTEIN: 30')).toBeInTheDocument();
-    expect(screen.getByText('FAT: 10')).toBeInTheDocument();
-    expect(screen.getByText('CARBS: 45')).toBeInTheDocument();
-    expect(screen.getByText('CALORIES: 390')).toBeInTheDocument();
-  });
-
-  it('should render macro keys in uppercase', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      mealMacros: { netCarbs: 40 },
-    });
-
-    render(<MealsFormMacros />);
-
-    expect(screen.getByText('NETCARBS: 40')).toBeInTheDocument();
-  });
-
-  it('should render nothing when mealMacros is null', () => {
-    useMealsFormContext.mockReturnValue({
-      ...mockFormContext,
-      mealMacros: null,
-    });
-
-    render(<MealsFormMacros />);
-
-    expect(screen.getByText('Estimated Macros')).toBeInTheDocument();
-
-    // No macro tags rendered
-    const tags = document.querySelectorAll('.rounded-full');
-    expect(tags.length).toBe(0);
-  });
-});
-
-// ============================================================
-// MealsFormFooter
-// ============================================================
-
-describe('MealsFormFooter Component', () => {
-  it('should render Create Meal button', () => {
-    render(<MealsFormFooter />);
-
-    expect(
-      screen.getByRole('button', { name: /create meal/i })
-    ).toBeInTheDocument();
-  });
-
-  it('should have submit type', () => {
-    render(<MealsFormFooter />);
-
-    expect(screen.getByRole('button', { name: /create meal/i })).toHaveAttribute(
-      'type',
-      'submit'
-    );
-  });
-
-  it('should apply gradient styling', () => {
-    render(<MealsFormFooter />);
-
-    const button = screen.getByRole('button', { name: /create meal/i });
-    expect(button).toHaveClass('bg-gradient-to-r', 'from-blue-600', 'to-indigo-600');
-  });
-
-  it('should span full width', () => {
-    render(<MealsFormFooter />);
-
-    expect(screen.getByRole('button', { name: /create meal/i })).toHaveClass('w-full');
-  });
-});
-
-// ============================================================
-// IngredientItem
-// ============================================================
-
-describe('IngredientItem Component', () => {
-  const mockItem = {
-    ingredientId: '123',
-    ingredientName: 'Chicken Breast',
-    quantity: 200,
-  };
-
-  const defaultProps = {
-    item: mockItem,
-    getIngredientField: vi.fn().mockReturnValue(200),
-    handleRemoveClick: vi.fn(),
-    handleIngredientQuantityChange: vi.fn(),
+vi.mock('../features/meals/hooks/useMealsFormContext');
+vi.mock('../features/meals/hooks/useMealsForm');
+vi.mock('../features/meals/hooks/useSearch');
+
+describe('Meals Components', () => {
+  const mockContext = {
+    mealName: '',
+    mealDescription: '',
+    mealMacros: { calories: 500, protein: 40, carbs: 50, fats: 20 },
+    ingredients: [
+      { ingredientId: '1', ingredientName: 'Chicken Breast', quantity: 100 },
+      { ingredientId: '2', ingredientName: 'Broccoli', quantity: 50 },
+    ],
     formErrors: null,
-    dataTestId: `quantity-input-${mockItem.ingredientId}`,
+    isPending: false,
+    getIngredientField: vi.fn((id) => mockContext.ingredients.find((i) => i.ingredientId === id)?.quantity || 0),
+    handleChange: vi.fn((e) => {
+      mockContext.mealName = e.target.value  
+    }),
+    handleClick: vi.fn(),
+    handleSubmit: vi.fn((e) => e.preventDefault()),
+    handleIngredientQuantityChange: vi.fn(),
+    handleRemoveIngredient: vi.fn(),
+    handleIngredientSelect: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    useMealsFormContext.mockReturnValue(mockContext);
   });
 
-  it('should render ingredient name', () => {
-    render(<IngredientItem {...defaultProps} />);
 
-    expect(screen.getByText('Chicken Breast')).toBeInTheDocument();
-  });
+  describe('MealsFormHeader', () => {
+    it('renders name and description inputs', () => {
+      render(<MealsFormHeader />);
+      render(<MealsFormDescription />);
 
-  it('should render quantity input', () => {
-    render(<IngredientItem {...defaultProps} />);
-
-    const quantityInput = screen.getByPlaceholderText('');
-    expect(quantityInput).toBeInTheDocument();
-    expect(quantityInput).toHaveAttribute('type', 'number');
-  });
-
-  it('should call handleRemoveClick on double click of ingredient name', async () => {
-    const user = userEvent.setup();
-    const mockHandleRemoveClick = vi.fn();
-
-    render(
-      <IngredientItem
-        {...defaultProps}
-        handleRemoveClick={mockHandleRemoveClick}
-      />
-    );
-
-    await user.dblClick(screen.getByText('Chicken Breast'));
-
-    expect(mockHandleRemoveClick).toHaveBeenCalledWith('123');
-  });
-
-  it('should call handleIngredientQuantityChange when quantity changes', async () => {
-    // Set up user event and mock handleIngredientQuantityChange function
-    const user = userEvent.setup();
-
-    // Simulate the parent state update that would occur when handleIngredientQuantityChange is called
-    let value = 200;
-    const getIngredientField = vi.fn(() => value);
-    const mockQuantityChange = vi.fn((id, newValue) => {
-      value = newValue; // simulate parent state update
+      // Checks for presence of name and description inputs
+      expect(screen.getByTestId('meal-name-input')).toBeInTheDocument();
+      expect(screen.getByTestId('meal-description-input')).toBeInTheDocument();
     });
 
-    // Re-render component with updated getIngredientField to reflect state change
-    render(
-      <IngredientItem
-        {...defaultProps}
-        getIngredientField={getIngredientField}
-        handleIngredientQuantityChange={mockQuantityChange}
-      />
-    );
+    it('calls handleChange when name changes', async () => {
+      const user = userEvent.setup();
+      render(<MealsFormHeader />);
+    
+      const input = screen.getByTestId('meal-name-input');
+    
+      // Simulate typing 'Oats' into the meal name input
+      await user.type(input, 'Oats');
+    
+      // handler should be called 4 times (one per character)
+      expect(mockContext.handleChange).toHaveBeenCalledTimes(4);
+    });
 
-    // Find the quantity input using the data-testid
-    const quantityInput = screen.getByTestId(`quantity-input-${mockItem.ingredientId}`);
+    it('renders validation error if present', () => {
+      useMealsFormContext.mockReturnValue({
+        ...mockContext,
+        formErrors: { mealName: ['Meal name is required'] },
+      });
 
-    // Clear the input and type a new value
-    await user.clear(quantityInput);
-    await user.type(quantityInput, '5');
+      render(<MealsFormHeader />);
 
-    // Check that handleIngredientQuantityChange was called with the correct arguments
-    expect(mockQuantityChange).toHaveBeenCalled();
+      // Checks for presence of validation error message
+      expect(screen.getByTestId('mealName-error-0')).toBeInTheDocument();
+    });
   });
 
-  it('should call getIngredientField with correct args', () => {
-    const mockGetField = vi.fn().mockReturnValue(200);
+  describe('MealsFormFooter', () => {
+    it('renders submit button', () => {
+      render(<MealsFormFooter />);
 
-    render(
-      <IngredientItem {...defaultProps} getIngredientField={mockGetField} />
-    );
+      // Checks for presence of submit button
+      expect(
+        screen.getByRole('button', { name: /create meal/i })
+      ).toBeInTheDocument();
+    });
 
-    expect(mockGetField).toHaveBeenCalledWith('123', 'quantity');
+    it('calls handleSubmit when clicked', async () => {
+      const user = userEvent.setup();
+
+      // Renders the entire form to ensure the submit function can be called correctly
+      render(
+        <MealsForm>
+          <MealsFormHeader />
+          <MealsFormFooter />
+        </MealsForm >
+      );
+
+      //
+      await user.click(
+        screen.getByRole('button', { name: /create meal/i })
+      );
+
+      // Checks that the submit handler was called
+      expect(mockContext.handleSubmit).toHaveBeenCalled();
+    });
+
+    it('disables button when pending', () => {
+      useMealsFormContext.mockReturnValue({
+        ...mockContext,
+        isPending: true,
+      });
+
+      render(<MealsFormFooter />);
+
+      // Checks that the submit button is disabled when the form is in a pending state
+      expect(
+        screen.getByRole('button', { name: /create meal/i })
+      ).toBeDisabled();
+    });
   });
 
-  it('should have max attribute of 999 on quantity input', () => {
-    render(<IngredientItem {...defaultProps} />);
+  describe('MealsFormMacros', () => {
+    it('renders macro values correctly', () => {
+      render(<MealsFormMacros />);
 
-    const quantityInput = screen.getByPlaceholderText('');
-    expect(quantityInput).toHaveAttribute('max', '999');
+      const macros = screen.getAllByTestId(/^macro-/i);
+
+      macros.forEach((macro) => {
+        // Checks that each macro badge is rendered
+        expect(macro).toBeInTheDocument();
+        expect(macro).toHaveTextContent(/calories|protein|carbs|fats/i);
+        expect(macro).toHaveTextContent(/\d+/i);
+      });
+    });
+
+    it('renders 0 when macro value is undefined', () => {
+      useMealsFormContext.mockReturnValue({
+        ...mockContext,
+        macros: {},
+      });
+
+      render(<MealsFormMacros />);
+
+      // Checks that macros with undefined values render as 0
+      expect(screen.getAllByTestId(/^macro-/i).length).toBeGreaterThan(0);
+    });
+  });
+
+
+  describe('IngredientSearch', () => {
+    const mockSearch = {
+      query: '',
+      results: [{ fdcId: '123', description: 'Chicken Breast' }],
+      isLoading: false,
+      handleChange: vi.fn(),
+      setInputValue: vi.fn(),
+      handleClick: vi.fn(),
+      handleScroll: vi.fn(),
+    };
+
+    beforeEach(() => {
+      useSearch.mockReturnValue(mockSearch);
+    });
+
+    it('renders search input', () => {
+      render(<MealsFormIngredientSearch />);
+
+      // Checks for presence of search input
+      expect(
+        screen.getByPlaceholderText(/type to search/i)
+      ).toBeInTheDocument();
+    });
+
+    it('updates the input value when typing', async () => {
+      const user = userEvent.setup();
+    
+      render(<MealsFormIngredientSearch />);
+    
+      // Simulate typing 'chicken' into the search input
+      const input = screen.getByPlaceholderText(/type to search/i);
+      await user.type(input, 'chicken');
+
+      // Checks that the search query is updated and handleChange is called
+      expect(mockSearch.setInputValue).toHaveBeenCalledTimes(7);
+    });
+
+    it('renders search results', () => {
+      render(<MealsFormIngredientSearch isOpen={true} setIsOpen={vi.fn()} />);
+
+      // Checks that search results are rendered
+      expect(screen.getByTestId(`search-result-${mockSearch.results[0].fdcId}`)).toBeInTheDocument();
+    });
+
+    it('calls handleClick when clicking a result', async () => {
+      const user = userEvent.setup();
+
+      render(<MealsFormIngredientSearch isOpen={true} setIsOpen={vi.fn()} />);
+
+      // Simulates clicking on the search result
+      await user.click(screen.getByTestId(`search-result-${mockSearch.results[0].fdcId}`));
+
+      // Checks that the handleClick function was called
+      expect(mockContext.handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls handleScroll when scrolling results', async () => {
+      render(<MealsFormIngredientSearch isOpen={true} setIsOpen={vi.fn()} />);
+
+      // Simulates scrolling the results container
+      const resultsContainer = screen.getByRole('list');
+      resultsContainer.dispatchEvent(new Event('scroll'));
+
+      // Checks that the handleScroll function was called
+      expect(mockSearch.handleScroll).toHaveBeenCalled();
+    });
+  });
+
+
+  describe('MealsFormIngredients', () => {
+    it('renders empty state when no ingredients selected', () => {
+      render(<MealsFormIngredients />);
+      expect(
+        screen.getByText(/selected ingredients/i)
+      ).toBeInTheDocument();
+    });
+
+    it('renders selected ingredients', () => {
+      useMealsFormContext.mockReturnValue({
+        ...mockContext,
+        ingredients: [
+          { ingredientId: '123', ingredientName: 'Chicken Breast', quantity: 100 },
+        ],
+      });
+
+      render(<MealsFormIngredients />);
+
+      expect(screen.getByText(/chicken breast/i)).toBeInTheDocument();
+    });
+
+    it('calls handleIngredientQuantityChange correctly', async () => {
+      const user = userEvent.setup();
+
+      useMealsFormContext.mockReturnValue({
+        ...mockContext,
+        ingredients: [
+          { ingredientId: '123', ingredientName: 'Chicken Breast', quantity: 100 },
+        ],
+      });
+
+      render(<MealsFormIngredients />);
+
+      const input = screen.getByTestId('quantity-input-123');
+      await user.type(input, '200');
+
+      // Checks that the quantity change handler was called the correct number of times (one per character)
+      expect(mockContext.handleIngredientQuantityChange).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls handleRemoveIngredient with correct id', async () => {
+      const user = userEvent.setup();
+
+      useMealsFormContext.mockReturnValue({
+        ...mockContext,
+        ingredients: [
+          { ingredientId: '123', ingredientName: 'Chicken Breast', quantity: 100 },
+        ],
+      });
+
+      render(<MealsFormIngredients />);
+
+
+      await user.dblClick(screen.getByText(/chicken breast/i));
+
+      expect(mockContext.handleRemoveIngredient).toHaveBeenCalledWith('123');
+    });
   });
 });

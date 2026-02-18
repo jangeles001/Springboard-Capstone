@@ -5,11 +5,11 @@ import useSearch from '../../hooks/useSearch'
 export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
     const { handleClick } = useMealsFormContext();
     const { 
-            query,
-            debouncedSetQuery,
-            handleScroll, 
+            inputValue,
+            handleScroll,
+            setInputValue, 
             results, 
-        } = useSearch("" ,50); // Ingredients search bar debouncer 
+        } = useSearch("" ,600);
     return (
         <div className="flex flex-col">
             <label htmlFor="ingredients" className="form-label">Enter Ingredient</label>
@@ -19,8 +19,8 @@ export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
                 className="border rounded min-w-md pl-3"
                 name='ingredients'
                 id="ingredients"
-                value={query}
-                onChange={(e) => debouncedSetQuery(e.target.value)}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 placeholder='Type to search for ingredients...'
                 onFocus={() => setIsOpen(true)}
                 />
@@ -35,9 +35,10 @@ export function MealsFormIngredientSearch({ isOpen, setIsOpen }) {
                         key={item.fdcId} 
                         onClick={ () => {
                             handleClick(item)
-                            debouncedSetQuery("");
+                            setInputValue("");
                             setIsOpen(false);
-                        }} 
+                        }}
+                        data-testid={`search-result-${item.fdcId}`} 
                         />
                     ))}
                     </ul>

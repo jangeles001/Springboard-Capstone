@@ -16,6 +16,7 @@ export function MealsFormMacros() {
                     rounded-full bg-blue-50 px-4 py-1
                     text-sm font-medium text-blue-400
                     "
+                    data-testid={`macro-${key}`}
                     >
                         {key.toUpperCase()}: {value}
                     </span>
