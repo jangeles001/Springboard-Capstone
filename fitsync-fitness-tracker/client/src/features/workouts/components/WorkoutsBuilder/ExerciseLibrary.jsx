@@ -43,8 +43,28 @@ export default function ExerciseLibrary() {
           }
           </div>
           <div className='flex flex-row justify-center gap-4 py-4'>
-            {prevLink && <button onClick={() => loadData(prevLink)} className='hover:underline'>Prev</button>}
-            {nextLink && <button onClick={() => loadData(nextLink)} className='hover:underline'>Next</button>}
+            {prevLink &&
+              <button
+              onClick={
+                () => loadData(prevLink)
+              } 
+              className='hover:underline'
+              data-testid='prev-button'
+              >
+                Prev
+              </button>
+            }
+            {nextLink &&
+              <button 
+              onClick={
+                () => loadData(nextLink)
+              } 
+              className='hover:underline'
+              data-testid='next-button'
+              >
+                Next
+              </button>
+            }
           </div>
       </div>
     )

@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { useCookiesStore } from '../features/cookies/store/CookiesStore';
 import { useRegistrationForm } from '../features/registration/hooks/useRegistrationForm';
-import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
 import CookiesNotification from '../features/cookies/component/CookiesNotification';
 import RegistrationForm from '../features/registration/components/RegistrationForm';

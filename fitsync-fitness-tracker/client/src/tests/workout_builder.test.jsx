@@ -41,8 +41,8 @@ import { useExercises } from '../features/workouts/hooks/useExercises';
 import useWorkouts from '../features/workouts/hooks/useWorkouts';
 import { useWorkoutsBuilderContext } from '../features/workouts/hooks/useWorkoutsBuilder';
 
-// ✅ GLOBAL beforeEach - applies to ALL tests in this file
 beforeEach(() => {
+  // Clear all mocks before each test
   vi.clearAllMocks();
 
   // Default store mocks for ALL tests
@@ -57,6 +57,7 @@ beforeEach(() => {
     fetchCategories: vi.fn(),
   });
 
+  // Default useExercises mock
   useExercises.mockReturnValue({
     error: null,
     response: [],
@@ -66,6 +67,7 @@ beforeEach(() => {
     handleClick: vi.fn(),
   });
 
+  // Default useWorkouts and useWorkoutsBuilderContext mocks
   useWorkouts.mockReturnValue({
     workoutName: '',
     workoutDuration: '',
@@ -75,6 +77,7 @@ beforeEach(() => {
     createdWorkout: { exercises: [] },
   });
 
+  // Mock context values for useWorkoutsBuilderContext
   useWorkoutsBuilderContext.mockReturnValue({
     workoutName: '',
     workoutDuration: '',
@@ -103,18 +106,21 @@ describe('WorkoutBuilderPage Component', () => {
 
     render(<WorkoutBuilderPage />);
 
+    // Check for error message
     expect(screen.getByTestId('exercise-error-message')).toBeInTheDocument();
   });
 
   it('should render WorkoutsBuilderForm', () => {
     render(<WorkoutBuilderPage />);
     
+    // Check for form element in the document
     expect(screen.getByTestId('builder-form')).toBeInTheDocument();
   });
 
   it('should render ExerciseLibrary', () => {
     render(<WorkoutBuilderPage />);
     
+    // Check for exercise library container in the document
     expect(screen.getByTestId('library-container')).toBeInTheDocument();
   });
 });
@@ -123,12 +129,14 @@ describe('CategoryDropdown Component', () => {
   it('should render category dropdown', () => {
     render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
 
+    // Check for select element in the document
     expect(screen.getByTestId('category-dropdown')).toBeInTheDocument();
   });
 
   it('should render all categories as options', () => {
     render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
 
+    // Check that all category options are rendered
     expect(screen.getByText('Arms')).toBeInTheDocument();
     expect(screen.getByText('Legs')).toBeInTheDocument();
     expect(screen.getByText('Chest')).toBeInTheDocument();
@@ -143,6 +151,7 @@ describe('CategoryDropdown Component', () => {
 
     render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
 
+    // Check that fetchCategories was called on component mount
     expect(mockFetchCategories).toHaveBeenCalled();
   });
 
@@ -152,9 +161,11 @@ describe('CategoryDropdown Component', () => {
 
     render(<CategoryDropdown onChange={mockOnChange} isLoading={false} />);
 
+    // Simulate selecting the "Arms" category
     const select = screen.getByLabelText(/category filter/i);
     await user.selectOptions(select, '1');
 
+    // Check that onChange was called with the correct category ID
     expect(mockOnChange).toHaveBeenCalledWith('1');
   });
 
@@ -163,6 +174,7 @@ describe('CategoryDropdown Component', () => {
 
     render(<CategoryDropdown onChange={vi.fn()} isLoading={true} />);
 
+    // Check that the select element is disabled
     const select = screen.getByLabelText(/category filter/i);
     expect(select).toBeDisabled();
   });
@@ -173,6 +185,7 @@ describe('CategoryDropdown Component', () => {
 
     render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
 
+    // Check that the select element is disabled
     const select = screen.getByLabelText(/category filter/i);
     expect(select).toBeDisabled();
   });
@@ -180,6 +193,7 @@ describe('CategoryDropdown Component', () => {
   it('should render "All" option', () => {
     render(<CategoryDropdown onChange={vi.fn()} isLoading={false} />);
 
+    // Check that the "All" option is rendered
     expect(screen.getByText('All')).toBeInTheDocument();
   });
 });
@@ -211,6 +225,7 @@ describe('ExerciseLibrary Component', () => {
   it('should render exercise library title', () => {
     render(<ExerciseLibrary />);
 
+    // Check for exercise library title in the document
     expect(screen.getByText(/Exercise Library/i)).toBeInTheDocument();
   });
 
@@ -225,6 +240,7 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
+    // Check for loading indicator in the document
     expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
 
@@ -239,6 +255,7 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
+    // Check that exercise names are rendered
     expect(screen.getByText('BENCH PRESS')).toBeInTheDocument();
     expect(screen.getByText('SQUATS')).toBeInTheDocument();
   });
@@ -254,6 +271,7 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
+    // Check that exercise categories are rendered
     expect(screen.getByText('Exercise Category: Chest')).toBeInTheDocument();
     expect(screen.getByText('Exercise Category: Legs')).toBeInTheDocument();
   });
@@ -269,6 +287,7 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
+    // Check that the description is rendered without HTML tags
     expect(screen.getByText('Great chest exercise')).toBeInTheDocument();
     expect(screen.queryByText('<p>')).not.toBeInTheDocument();
   });
@@ -287,9 +306,11 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
+    // Simulate clicking on the first exercise
     const exercise = screen.getByText('BENCH PRESS').closest('div');
     await user.click(exercise);
 
+    // Check that handleClick was called with the correct exercise data
     expect(mockHandleClick).toHaveBeenCalledWith(mockExercises[0]);
   });
 
@@ -306,8 +327,9 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
-    expect(screen.getByText('Next')).toBeInTheDocument();
-    expect(screen.getByText('Prev')).toBeInTheDocument();
+    // Check that both next and prev buttons are rendered
+    expect(screen.getByTestId('next-button')).toBeInTheDocument();
+    expect(screen.getByTestId('prev-button')).toBeInTheDocument();
   });
 
   it('should not render next button when no nextLink', () => {
@@ -323,8 +345,9 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
-    expect(screen.queryByText('Next')).not.toBeInTheDocument();
-    expect(screen.getByText('Prev')).toBeInTheDocument();
+    // Check that next button is not rendered and prev button is rendered
+    expect(screen.queryByTestId('next-button')).not.toBeInTheDocument();
+    expect(screen.getByTestId('prev-button')).toBeInTheDocument();
   });
 
   it('should call loadData when next button is clicked', async () => {
@@ -342,9 +365,11 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
-    const nextButton = screen.getByText('Next');
+    // Simulate clicking the next button
+    const nextButton = screen.getByTestId('next-button');
     await user.click(nextButton);
 
+    // Check that loadData was called with the correct nextLink
     expect(mockLoadData).toHaveBeenCalledWith('https://api.com/next');
   });
 
@@ -360,11 +385,13 @@ describe('ExerciseLibrary Component', () => {
       handleClick: vi.fn(),
     });
 
-    render(<ExerciseLibrary />);
+    const { container } = render(<ExerciseLibrary />);
 
-    const select = screen.getByRole('combobox');
+    // Simulate selecting the "Arms" category
+    const select = container.querySelector('#categories');
     await user.selectOptions(select, '1');
 
+    // Check that loadByCategory was called with the correct category ID
     expect(mockLoadByCategory).toHaveBeenCalled();
   });
 
@@ -385,6 +412,7 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
+    // Check that the fallback name is rendered when no name is provided
     expect(screen.getByText('Exercise #999')).toBeInTheDocument();
   });
 
@@ -405,11 +433,13 @@ describe('ExerciseLibrary Component', () => {
 
     render(<ExerciseLibrary />);
 
+    // Check that the fallback description is rendered when no description is provided
     expect(screen.getByText('No Description Provided')).toBeInTheDocument();
   });
 });
 
 describe('WorkoutsBuilderHeader Component', () => {
+  // Mock context values for useWorkoutsBuilderContext
   const mockContext = {
     workoutName: '',
     workoutDuration: '',
@@ -418,24 +448,28 @@ describe('WorkoutsBuilderHeader Component', () => {
   };
 
   beforeEach(() => {
+    // Set default context values before each test
     useWorkoutsBuilderContext.mockReturnValue(mockContext);
   });
 
   it('should render workout details title', () => {
     render(<WorkoutsBuilderHeader />);
 
+    // Check for workout details title in the document
     expect(screen.getByText('Workout Details')).toBeInTheDocument();
   });
 
   it('should render workout name input', () => {
     render(<WorkoutsBuilderHeader />);
 
+    // Check for workout name input in the document
     expect(screen.getByPlaceholderText(/Push Day, Leg Day/i)).toBeInTheDocument();
   });
 
   it('should render duration input', () => {
     render(<WorkoutsBuilderHeader />);
 
+    // Check for workout duration input in the document
     const durationInput = screen.getByPlaceholderText('0');
     expect(durationInput).toBeInTheDocument();
     expect(durationInput).toHaveAttribute('type', 'number');
@@ -449,6 +483,7 @@ describe('WorkoutsBuilderHeader Component', () => {
 
     render(<WorkoutsBuilderHeader />);
 
+    // Check that the workout name input displays the correct value from context
     const nameInput = screen.getByPlaceholderText(/Push Day, Leg Day/i);
     expect(nameInput).toHaveValue('Leg Day');
   });
@@ -461,6 +496,7 @@ describe('WorkoutsBuilderHeader Component', () => {
 
     render(<WorkoutsBuilderHeader />);
 
+    // Check that the workout duration input displays the correct value from context
     const durationInput = screen.getByPlaceholderText('0');
     expect(durationInput).toHaveValue(60);
   });
@@ -476,9 +512,11 @@ describe('WorkoutsBuilderHeader Component', () => {
 
     render(<WorkoutsBuilderHeader />);
 
+    // Simulate typing into the workout name input
     const nameInput = screen.getByPlaceholderText(/Push Day, Leg Day/i);
     await user.type(nameInput, 'Chest Day');
 
+    // Check that handleFieldChange was called when the input value changes
     expect(mockHandleChange).toHaveBeenCalled();
   });
 
@@ -493,6 +531,7 @@ describe('WorkoutsBuilderHeader Component', () => {
 
     render(<WorkoutsBuilderHeader />);
 
+    // Simulate typing into the workout duration input
     const durationInput = screen.getByPlaceholderText('0');
     await user.type(durationInput, '45');
 
@@ -507,6 +546,7 @@ describe('WorkoutsBuilderHeader Component', () => {
 
     render(<WorkoutsBuilderHeader />);
 
+    // Check that the error message for workout name is displayed when formErrors contains an error for workoutName
     expect(screen.getByText('*A workout name is required!')).toBeInTheDocument();
   });
 
@@ -519,6 +559,7 @@ describe('WorkoutsBuilderHeader Component', () => {
 
     render(<WorkoutsBuilderHeader />);
 
+    // Check that the workout name input has error styling when there is an error for workoutName in formErrors
     const nameInput = screen.getByPlaceholderText(/Push Day, Leg Day/i);
     expect(nameInput).toHaveClass('form-input-error');
   });
@@ -526,6 +567,7 @@ describe('WorkoutsBuilderHeader Component', () => {
   it('should have maxLength attribute on name input', () => {
     render(<WorkoutsBuilderHeader />);
 
+    // Check that the workout name input has a maxLength attribute of 25
     const nameInput = screen.getByPlaceholderText(/Push Day, Leg Day/i);
     expect(nameInput).toHaveAttribute('maxLength', '25');
   });
@@ -535,12 +577,14 @@ describe('WorkoutsBuilderSubmitButton Component', () => {
   it('should render submit button', () => {
     render(<WorkoutsBuilderSubmitButton />);
 
+    // Check that the submit button is present in the document
     expect(screen.getByRole('button', { name: /create workout/i })).toBeInTheDocument();
   });
 
   it('should have submit type', () => {
     render(<WorkoutsBuilderSubmitButton />);
 
+    // Check that the button has a type attribute of submit
     const button = screen.getByRole('button', { name: /create workout/i });
     expect(button).toHaveAttribute('type', 'submit');
   });
@@ -548,6 +592,7 @@ describe('WorkoutsBuilderSubmitButton Component', () => {
   it('should apply gradient styling', () => {
     render(<WorkoutsBuilderSubmitButton />);
 
+    // Check that the button has the correct gradient background classes
     const button = screen.getByRole('button', { name: /create workout/i });
     expect(button).toHaveClass('bg-gradient-to-r', 'from-blue-600', 'to-indigo-600');
   });
@@ -555,6 +600,7 @@ describe('WorkoutsBuilderSubmitButton Component', () => {
   it('should span full width', () => {
     render(<WorkoutsBuilderSubmitButton />);
 
+    // Check that the button has a class that makes it span the full width of its container
     const button = screen.getByRole('button', { name: /create workout/i });
     expect(button).toHaveClass('w-full');
   });
