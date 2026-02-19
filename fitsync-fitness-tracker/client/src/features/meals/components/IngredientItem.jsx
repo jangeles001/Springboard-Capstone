@@ -8,8 +8,10 @@ export default function IngredientItem({ item, getIngredientField, handleRemoveC
         className="flex items-center space-x-2 my-1 p-2 hover:border-1 rounded-md"
         >
             
-            <p className="max-w-md hover:cursor-pointer select-none"
+            <p 
+            className="max-w-md hover:cursor-pointer select-none"
             onDoubleClick={() => handleRemoveClick(item?.ingredientId)}
+            data-testid={`ingredient-${item?.ingredientId}`}
             >
                 {item?.ingredientName}
             </p>
