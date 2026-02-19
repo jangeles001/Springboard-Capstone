@@ -1,12 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { CollectionPage } from '../../../components/CollectionPage/CollectionPage';
-import { CollectionPageHeader } from '../../../components/CollectionPage/CollectionPageHeader';
-import { CollectionPageGrid } from '../../../components/CollectionPage/CollectionPageGrid';
-import { CollectionPageFooter } from '../../../components/CollectionPage/CollectionPageFooter';
+import { CollectionPage } from '../components/CollectionPage/CollectionPage';
+import { CollectionPageHeader } from '../components/CollectionPage/CollectionPageHeader';
+import { CollectionPageGrid } from '../components/CollectionPage/CollectionPageGrid';
+import { CollectionPageFooter } from '../components/CollectionPage/CollectionPageFooter';
 import { WorkoutCollectionPage } from '../features/workouts/pages/WorkoutCollectionPage';
+import { WorkoutCard } from '../features/workouts/components/WorkoutCard';
 
 // ============================================================
 // MOCKS
@@ -16,7 +18,21 @@ vi.mock('../../../components/Loading', () => ({
   default: ({ type }) => <div data-testid="loading">Loading {type}</div>,
 }));
 
-// Mock the WorkoutCard component
+vi.mock('../features/workouts/hooks/useWorkoutsList', () => ({
+  useWorkoutsList: vi.fn(),
+}));
+
+vi.mock('../../../store/UserStore', () => ({
+  usePublicId: vi.fn(() => 'user-123'),
+}));
+
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: vi.fn(),
+}));
+
+import { useWorkoutsList } from '../features/workouts/hooks/useWorkoutsList';
+
+// Mock the WorkoutCard component for CollectionPage tests
 const MockWorkoutCard = ({ item, publicId, onClick, handleDelete, active }) => (
   <div data-testid="workout-card">
     <h3>{item.workoutName}</h3>
@@ -29,6 +45,20 @@ const MockWorkoutCard = ({ item, publicId, onClick, handleDelete, active }) => (
 
 // Mock the hook
 const mockHook = vi.fn();
+
+// Helper to wrap components with QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    {children}
+  </QueryClientProvider>
+);
 
 // ============================================================
 // SHARED MOCK DATA
@@ -72,6 +102,7 @@ const mockHookReturn = {
 beforeEach(() => {
   vi.clearAllMocks();
   mockHook.mockReturnValue(mockHookReturn);
+  useWorkoutsList.mockReturnValue(mockHookReturn);
 });
 
 // ============================================================
@@ -410,8 +441,8 @@ describe('CollectionPageFooter Component', () => {
     expect(screen.queryByText('Prev')).not.toBeInTheDocument();
   });
 
-  it('should apply hover underline styling', () => {
-    render(
+  it('should render buttons as plain text, not interactive buttons', () => {
+    const { container } = render(
       <CollectionPageFooter
         data={{ data: { nextPage: 2, previousPage: null } }}
       />
@@ -419,6 +450,18 @@ describe('CollectionPageFooter Component', () => {
 
     const nextButton = screen.getByText('Next');
     expect(nextButton).toHaveClass('hover:underline');
+    expect(nextButton.tagName).toBe('BUTTON');
+  });
+
+  it('should center footer content', () => {
+    const { container } = render(
+      <CollectionPageFooter
+        data={{ data: { nextPage: 2, previousPage: null } }}
+      />
+    );
+
+    const footer = container.querySelector('.justify-center');
+    expect(footer).toBeInTheDocument();
   });
 });
 
@@ -427,10 +470,206 @@ describe('CollectionPageFooter Component', () => {
 // ============================================================
 
 describe('WorkoutCollectionPage Component', () => {
-  it('should render and pass correct props to CollectionPage', () => {
-    const { container } = render(<WorkoutCollectionPage />);
+  it('should render CollectionPage with useWorkoutsList hook', () => {
+    render(<WorkoutCollectionPage />, { wrapper });
 
-    // Just verify it renders without errors
-    expect(container.firstChild).toBeInTheDocument();
+    // Verify the hook was called
+    expect(useWorkoutsList).toHaveBeenCalled();
+  });
+});
+
+// ============================================================
+// WorkoutCard Component
+// ============================================================
+
+describe('WorkoutCard Component', () => {
+  const mockWorkout = {
+    uuid: 'workout-123',
+    workoutName: 'Push Day',
+    muscleGroups: ['Chest', 'Triceps', 'Shoulders', 'Core'],
+    exercises: [
+      {
+        exerciseId: '1',
+        exerciseName: 'Bench Press',
+        description: '<p>Great chest exercise</p>',
+      },
+      {
+        exerciseId: '2',
+        exerciseName: 'Overhead Press',
+        description: 'Shoulder exercise',
+      },
+      {
+        exerciseId: '3',
+        exerciseName: 'Tricep Dips',
+        description: 'Tricep exercise',
+      },
+    ],
+  };
+
+  const defaultProps = {
+    item: mockWorkout,
+    onClick: vi.fn(),
+    handleDelete: vi.fn(),
+    active: 'Personal',
+    isPending: false,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should render workout name', () => {
+    render(<WorkoutCard {...defaultProps} />);
+
+    expect(screen.getByText('Push Day')).toBeInTheDocument();
+  });
+
+  it('should call onClick when workout name is clicked', async () => {
+    const user = userEvent.setup();
+    const mockOnClick = vi.fn();
+
+    render(<WorkoutCard {...defaultProps} onClick={mockOnClick} />);
+
+    await user.click(screen.getByText('Push Day'));
+
+    expect(mockOnClick).toHaveBeenCalledWith('workout-123');
+  });
+
+  it('should render first 4 muscle groups', () => {
+    render(<WorkoutCard {...defaultProps} />);
+
+    expect(screen.getByText('Chest')).toBeInTheDocument();
+    expect(screen.getByText('Triceps')).toBeInTheDocument();
+    expect(screen.getByText('Shoulders')).toBeInTheDocument();
+    expect(screen.getByText('Core')).toBeInTheDocument();
+  });
+
+  it('should not render more than 4 muscle groups', () => {
+    const workoutWithManyMuscles = {
+      ...mockWorkout,
+      muscleGroups: ['Chest', 'Triceps', 'Shoulders', 'Core', 'Abs', 'Back'],
+    };
+
+    const { container } = render(
+      <WorkoutCard {...defaultProps} item={workoutWithManyMuscles} />
+    );
+
+    const muscleTags = container.querySelectorAll('.bg-blue-100');
+    expect(muscleTags).toHaveLength(4);
+  });
+
+  it('should render first 3 exercises', () => {
+    render(<WorkoutCard {...defaultProps} />);
+
+    expect(screen.getByText('Bench Press')).toBeInTheDocument();
+    expect(screen.getByText('Overhead Press')).toBeInTheDocument();
+    expect(screen.getByText('Tricep Dips')).toBeInTheDocument();
+  });
+
+  it('should show "+ X more exercises" when workout has more than 3 exercises', () => {
+    const workoutWithManyExercises = {
+      ...mockWorkout,
+      exercises: [
+        ...mockWorkout.exercises,
+        {
+          exerciseId: '4',
+          exerciseName: 'Push Ups',
+          description: 'Bodyweight exercise',
+        },
+        {
+          exerciseId: '5',
+          exerciseName: 'Dumbbell Flyes',
+          description: 'Chest isolation',
+        },
+      ],
+    };
+
+    render(<WorkoutCard {...defaultProps} item={workoutWithManyExercises} />);
+
+    expect(screen.getByText('+ 2 more exercises')).toBeInTheDocument();
+  });
+
+  it('should not show "+ X more" when workout has 3 or fewer exercises', () => {
+    render(<WorkoutCard {...defaultProps} />);
+
+    expect(screen.queryByText(/more exercises/i)).not.toBeInTheDocument();
+  });
+
+  it('should show delete button when active is Personal', () => {
+    render(<WorkoutCard {...defaultProps} active="Personal" />);
+
+    expect(
+      screen.getByRole('button', { name: /delete workout/i })
+    ).toBeInTheDocument();
+  });
+
+  it('should not show delete button when active is All', () => {
+    render(<WorkoutCard {...defaultProps} active="All" />);
+
+    expect(
+      screen.queryByRole('button', { name: /delete workout/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it('should call handleDelete when delete button clicked', async () => {
+    const user = userEvent.setup();
+    const mockHandleDelete = vi.fn();
+
+    render(
+      <WorkoutCard {...defaultProps} handleDelete={mockHandleDelete} />
+    );
+
+    await user.click(screen.getByRole('button', { name: /delete workout/i }));
+
+    expect(mockHandleDelete).toHaveBeenCalledWith('workout-123');
+  });
+
+  it('should disable delete button when isPending is true', () => {
+    render(<WorkoutCard {...defaultProps} isPending={true} />);
+
+    expect(
+      screen.getByRole('button', { name: /delete workout/i })
+    ).toBeDisabled();
+  });
+
+  it('should not disable delete button when isPending is false', () => {
+    render(<WorkoutCard {...defaultProps} isPending={false} />);
+
+    expect(
+      screen.getByRole('button', { name: /delete workout/i })
+    ).not.toBeDisabled();
+  });
+
+  it('should apply hover cursor to workout name', () => {
+    render(<WorkoutCard {...defaultProps} />);
+
+    const workoutName = screen.getByText('Push Day');
+    expect(workoutName).toHaveClass('hover:cursor-pointer');
+  });
+
+  it('should render muscle group badges with correct styling', () => {
+    const { container } = render(<WorkoutCard {...defaultProps} />);
+
+    const muscleTags = container.querySelectorAll('.bg-blue-100.text-blue-700');
+    expect(muscleTags.length).toBeGreaterThan(0);
+  });
+
+  it('should handle workout with no muscle groups', () => {
+    const workoutNoMuscles = {
+      ...mockWorkout,
+      muscleGroups: undefined,
+    };
+
+    render(<WorkoutCard {...defaultProps} item={workoutNoMuscles} />);
+
+    // Should not crash
+    expect(screen.getByText('Push Day')).toBeInTheDocument();
+  });
+
+  it('should render in card layout with proper styling', () => {
+    const { container } = render(<WorkoutCard {...defaultProps} />);
+
+    const card = container.querySelector('.bg-white.rounded-2xl.shadow-md');
+    expect(card).toBeInTheDocument();
   });
 });
