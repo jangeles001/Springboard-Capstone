@@ -112,8 +112,6 @@ export async function getMealInformation(mealId) {
   if (!meal) {
     const collection =
       await mealCollectionRepo.findMealInCollectionById(mealId);
-
-    console.log(collection);
     return collection[0].snapshot;
   }
 

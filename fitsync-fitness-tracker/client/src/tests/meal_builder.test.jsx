@@ -243,9 +243,11 @@ describe('Meals Components', () => {
     
       const input = screen.getByTestId('quantity-input-123');
     
+      // clears the input and simulates typing '200 into the quantity input
       await user.clear(input);
       await user.type(input, '200');
     
+      // Checks that the quantity change handler was called
       expect(mockContext.handleIngredientQuantityChange)
         .toHaveBeenCalled();
     });
@@ -255,8 +257,10 @@ describe('Meals Components', () => {
 
       render(<MealsFormIngredients />);
 
+      // Simulates double-clicking the ingredient to remove it
       await user.dblClick(screen.getByTestId(`ingredient-${mockContext.ingredients?.[0]?.ingredientId}`));
 
+      // Checks that the remove handler was called with the correct ingredient ID
       expect(mockContext.handleRemoveClick).toHaveBeenCalledWith('123');
     });
   });

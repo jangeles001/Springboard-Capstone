@@ -15,6 +15,11 @@ export function DisplayPageBody({
 
 
     return (
-      <CardComponent data={data} publicId={publicId} handleDelete={handleDelete} isPersonal={isPersonal} />
+      <CardComponent 
+      data={data} 
+      publicId={publicId} 
+      handleDelete={handleDelete} 
+      isPersonal={isPersonal} 
+      />
     );
 }

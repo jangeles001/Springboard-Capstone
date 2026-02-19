@@ -17,11 +17,11 @@ export function MealDisplayCard({ data, handleDelete, isPersonal }) {
       <div className="mb-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-3">Ingredients</h3>
         <div className="flex flex-col gap-2">
-          {data?.data?.ingredients.map((ingredient) => (
+          {data?.data?.ingredients?.map((ingredient) => (
             <Ingredient
-              key={ingredient.ingredientId}
+              key={ingredient?.ingredientId}
               item={ingredient}
-              getIngredientField={() => ingredient.quantity} // read-only for display
+              getIngredientField={() => ingredient?.quantity} // read-only for display
               handleRemoveClick={() => {}}
               handleIngredientQuantityChange={() => {}}
               formErrors={{}}

@@ -52,10 +52,8 @@ export async function getWorkoutInformationController(req, res) {
       publicId,
       workoutId,
     );
-    console.log(workoutInformation);
     return res.generateSuccessResponse(workoutInformation, "Success!", 200);
   } catch (error) {
-    console.log(error);
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 }

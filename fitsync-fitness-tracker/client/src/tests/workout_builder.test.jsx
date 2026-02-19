@@ -199,6 +199,7 @@ describe('CategoryDropdown Component', () => {
 });
 
 describe('ExerciseLibrary Component', () => {
+  // Mock exercises data for testing
   const mockExercises = [
     {
       id: 1,

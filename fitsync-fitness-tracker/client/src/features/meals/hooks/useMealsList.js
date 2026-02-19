@@ -68,6 +68,7 @@ export function useMealsList({ limit }) {
 
   // Function to handle meal item click, navigates to the meal details page
   const handleMealClick = (mealId) => {
+    console.log("Navigating to meal details for meal ID:", mealId); 
     return navigate({
       to: "/dashboard/meals/$mealId",
       params: { mealId: mealId },

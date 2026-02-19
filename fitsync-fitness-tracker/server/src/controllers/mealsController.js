@@ -51,11 +51,9 @@ export async function getAllMealsController(req, res) {
 export async function getMealInformationController(req, res) {
   try {
     const { mealId } = req.params;
-    const { publicId } = req.user;
     const mealInfo = await mealService.getMealInformation(mealId);
     return res.generateSuccessResponse(mealInfo, "Success!");
   } catch (error) {
-    console.log(error);
     return res.generateErrorResponse(error.message, error.statusCode);
   }
 }

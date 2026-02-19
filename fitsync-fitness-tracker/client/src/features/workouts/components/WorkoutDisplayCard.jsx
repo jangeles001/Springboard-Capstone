@@ -1,7 +1,6 @@
 export function WorkoutDisplayCard({ data, isPersonal, handleDelete }) {
   return (
     <div className="min-w-xl bg-white rounded-2xl shadow-md p-6 border">
-
       <h2 className="text-3xl font-bold mb-2">
         {data?.data?.workoutName}
       </h2>
@@ -11,13 +10,13 @@ export function WorkoutDisplayCard({ data, isPersonal, handleDelete }) {
       </p>
 
       <div className="space-y-4">
-        {data?.data?.exercises.map((exercise) => (
+        {data?.data?.exercises?.map((exercise) => (
           <div
-          key={exercise.exerciseId}
+          key={exercise?.exerciseId}
           className="border rounded-xl p-4"
           >
             <h3 className="font-semibold">
-              {exercise.exerciseName}
+              {exercise?.exerciseName}
             </h3>
 
             <p className="text-sm text-gray-600 mb-2">
@@ -25,7 +24,7 @@ export function WorkoutDisplayCard({ data, isPersonal, handleDelete }) {
             </p>
 
             <div className="flex flex-wrap gap-2 text-xs">
-              {exercise.muscles.map((m) => (
+              {exercise?.muscles?.map((m) => (
                 <span
                   key={m}
                   className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full"

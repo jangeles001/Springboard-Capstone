@@ -39,6 +39,7 @@ export function MealCard({ item: meal, onClick, handleDelete, active}) {
         <button
         className="mt-8 bg-blue-500 text-white px-4 py-2 rounded-lg"
         onClick={() => handleDelete(meal.uuid)}
+        data-testid={`delete-button-${meal?.uuid}`}
         >
           Delete Meal
         </button>

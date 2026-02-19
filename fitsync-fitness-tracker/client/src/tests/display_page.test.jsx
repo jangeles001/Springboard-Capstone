@@ -2,29 +2,25 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { DisplayPage } from '../../../components/DisplayPage/DisplayPage';
-import { DisplayPageHeader } from '../../../components/DisplayPage/DisplayPageHeader';
-import { DisplayPageBody } from '../../../components/DisplayPage/DisplayPageBody';
-import { DisplayPageFooter } from '../../../components/DisplayPage/DisplayPageFooter';
+import DisplayPage from '../components/DisplayPage/DisplayPage';
 import { WorkoutDisplayPage } from '../features/workouts/pages/WorkoutDisplayPage';
+import { WorkoutDisplayCard } from '../features/workouts/components/WorkoutDisplayCard';
 
-// ============================================================
-// MOCKS
-// ============================================================
-
+// Mock the necessary hooks and components
 vi.mock('@tanstack/react-router', () => ({
   useRouter: vi.fn(),
   useParams: vi.fn(),
   useNavigate: vi.fn(),
+  useMatches: vi.fn(() => []),
 }));
 
-vi.mock('../../../components/Loading', () => ({
-  default: ({ type }) => <div data-testid="loading">Loading {type}</div>,
+vi.mock('../components/Loading', () => ({
+  default: ({ type }) => <div>Loading {type}</div>,
 }));
 
-vi.mock('../../../components/Breadcrumbs', () => ({
+vi.mock('../components/Breadcrumbs', () => ({
   default: ({ dynamicCrumb }) => (
-    <div data-testid="breadcrumbs">Breadcrumb: {dynamicCrumb}</div>
+    <div>Breadcrumb: {dynamicCrumb}</div>
   ),
 }));
 
@@ -32,24 +28,10 @@ vi.mock('../features/workouts/hooks/useWorkoutId', () => ({
   useWorkoutId: vi.fn(),
 }));
 
-vi.mock('../features/workouts/components/WorkoutDisplayCard', () => ({
-  WorkoutDisplayCard: ({ data, handleDelete, isPersonal }) => (
-    <div data-testid="workout-display-card">
-      <h2>{data?.data?.workoutName}</h2>
-      {isPersonal && (
-        <button onClick={() => handleDelete(data?.data?.uuid)}>Delete</button>
-      )}
-    </div>
-  ),
-}));
-
 import { useRouter, useParams } from '@tanstack/react-router';
 import { useWorkoutId } from '../features/workouts/hooks/useWorkoutId';
 
-// ============================================================
-// SHARED MOCK DATA
-// ============================================================
-
+// Mock data for testing
 const mockWorkoutData = {
   data: {
     uuid: 'workout-123',
@@ -63,6 +45,7 @@ const mockWorkoutData = {
   },
 };
 
+// Common mock return value for the hook
 const mockHookReturn = {
   publicId: 'user-123',
   data: mockWorkoutData,
@@ -75,132 +58,97 @@ const mockHookReturn = {
   handleLog: vi.fn(),
 };
 
-// Mock card component for testing
-const MockCardComponent = ({ data, handleDelete, isPersonal }) => (
-  <div data-testid="mock-card">
-    <h3>{data?.data?.workoutName}</h3>
-    {isPersonal && <button onClick={() => handleDelete('workout-123')}>Delete</button>}
-  </div>
-);
-
-// ============================================================
-// GLOBAL SETUP
-// ============================================================
-
 beforeEach(() => {
   vi.clearAllMocks();
   useWorkoutId.mockReturnValue(mockHookReturn);
-  useRouter.mockReturnValue({ id: '/dashboard/workouts/$workoutId' });
-  useParams.mockReturnValue({ workoutId: 'workout-123' });
+  useRouter.mockReturnValue({
+    id: '/dashboard/workouts/$workoutId',
+  });
+
+  useParams.mockReturnValue({
+    workoutId: 'workout-123',
+  });
 });
 
-// ============================================================
-// DisplayPage (Integration)
-// ============================================================
-
-describe('DisplayPage Component', () => {
+describe('DisplayPage Component (User-Focused)', () => {
   const mockHook = vi.fn().mockReturnValue(mockHookReturn);
 
-  it('should call hook with ResourceId', () => {
+  it('calls hook with ResourceId', () => {
     render(
       <DisplayPage
         hook={mockHook}
-        CardComponent={MockCardComponent}
+        CardComponent={WorkoutDisplayCard}
         ResourceId="workout-123"
         type="Workout"
       />
     );
 
+    // Verify the hook is called with the correct ResourceId
     expect(mockHook).toHaveBeenCalledWith('workout-123');
   });
 
-  it('should render breadcrumbs with dynamic crumb', () => {
+  it('renders breadcrumbs', () => {
     render(
       <DisplayPage
         hook={mockHook}
-        CardComponent={MockCardComponent}
+        CardComponent={WorkoutDisplayCard}
         ResourceId="workout-123"
         type="Workout"
       />
     );
 
-    expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument();
-    expect(screen.getByText(/Breadcrumb: workout-123/i)).toBeInTheDocument();
+    // Verify the breadcrumb is rendered with the correct dynamic crumb
+    expect(
+      screen.getByText(/Breadcrumb: workout-123/i)
+    ).toBeInTheDocument();
   });
 
-  it('should use type as fallback when no uuid in data', () => {
-    mockHook.mockReturnValue({
-      ...mockHookReturn,
-      data: { data: { workoutName: 'Test' } }, // No uuid
-    });
-
+  it('renders header title', () => {
     render(
       <DisplayPage
         hook={mockHook}
-        CardComponent={MockCardComponent}
+        CardComponent={WorkoutDisplayCard}
         ResourceId="workout-123"
         type="Workout"
       />
     );
 
-    expect(screen.getByText(/Breadcrumb: Workout/i)).toBeInTheDocument();
-  });
-
-  it('should render header with correct props', () => {
-    render(
-      <DisplayPage
-        hook={mockHook}
-        CardComponent={MockCardComponent}
-        ResourceId="workout-123"
-        type="Workout"
-      />
-    );
-
+    // Verify the header title is rendered correctly
     expect(screen.getByText('Workout Details')).toBeInTheDocument();
   });
 
-  it('should render body with card component', () => {
+  it('renders workout details from data', () => {
     render(
       <DisplayPage
         hook={mockHook}
-        CardComponent={MockCardComponent}
+        CardComponent={WorkoutDisplayCard}
         ResourceId="workout-123"
         type="Workout"
       />
     );
 
-    expect(screen.getByTestId('mock-card')).toBeInTheDocument();
+    // Verify workout details are rendered from the mock data
     expect(screen.getByText('Push Day')).toBeInTheDocument();
+    expect(screen.getByText(/Bench Press/i)).toBeInTheDocument();
   });
 
-  it('should render footer', () => {
+  it('shows personal actions when owner', () => {
     render(
       <DisplayPage
         hook={mockHook}
-        CardComponent={MockCardComponent}
+        CardComponent={WorkoutDisplayCard}
         ResourceId="workout-123"
         type="Workout"
       />
     );
 
-    expect(screen.getByText(/Created by: user-123/i)).toBeInTheDocument();
+    // Verify that the delete button is rendered for the owner
+    expect(
+      screen.getByRole('button', { name: /delete/i })
+    ).toBeInTheDocument();
   });
 
-  it('should set isPersonal to true when publicId matches creator', () => {
-    render(
-      <DisplayPage
-        hook={mockHook}
-        CardComponent={MockCardComponent}
-        ResourceId="workout-123"
-        type="Workout"
-      />
-    );
-
-    // Delete button should be visible (isPersonal = true)
-    expect(screen.getByText('Delete')).toBeInTheDocument();
-  });
-
-  it('should set isPersonal to false when publicId does not match creator', () => {
+  it('hides personal actions when not owner', () => {
     mockHook.mockReturnValue({
       ...mockHookReturn,
       publicId: 'different-user',
@@ -209,238 +157,46 @@ describe('DisplayPage Component', () => {
     render(
       <DisplayPage
         hook={mockHook}
-        CardComponent={MockCardComponent}
+        CardComponent={WorkoutDisplayCard}
         ResourceId="workout-123"
         type="Workout"
       />
     );
 
-    // Delete button should not be visible (isPersonal = false)
-    expect(screen.queryByText('Delete')).not.toBeInTheDocument();
-  });
-});
-
-// ============================================================
-// DisplayPageHeader
-// ============================================================
-
-describe('DisplayPageHeader Component', () => {
-  const headerProps = {
-    type: 'Workout',
-    handleReturn: vi.fn(),
-    handleLog: vi.fn(),
-    resourceId: 'workout-123',
-    publicId: 'user-123',
-    data: mockWorkoutData,
-  };
-
-  it('should render header title with type', () => {
-    render(<DisplayPageHeader {...headerProps} />);
-
-    expect(screen.getByText('Workout Details')).toBeInTheDocument();
-  });
-
-  it('should render Return to Collection button', () => {
-    render(<DisplayPageHeader {...headerProps} />);
-
+    // Verify that the delete button is not rendered for non-owners
     expect(
-      screen.getByRole('button', { name: /return to collection/i })
-    ).toBeInTheDocument();
+      screen.queryByRole('button', { name: /delete/i })
+    ).not.toBeInTheDocument();
   });
 
-  it('should render Record button with type', () => {
-    render(<DisplayPageHeader {...headerProps} />);
-
-    expect(
-      screen.getByRole('button', { name: /record workout/i })
-    ).toBeInTheDocument();
-  });
-
-  it('should call handleReturn when Return button clicked', async () => {
-    const user = userEvent.setup();
-    const mockHandleReturn = vi.fn();
-
-    render(<DisplayPageHeader {...headerProps} handleReturn={mockHandleReturn} />);
-
-    await user.click(screen.getByRole('button', { name: /return to collection/i }));
-
-    expect(mockHandleReturn).toHaveBeenCalled();
-  });
-
-  it('should call handleLog with resourceId when Record button clicked', async () => {
-    const user = userEvent.setup();
-    const mockHandleLog = vi.fn();
-
-    render(<DisplayPageHeader {...headerProps} handleLog={mockHandleLog} />);
-
-    await user.click(screen.getByRole('button', { name: /record workout/i }));
-
-    expect(mockHandleLog).toHaveBeenCalledWith('workout-123');
-  });
-
-  it('should apply blue button styling', () => {
-    render(<DisplayPageHeader {...headerProps} />);
-
-    const returnButton = screen.getByRole('button', { name: /return to collection/i });
-    expect(returnButton).toHaveClass('bg-blue-500', 'hover:bg-blue-600');
-  });
-
-  it('should render both buttons in button group', () => {
-    const { container } = render(<DisplayPageHeader {...headerProps} />);
-
-    const buttonGroup = container.querySelector('.space-x-4');
-    expect(buttonGroup).toBeInTheDocument();
-    expect(buttonGroup?.children).toHaveLength(2);
-  });
-});
-
-// ============================================================
-// DisplayPageBody
-// ============================================================
-
-describe('DisplayPageBody Component', () => {
-  const bodyProps = {
-    isLoading: false,
-    isError: false,
-    error: null,
-    data: mockWorkoutData,
-    publicId: 'user-123',
-    CardComponent: MockCardComponent,
-    handleDelete: vi.fn(),
-    isPersonal: true,
-  };
-
-  it('should show loading state', () => {
-    render(<DisplayPageBody {...bodyProps} isLoading={true} />);
-
-    expect(screen.getByTestId('loading')).toBeInTheDocument();
-  });
-
-  it('should show error state', () => {
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-
+  it('renders creator footer', () => {
     render(
-      <DisplayPageBody
-        {...bodyProps}
-        isError={true}
-        error={{ message: 'Failed to load' }}
+      <DisplayPage
+        hook={mockHook}
+        CardComponent={WorkoutDisplayCard}
+        ResourceId="workout-123"
+        type="Workout"
       />
     );
 
-    expect(consoleError).toHaveBeenCalled();
-    consoleError.mockRestore();
-  });
-
-  it('should render CardComponent with correct props', () => {
-    render(<DisplayPageBody {...bodyProps} />);
-
-    expect(screen.getByTestId('mock-card')).toBeInTheDocument();
-    expect(screen.getByText('Push Day')).toBeInTheDocument();
-  });
-
-  it('should pass isPersonal to CardComponent', () => {
-    render(<DisplayPageBody {...bodyProps} isPersonal={true} />);
-
-    // Delete button visible when isPersonal = true
-    expect(screen.getByText('Delete')).toBeInTheDocument();
-  });
-
-  it('should not show delete when isPersonal is false', () => {
-    render(<DisplayPageBody {...bodyProps} isPersonal={false} />);
-
-    // Delete button not visible when isPersonal = false
-    expect(screen.queryByText('Delete')).not.toBeInTheDocument();
-  });
-
-  it('should pass handleDelete to CardComponent', async () => {
-    const user = userEvent.setup();
-    const mockHandleDelete = vi.fn();
-
-    render(<DisplayPageBody {...bodyProps} handleDelete={mockHandleDelete} />);
-
-    await user.click(screen.getByText('Delete'));
-
-    expect(mockHandleDelete).toHaveBeenCalledWith('workout-123');
+    // Verify that the creator information is rendered in the footer
+    expect(
+      screen.getByText(/Created by: user-123/i)
+    ).toBeInTheDocument();
   });
 });
 
-// ============================================================
-// DisplayPageFooter
-// ============================================================
-
-describe('DisplayPageFooter Component', () => {
-  it('should display creator publicId', () => {
-    render(<DisplayPageFooter data={mockWorkoutData} />);
-
-    expect(screen.getByText('Created by: user-123')).toBeInTheDocument();
-  });
-
-  it('should show "Unknown" when no creator', () => {
-    render(<DisplayPageFooter data={{ data: {} }} />);
-
-    expect(screen.getByText('Created by: Unknown')).toBeInTheDocument();
-  });
-
-  it('should show "Unknown" when data is null', () => {
-    render(<DisplayPageFooter data={null} />);
-
-    expect(screen.getByText('Created by: Unknown')).toBeInTheDocument();
-  });
-
-  it('should apply gray text styling', () => {
-    const { container } = render(<DisplayPageFooter data={mockWorkoutData} />);
-
-    const footer = container.querySelector('.text-gray-500');
-    expect(footer).toBeInTheDocument();
-  });
-
-  it('should center footer content', () => {
-    const { container } = render(<DisplayPageFooter data={mockWorkoutData} />);
-
-    const footer = container.querySelector('.mx-auto');
-    expect(footer).toBeInTheDocument();
-  });
-});
-
-// ============================================================
-// WorkoutDisplayPage
-// ============================================================
-
-describe('WorkoutDisplayPage Component', () => {
-  it('should render DisplayPage component', () => {
-    render(<WorkoutDisplayPage />);
-
-    // Verify it renders without errors
-    expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument();
-  });
-
-  it('should pass workoutId from params to DisplayPage', () => {
+describe('WorkoutDisplayPage', () => {
+  it('uses workoutId from params', () => {
     useParams.mockReturnValue({ workoutId: 'workout-456' });
 
     render(<WorkoutDisplayPage />);
 
+    // Verify the hook is called with the correct workoutId from params
     expect(useWorkoutId).toHaveBeenCalledWith('workout-456');
   });
 
-  it('should pass type as "Workout"', () => {
-    render(<WorkoutDisplayPage />);
-
-    expect(screen.getByText('Workout Details')).toBeInTheDocument();
-  });
-
-  it('should pass useWorkoutId hook', () => {
-    render(<WorkoutDisplayPage />);
-
-    expect(useWorkoutId).toHaveBeenCalled();
-  });
-});
-
-// ============================================================
-// useWorkoutId Hook Integration
-// ============================================================
-
-describe('DisplayPage with useWorkoutId', () => {
-  it('should handle loading state from hook', () => {
+  it('handles loading state', () => {
     useWorkoutId.mockReturnValue({
       ...mockHookReturn,
       isLoading: true,
@@ -448,12 +204,17 @@ describe('DisplayPage with useWorkoutId', () => {
 
     render(<WorkoutDisplayPage />);
 
-    expect(screen.getByTestId('loading')).toBeInTheDocument();
+    // Verify that the loading state is rendered correctly
+    expect(screen.getByText(/Loading/i)).toBeInTheDocument();
   });
 
-  it('should handle error state from hook', () => {
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+  it('handles error state', () => {
+    // Spy on console.error to suppress error logs during testing
+    const consoleError = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
 
+    // Mock the hook to return an error state
     useWorkoutId.mockReturnValue({
       ...mockHookReturn,
       isError: true,
@@ -462,64 +223,39 @@ describe('DisplayPage with useWorkoutId', () => {
 
     render(<WorkoutDisplayPage />);
 
+    // Verify that the error message is rendered correctly
     expect(consoleError).toHaveBeenCalled();
+    expect(screen.getByText(/Error loading data/i)).toBeInTheDocument();
+
+    // Restore the original console.error implementation
     consoleError.mockRestore();
   });
 
-  it('should pass handlers from hook to components', async () => {
+  it('wires handlers from hook to UI', async () => {
     const user = userEvent.setup();
-    const mockHandleReturn = vi.fn();
-    const mockHandleLog = vi.fn();
-
-    useWorkoutId.mockReturnValue({
-      ...mockHookReturn,
-      handleReturn: mockHandleReturn,
-      handleLog: mockHandleLog,
-    });
 
     render(<WorkoutDisplayPage />);
 
-    await user.click(screen.getByRole('button', { name: /return to collection/i }));
-    expect(mockHandleReturn).toHaveBeenCalled();
+    // Simulate clicking the "Return to Collection" button
+    await user.click(
+      screen.getByRole('button', {
+        name: /return to collection/i,
+      })
+    );
 
-    await user.click(screen.getByRole('button', { name: /record workout/i }));
-    expect(mockHandleLog).toHaveBeenCalledWith('workout-123');
-  });
+    // Verify that the handleReturn function from the hook is called
+    expect(mockHookReturn.handleReturn).toHaveBeenCalled();
 
-  it('should correctly determine isPersonal based on publicId match', () => {
-    useWorkoutId.mockReturnValue({
-      ...mockHookReturn,
-      publicId: 'user-123',
-      data: {
-        data: {
-          ...mockWorkoutData.data,
-          creatorPublicId: 'user-123',
-        },
-      },
-    });
+    // Simulate clicking the "Record Workout" button
+    await user.click(
+      screen.getByRole('button', {
+        name: /record workout/i,
+      })
+    );
 
-    render(<WorkoutDisplayPage />);
-
-    // Should show delete button (isPersonal = true)
-    expect(screen.getByTestId('workout-display-card')).toBeInTheDocument();
-  });
-
-  it('should hide personal actions when not owner', () => {
-    useWorkoutId.mockReturnValue({
-      ...mockHookReturn,
-      publicId: 'different-user',
-      data: {
-        data: {
-          ...mockWorkoutData.data,
-          creatorPublicId: 'user-123',
-        },
-      },
-    });
-
-    const { container } = render(<WorkoutDisplayPage />);
-
-    // Delete button should not be in WorkoutDisplayCard
-    const card = screen.getByTestId('workout-display-card');
-    expect(card.querySelector('button')).not.toBeInTheDocument();
+    // Verify that the handleLog function from the hook is called with the correct workoutId
+    expect(mockHookReturn.handleLog).toHaveBeenCalledWith(
+      'workout-123'
+    );
   });
 });

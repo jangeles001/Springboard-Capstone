@@ -95,7 +95,6 @@ export async function resetPasswordController(req, res) {
   try {
     const { token } = req.params;
     const { password } = req.validatedBody;
-    console.log(`Setting new Password (${password}) with token: ${token}`);
     await userService.resetPassword(token, password);
     return res.generateSuccessResponse(null, "Password Reset Successful!", 200);
   } catch (error) {

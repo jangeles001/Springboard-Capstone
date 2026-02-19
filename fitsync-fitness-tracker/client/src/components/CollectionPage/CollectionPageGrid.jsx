@@ -8,7 +8,6 @@ export function CollectionPageGrid({
     data,
     emptyText,
     CardComponent,
-    publicId,
     onClick,
     handleDelete,
 }) {
@@ -30,7 +29,6 @@ export function CollectionPageGrid({
             <CardComponent 
             key={item.uuid || item.id} 
             item={item} 
-            publicId={publicId} 
             onClick={onClick} 
             handleDelete={handleDelete} 
             active={active} 

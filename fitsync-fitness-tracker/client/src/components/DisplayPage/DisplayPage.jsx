@@ -3,8 +3,17 @@ import { DisplayPageBody } from "./DisplayPageBody";
 import { DisplayPageFooter } from "./DisplayPageFooter";
 import Breadcrumbs from "../Breadcrumbs"
 
-export function DisplayPage({ hook, CardComponent, ResourceId, type }) { 
-  const { data, isLoading, isError, error, handleDelete, publicId, handleReturn, handleLog } = hook(ResourceId);
+export default function DisplayPage({ hook, CardComponent, ResourceId, type }) { 
+  const { 
+    data, 
+    isLoading, 
+    isError, 
+    error, 
+    handleDelete, 
+    publicId, 
+    handleReturn, 
+    handleLog 
+  } = hook(ResourceId);
   const isPersonal = publicId === data?.data?.creatorPublicId;
   const dynamicCrumb = data?.data?.uuid ?? type;
   

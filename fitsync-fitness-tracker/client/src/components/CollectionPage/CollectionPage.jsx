@@ -40,7 +40,6 @@ export function CollectionPage({
         data={data}
         emptyText={emptyText}
         CardComponent={CardComponent}
-        publicId={publicId}
         onClick={onClick}
         handleDelete={handleDelete}
       />
