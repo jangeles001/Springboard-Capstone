@@ -46,7 +46,11 @@ export function useRegistrationForm({ onSuccessFunction }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormField(name, value);
+    if(e.target.type === "checkbox") {
+      setFormField(name, e.target.checked);
+    }else{
+      setFormField(name, value);
+    }
 
     // If there is an error message for the field being updated, remove it from the formErrors state
     if (Object.keys(formErrors).includes(name)) {
