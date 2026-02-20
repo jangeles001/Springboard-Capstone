@@ -75,6 +75,7 @@ export async function deleteMeal(publicId, mealId) {
 
   // Meal doesn't exist (only collection entry or nothing)
   if (!meal) {
+    console.log("this one", collectionEntries);
     if (!hasCollectionEntry) {
       throw new NotFoundError("MEAL");
     }

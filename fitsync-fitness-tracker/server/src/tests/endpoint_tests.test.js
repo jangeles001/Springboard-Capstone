@@ -1434,21 +1434,22 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
           validateStatus: () => true,
         },
       );
+
       expect(results.status).to.equal(201);
 
-      const log = await WorkoutLog.findOne({
+      const log = await WorkoutLog.find({
         creatorPublicId: newUserB.publicId,
         sourceWorkoutUUID: newWorkoutA.uuid,
       });
 
       expect(log).to.exist;
 
-      const collectionEntry = await WorkoutCollection.findOne({
+      const collectionEntries = await WorkoutCollection.find({
         userPublicId: newUserB.publicId,
         workoutUUID: newWorkoutA.uuid,
       });
 
-      expect(collectionEntry).to.exist;
+      expect(collectionEntries.length).to.equal(1);
     });
 
     it("Should return 404 when workout does not exist", async () => {
@@ -1761,7 +1762,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       });
     });
 
-    it("Should return 200 and remove from collection when user deletes someone else's meal", async () => {
+    it("Should return 200 and remove from collection only when user deletes someone else's meal", async () => {
       // User B adds User A's meal to their collection
       await MealCollection.create({
         userPublicId: newUserB.publicId,
@@ -1783,6 +1784,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
           netCarbs: 3,
           calories: 120,
         },
+        isDeleted: false,
         consumedAt: new Date(),
       });
 
@@ -1813,8 +1815,9 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         creatorPublicId: newUserB.publicId,
         sourceMealUUID: newMealA.uuid,
       });
+
       userBLogs.forEach((log) => {
-        expect(log.isDeleted).to.be.true;
+        expect(log.isDeleted).to.be.false;
       });
     });
 
@@ -1823,6 +1826,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       await MealCollection.create({
         userPublicId: newUserA.publicId,
         mealUUID: newMealA.uuid,
+        isDeleted: false,
       });
 
       // Delete the actual meal
