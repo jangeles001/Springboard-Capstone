@@ -9,7 +9,7 @@ export async function addWorkoutToCollection(userPublicId, workoutUUID) {
 }
 
 export async function findWorkoutInCollectionById(userPublicId, workoutUUID) {
-  return await WorkoutCollection.find({
+  return await WorkoutCollection.findOne({
     userPublicId,
     workoutUUID,
   }).lean();

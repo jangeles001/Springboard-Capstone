@@ -38,8 +38,6 @@ const mealSchema = new mongoose.Schema(
     },
 
     mealMacros: { type: macrosSchema, required: true },
-
-    lastRecommendationGeneratedAt: { type: Date, default: null },
   },
   { timestamps: true },
 );

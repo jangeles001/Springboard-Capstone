@@ -35,7 +35,7 @@ export async function duplicateMeal(publicId, mealId) {
     mealId,
   );
 
-  if (collection && collection.length > 0) {
+  if (collection) {
     await mealLogRepo.createOneMealLogEntry({
       creatorPublicId: publicId,
       sourceMealUUID: mealId,
@@ -65,18 +65,21 @@ export async function duplicateMeal(publicId, mealId) {
 }
 
 export async function deleteMeal(publicId, mealId) {
-  // Fetch meals and collections entry in parallel
-  const [meal, collectionEntries] = await Promise.all([
-    mealRepo.findOneMealByUUID(mealId),
-    mealCollectionRepo.findMealInCollectionById(publicId, mealId),
-  ]);
 
-  const hasCollectionEntry = collectionEntries && collectionEntries.length > 0;
+  console.log("Deleting meal with ID:", mealId, "for user:", publicId);
+
+  // Fetch meals and collections entry in parallel
+  const [meal, collectionEntry] = await Promise.all([
+    mealRepo.findOneMealByUUID(mealId),
+    mealCollectionRepo.findMealInCollectionById(
+      publicId, 
+      mealId,
+    ),
+  ]);
 
   // Meal doesn't exist (only collection entry or nothing)
   if (!meal) {
-    console.log("this one", collectionEntries);
-    if (!hasCollectionEntry) {
+    if (!collectionEntry) {
       throw new NotFoundError("MEAL");
     }
 
@@ -100,6 +103,8 @@ export async function deleteMeal(publicId, mealId) {
   await Promise.all([
     mealCollectionRepo.removeMealFromCollection(publicId, mealId),
     mealCollectionRepo.updateDeletedMealInCollection(mealId, {
+      creatorPublicId: meal.creatorPublicId,
+      uuid: meal.uuid,
       mealName: meal.mealName,
       mealMacros: meal.mealMacros,
     }),

@@ -1324,6 +1324,8 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
         },
       );
 
+      console.log(results);
+
       expect(results.status).to.equal(404);
       expect(results.data.message).to.equal("WORKOUT_NOT_FOUND");
     });
@@ -1826,7 +1828,6 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       await MealCollection.create({
         userPublicId: newUserA.publicId,
         mealUUID: newMealA.uuid,
-        isDeleted: false,
       });
 
       // Delete the actual meal

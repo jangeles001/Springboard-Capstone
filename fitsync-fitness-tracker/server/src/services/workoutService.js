@@ -34,7 +34,7 @@ export async function duplicateWorkout(publicId, workoutId) {
     workoutId,
   );
 
-  if (collection && collection.length > 0) {
+  if (collection) {
     workoutLogRepo.createOneWorkoutLogEntry({
       creatorPublicId: publicId,
       sourceWorkoutUUID: workoutId,
@@ -63,20 +63,19 @@ export async function duplicateWorkout(publicId, workoutId) {
 
 export async function deleteWorkout(publicId, workoutId) {
   // Fetch workouts and collections entry in parallel
-  const [workout, collectionEntries] = await Promise.all([
+  const [workout, collectionEntry] = await Promise.all([
     workoutRepo.findOneWorkoutByUUID(workoutId),
     workoutCollectionRepo.findWorkoutInCollectionById(
       publicId,
       workoutId,
-      true,
     ),
   ]);
 
-  const hasCollectionEntry = collectionEntries && collectionEntries.length > 0;
+  console.log(collectionEntry);
 
   // Workout doesn't exist (only collection entry or nothing)
   if (!workout) {
-    if (!hasCollectionEntry) {
+    if (!collectionEntry) {
       throw new NotFoundError("WORKOUT");
     }
 
