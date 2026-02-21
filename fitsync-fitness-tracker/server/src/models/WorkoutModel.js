@@ -40,7 +40,7 @@ export const workoutExerciseSchema = new mongoose.Schema(
     },
     aiFeatures: { type: Object, default: {} }, // snapshot AI features
   },
-  { _id: false }
+  { _id: false },
 );
 
 // Mongoose schema definition
@@ -88,9 +88,8 @@ export const workoutSchema = new mongoose.Schema(
       default: false,
       index: true,
     },
-
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Customized JSON output
