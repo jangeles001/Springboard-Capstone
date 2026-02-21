@@ -1,7 +1,6 @@
 import "./utils/responseEnhancer.js";
 import express from "express";
 import cors from "cors";
-import session from "express-session";
 import cookieParser from "cookie-parser";
 import workoutsRouter from "./routes/workouts.js";
 import authRouter from "./routes/auth.js";
@@ -24,13 +23,6 @@ app.use(
   }),
 );
 app.use(express.json());
-app.use(
-  session({
-    secret: getEnv("JWT_SECRET"),
-    resave: false,
-    saveUninitialized: false,
-  }),
-);
 app.use(cookieParser());
 
 // Health check
