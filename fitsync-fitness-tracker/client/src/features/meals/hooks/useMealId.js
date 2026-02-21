@@ -9,10 +9,11 @@ export function useMealId(mealId) {
   // Global store state selector
   const publicId = usePublicId();
 
+  // Initialize query client and navigation
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Query hook fetches workout data for the given mealId and caches the result per mealtId and publicId
+  // Query hook fetches meal data for the given mealId and caches the result per mealId and publicId
   const query = useQuery({
     queryKey: ["meal", mealId, publicId],
     queryFn: () => fetchMealById({ mealId }),
@@ -21,17 +22,37 @@ export function useMealId(mealId) {
   // Mutate hook that sends delete request to the delete meals endpoint
   const deleteMealMutation = useMutation({
     mutationFn: (mealId) => api.delete(`api/v1/meals/delete/${mealId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        // Invalidate all queries containing this meal
+        queryKey: ["meal", mealId, publicId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["meals", "All"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["meals", "Personal"],
+      });
+    },
+    onError: () => toast.error("Something went wrong! Please try again later."),
   });
 
   // Mutate hook that sends duplication request to the duplication endpoint
   const addMealMutation = useMutation({
     mutationFn: (mealId) => api.post(`api/v1/meals/duplicate/${mealId}`),
     onSuccess: () => {
+      // Invalidates query cache so dashboard charts refreshes with updated data
       queryClient.invalidateQueries({
-        queryKey: ["meal"],
+        queryKey: ["dashboard", "nutrition"],
+      });
+
+      // Invalidates query cache to ensure any new workouts are displayed in the user collections
+      queryClient.invalidateQueries({
+        queryKey: ["meals", "Personal"],
       });
       toast.success("Meal logged successfully!");
-    }
+    },
+    onError: () => toast.error("Something went wrong! Please try again later!"),
   });
 
   // Function that handles navigation to the meals display page
@@ -39,7 +60,8 @@ export function useMealId(mealId) {
     return navigate({ to: "/dashboard/meals" });
   };
 
-  // Function calls add meal mutation to either add meal to the users personal collection and logs it or just logs it if it already exists in users collection
+  // Function calls add meal mutation to either add meal to the users personal collection and logs it or just logs
+  //  it if it already exists in users collection
   const handleLog = () => {
     addMealMutation.mutate(mealId);
   };
@@ -47,10 +69,7 @@ export function useMealId(mealId) {
   // Function calls delete meal mutation and removes any data associated with its key from the query client cache.
   const handleDelete = () => {
     deleteMealMutation.mutate(mealId);
-    queryClient.invalidateQueries({
-      queryKey: ["meal"],
-    });
-    handleReturn();
+    if (deleteMealMutation.isError) handleReturn();
   };
 
   return {

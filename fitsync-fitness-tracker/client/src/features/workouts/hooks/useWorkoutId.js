@@ -9,6 +9,7 @@ export function useWorkoutId(workoutId) {
   // Global store state selector
   const publicId = usePublicId();
 
+  // Initialize query client and navigation
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -22,6 +23,19 @@ export function useWorkoutId(workoutId) {
   const deleteWorkoutMutation = useMutation({
     mutationFn: (workoutId) =>
       api.delete(`api/v1/workouts/delete/${workoutId}`),
+    onSuccess: () => {
+      // Invalidate all queries containing this workout
+      queryClient.invalidateQueries({
+        queryKey: ["workouts", workoutId, publicId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["workouts", "All"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["workouts", "Personal"],
+      });
+    },
+    onError: () => toast.error("Something went wrong! Please try again later."),
   });
 
   // Mutate hook that sends duplication request to the duplication endpoint
@@ -29,11 +43,18 @@ export function useWorkoutId(workoutId) {
     mutationFn: (workoutId) =>
       api.post(`api/v1/workouts/duplicate/${workoutId}`),
     onSuccess: () => {
+      // Invalidates query cache so dashboard charts refreshes with updated data
       queryClient.invalidateQueries({
-        queryKey: ["workout"],
+        queryKey: ["dashboard", "workouts"],
+      });
+
+      // Invalidates query cache to ensure any new workouts are displayed in the user collections
+      queryClient.invalidateQueries({
+        queryKey: ["workouts", "Personal"],
       });
       toast.success("Workout logged successfully!");
     },
+    onError: () => toast.error("Something went wrong! Please try again later!"),
   });
 
   // Function that handles navigation to the workouts display page
@@ -49,13 +70,7 @@ export function useWorkoutId(workoutId) {
   // Function calls delete workout mutation and removes any data associated with its key from the query client cache.
   const handleDelete = (workoutId) => {
     deleteWorkoutMutation.mutate(workoutId);
-    queryClient.invalidateQueries({
-      queryKey: ["workout", workoutId, publicId],
-    });
-    queryClient.invalidateQueries({
-      queryKey: ["workout", "All", 10],
-    });
-    return navigate({ to: "/dashboard/workouts" });
+    if (deleteWorkoutMutation.isSuccess) handleReturn();
   };
 
   return {

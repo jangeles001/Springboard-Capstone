@@ -6,6 +6,7 @@ import {
   useWorkoutActions,
 } from "../store/WorkoutStore";
 import { api } from "../../../services/api";
+import { toast } from "react-hot-toast";
 
 export default function useWorkouts() {
   // Store state selector
@@ -37,7 +38,7 @@ export default function useWorkouts() {
       resetCreatedWorkout();
     },
     onError: (error) => {
-      console.error("Error creating resource", error);
+      toast.error("Something went wrong! Please try again later.");
     },
   });
 
@@ -48,11 +49,12 @@ export default function useWorkouts() {
 
     // If there is an error message for the field being updated, remove it from the formErrors state
     if (Object.keys(formErrors).includes(name)) {
-      setFormErrors(prev => {
+      setFormErrors((prev) => {
         const next = { ...prev };
         delete next[name];
         return next;
-    })};
+      });
+    }
   };
 
   const handleExerciseInformationChange = (e, id, field) => {

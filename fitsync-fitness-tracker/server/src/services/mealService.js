@@ -65,16 +65,10 @@ export async function duplicateMeal(publicId, mealId) {
 }
 
 export async function deleteMeal(publicId, mealId) {
-
-  console.log("Deleting meal with ID:", mealId, "for user:", publicId);
-
   // Fetch meals and collections entry in parallel
   const [meal, collectionEntry] = await Promise.all([
     mealRepo.findOneMealByUUID(mealId),
-    mealCollectionRepo.findMealInCollectionById(
-      publicId, 
-      mealId,
-    ),
+    mealCollectionRepo.findMealInCollectionById(publicId, mealId),
   ]);
 
   // Meal doesn't exist (only collection entry or nothing)

@@ -5,23 +5,27 @@ import { fetchAllWorkouts } from "../services/fetchAllWorkouts";
 import { api } from "../../../services/api";
 import { usePublicId } from "../../../store/UserStore";
 import { useNavigate } from "@tanstack/react-router";
+import { toast } from "react-hot-toast";
 
 export function useWorkoutsList({ limit }) {
-  // Global store state selector
+  // Store state selector
   const publicId = usePublicId();
 
+  // Initialize query client and navigation
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Hook local page state object
+  //Local state to manage pagination for both "Personal" and "All" meals lists
   const [pages, setPages] = useState({
     Personal: 1,
     All: 1,
   });
-  // State for current active page
+
+  // Local state to track which workout list is currently active
   const [active, setActive] = useState("Personal");
 
-  // Prefetch query hook fetches personal or all workouts depending on the active value and caches the result per active value, page, and limit
+  // Prefetch query hook fetches personal or all workouts depending on
+  // the active value and caches the result per active value, page, and limit
   useEffect(() => {
     const nextTab = active === "Personal" ? "All" : "Personal";
     const nextPage = pages[nextTab];
@@ -46,7 +50,6 @@ export function useWorkoutsList({ limit }) {
     keepPreviousData: true,
     refetchOnWindowFocus: false,
     staleTime: 2 * 60 * 1000, // 2 minutes
-    refetchOnMount: "always",
   });
 
   // Mutate hook that sends delete request to the delete workout endpoint
@@ -58,6 +61,10 @@ export function useWorkoutsList({ limit }) {
       queryClient.invalidateQueries({
         queryKey: ["workouts"],
       });
+      toast.success("Workout deleted successfully!");
+    },
+    onError: () => {
+      toast.error("Something went wrong! Please try again later.");
     },
   });
 
@@ -73,7 +80,7 @@ export function useWorkoutsList({ limit }) {
   const handleDelete = (workoutId) => {
     deleteWorkoutMutation.mutate(workoutId);
     queryClient.invalidateQueries({
-      queryKey: ["workouts", active, limit],
+      queryKey: ["workouts", active],
     });
   };
 

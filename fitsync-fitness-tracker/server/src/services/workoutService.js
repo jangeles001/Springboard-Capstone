@@ -65,13 +65,8 @@ export async function deleteWorkout(publicId, workoutId) {
   // Fetch workouts and collections entry in parallel
   const [workout, collectionEntry] = await Promise.all([
     workoutRepo.findOneWorkoutByUUID(workoutId),
-    workoutCollectionRepo.findWorkoutInCollectionById(
-      publicId,
-      workoutId,
-    ),
+    workoutCollectionRepo.findWorkoutInCollectionById(publicId, workoutId),
   ]);
-
-  console.log(collectionEntry);
 
   // Workout doesn't exist (only collection entry or nothing)
   if (!workout) {

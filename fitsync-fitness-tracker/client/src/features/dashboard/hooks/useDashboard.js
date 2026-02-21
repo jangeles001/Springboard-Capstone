@@ -15,7 +15,6 @@ export function useDashboard(range) {
     queryFn: () => fetchNutritionReports(range),
     enabled: activeView === "nutrition",
     staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnMount: "always",
   });
 
   // Query hook for fetching workout reports, enabled only when the active view is "workouts"
@@ -24,7 +23,6 @@ export function useDashboard(range) {
     queryFn: () => fetchWorkoutReports(range),
     enabled: activeView === "workouts",
     staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnMount: "always",
   });
 
   // Query hook for fetching recommendations, always enabled and with a longer stale time since recommendations will not change frequently
