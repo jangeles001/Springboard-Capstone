@@ -1,4 +1,4 @@
-import { optional, z } from "zod";
+import { z } from "zod";
 
 export const exerciseZodSchema = z.object({
   exerciseId: z.string({
