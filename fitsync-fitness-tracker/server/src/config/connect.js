@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { getEnv } from "./envConfig.js";
 
 async function connectDB() {
-  if (getEnv("NODE_ENV") === "test") {
+  if (getEnv("NODE_ENV") === "development") {
     await mongoose.connect(getEnv("MONGO_TEST_URI"));
   } else {
     await mongoose.connect(getEnv("MONGO_URI"));

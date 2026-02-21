@@ -11,7 +11,8 @@ import { NotFoundError } from "../errors/NotFoundError.js";
 import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 import { getDateRange } from "../utils/getDateRange.js";
 import { calculateMacros } from "../utils/calculateMacros.js";
-import { mailjet } from "../config/nodeMailer.js";
+import { sendUserVerificationEmail } from "../utils/sendUserVerificationEmail.js";
+import { sendPasswordResetEmail } from "../utils/sendPasswordResetEmail.js";
 import * as userRepo from "../repositories/userRepo.js";
 import { findOneWorkoutByUUID } from "../repositories/workoutRepo.js";
 import { findOneMealByUUID } from "../repositories/mealRepo.js";
@@ -51,35 +52,13 @@ export async function registerNewUser(userData) {
   // Creates email verification token, stores in redis with 24 hour expiration, and sends verification email to user with link containing token
   const verificationToken = uuidv4();
 
-  await redisClient.setEx(
+  await redisClient.setex(
     `emailVerificationToken:${verificationToken}`,
-    86400,
+    86400, //24 hour expiration
     JSON.stringify({ uuid: newUser.uuid }),
   );
 
-  if (getEnv("NODE_ENV") !== "test") {
-    const verifyUrl = `${getEnv("CLIENT_ORIGIN")}/auth/verify/${verificationToken}`;
-    await mailjet.post("send", { version: "v3.1" }).request({
-      Messages: [
-        {
-          From: {
-            Email: getEnv("MAILJET_FROM_EMAIL"),
-            Name: getEnv("MAILJET_FROM_NAME"),
-          },
-          To: [
-            {
-              Email: newUser.email,
-            },
-          ],
-          TemplateID: 7732849,
-          TemplateLanguage: true,
-          Variables: {
-            verifyLink: verifyUrl,
-          },
-        },
-      ],
-    });
-  }
+  await sendUserVerificationEmail(newUser, verificationToken);
 
   return {
     accessToken,
@@ -113,36 +92,14 @@ export async function initiatePasswordReset(email) {
   const resetToken = uuidv4();
 
   // Stores token in redis with 1 hour expiration time
-  await redisClient.setEx(
+  await redisClient.setex(
     `passwordResetVerificationToken:${resetToken}`,
-    3600,
+    7200, // 2 hour expiration
     JSON.stringify({ uuid: user.uuid }),
   );
 
-  if (getEnv("NODE_ENV") !== "test") {
-    // Creates email verification token, stores in redis with 24 hour expiration, and sends verification email to user with link containing token
-    const resetUrl = `${getEnv("CLIENT_ORIGIN")}/auth/change-password/${resetToken}`;
-    await mailjet.post("send", { version: "v3.1" }).request({
-      Messages: [
-        {
-          From: {
-            Email: getEnv("MAILJET_FROM_EMAIL"),
-            Name: getEnv("MAILJET_FROM_NAME"),
-          },
-          To: [
-            {
-              Email: user.email,
-            },
-          ],
-          TemplateID: 7733362,
-          TemplateLanguage: true,
-          Variables: {
-            resetLink: resetUrl,
-          },
-        },
-      ],
-    });
-  }
+  await sendPasswordResetEmail(user, resetToken);
+
   return;
 }
 
@@ -152,7 +109,7 @@ export async function resetPassword(token, newPassword) {
   if (!user) throw new UnauthorizedError();
 
   // If token is valid, hashes new password and updates user document with new password hash and deletes the token from redis
-  const uuid = JSON.parse(user).uuid;
+  const { uuid } = user;
   const salt = await generateSalt();
   const newPasswordHash = await hashPassword(newPassword, salt);
 
@@ -205,7 +162,7 @@ export async function generateTokens(user) {
   const refreshToken = uuidv4(); // Opaque string
 
   // Sets redis key with newly generated refreshToken, user.uuid, and issued date
-  await redisClient.setEx(
+  await redisClient.setex(
     `refreshToken:${refreshToken}`,
     604800,
     JSON.stringify({
@@ -221,7 +178,7 @@ export async function revokeRefreshToken(refreshToken) {
   const stored = await redisClient.get(`refreshToken:${refreshToken}`);
   if (!stored) return; // returns if redis client has already expired the token entry
 
-  const { iat } = JSON.parse(stored);
+  const { iat } = stored;
   const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
   const timeElapsed = now - iat;
@@ -229,7 +186,7 @@ export async function revokeRefreshToken(refreshToken) {
 
   // Sets new `revoked:${refreshToken}` key with remaining lifetime in cache
   if (timeRemaining > 0) {
-    await redisClient.setEx(
+    await redisClient.setex(
       `revoked:${refreshToken}`,
       Math.floor(timeRemaining / 1000),
       "revoked",

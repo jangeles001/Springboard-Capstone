@@ -72,7 +72,8 @@ export async function getUserController(req, res) {
     const { publicId } = await userService.getPrivateUserInformation(sub);
     return res.generateSuccessResponse({ username, publicId }, "Success!", 200);
   } catch (error) {
-     // Error is caught but we return success with null data. This is to prevent malicious actors from being able to determine if a user exists based on the error message.
+    // Error is caught but we return success with null data.
+    // This is to prevent malicious actors from being able to determine if a user exists based on the error message.
     return res.generateSuccessResponse(null, "Success!", 200);
   }
 }
@@ -158,7 +159,7 @@ export async function logout(req, res) {
     await new Promise((resolve) => {
       req.session.destroy((destroyError) => {
         if (destroyError) {
-          console.error("Session destroy failed:", destroyError);
+          console.error("SESSION_DESTROY_FAILED:", destroyError);
         }
         resolve();
       });

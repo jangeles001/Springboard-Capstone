@@ -1,21 +1,29 @@
 import nodemailer from "nodemailer";
-import Mailjet from "node-mailjet";
 import { getEnv } from "./envConfig.js";
 
-
-export const transporter = nodemailer.createTransport({
-  host: "in-v3.mailjet.com",
-  port: 587,
-  secure: false,
+const transporter = nodemailer.createTransport({
+  service: "gmail",
   auth: {
-    user: getEnv("MAILJET_API_KEY"),
-    pass: getEnv("MAILJET_SECRET_KEY"),
+    user: getEnv("GMAIL_EMAIL"),
+    pass: getEnv("GMAIL_APP_PASSWORD"),
   },
 });
 
-export const mailjet = Mailjet.apiConnect(
-  getEnv("MAILJET_API_KEY"),
-  getEnv("MAILJET_SECRET_KEY")
-);
+export async function sendEmail({ to, subject, html }) {
+  const env = getEnv("NODE_ENV");
+
+  // Skip if in development environment
+  if (["test", "development"].includes(env)) {
+    console.log(`[Email skipped in test] → ${to}: ${subject}`);
+    return;
+  }
+
+  await transporter.sendMail({
+    from: `"FitSync" <${getEnv("GMAIL_EMAIL")}>`,
+    to,
+    subject,
+    html,
+  });
+}
 
 console.log("Email services configured");

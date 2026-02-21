@@ -1,5 +1,3 @@
-process.env.NODE_ENV = "test";
-
 import { expect } from "chai";
 import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
@@ -35,7 +33,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       Meal.deleteMany({}),
       MealLog.deleteMany({}),
       MealCollection.deleteMany({}),
-      redisClient.flushDb(),
+      redisClient.flushall(),
       userA.jar.removeAllCookies(),
       userB.jar.removeAllCookies(),
     ]);
@@ -553,7 +551,7 @@ describe("Workout Creation, Logging, and Deletion Tests", function () {
       await registerNewUser(userData);
     });
 
-    it("Should return 200 and send reset email for valid email", async () => {
+    it("Should return 200 and send reset password email for valid email", async () => {
       const response = await userA.client.post(
         `${BASE_URL}/api/v1/auth/reset-password`,
         { email: "reset@example.com" },

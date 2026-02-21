@@ -1,9 +1,7 @@
 import "./utils/responseEnhancer.js";
 import express from "express";
 import cors from "cors";
-import path from "path";
 import session from "express-session";
-import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 import workoutsRouter from "./routes/workouts.js";
 import authRouter from "./routes/auth.js";
@@ -35,26 +33,16 @@ app.use(
 );
 app.use(cookieParser());
 
+// Health check
+app.get("/health", (req, res) => {
+  res.status(200).send("API is running");
+});
+
 // Routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/workouts", workoutsRouter);
 app.use("/api/v1/meals", mealsRouter);
-
-// Resolve __dirname in ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-if (getEnv("NODE_ENV") === "production") {
-  // Serves the built frontend (client/dist)
-  const clientPath = path.join(__dirname, "../client/dist");
-  app.use(express.static(clientPath));
-
-  // Catch-all: sends index.html for any unknown route
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(clientPath, "index.html")); // TODO: Connect vite frontend with server response?
-  });
-}
 
 async function startServer() {
   try {
