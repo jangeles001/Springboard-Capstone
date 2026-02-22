@@ -6,6 +6,8 @@ import {
   useFormErrors,
   useRegisterFormActions,
 } from "../store/RegistrationStore";
+import { toast } from "react-hot-toast";
+
 export function useRegistrationForm({ onSuccessFunction }) {
   // Store state slices
   const fields = {
@@ -46,19 +48,20 @@ export function useRegistrationForm({ onSuccessFunction }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if(e.target.type === "checkbox") {
+    if (e.target.type === "checkbox") {
       setFormField(name, e.target.checked);
-    }else{
+    } else {
       setFormField(name, value);
     }
 
     // If there is an error message for the field being updated, remove it from the formErrors state
     if (Object.keys(formErrors).includes(name)) {
-      setFormErrors(prev => {
+      setFormErrors((prev) => {
         const next = { ...prev };
         delete next[name];
         return next;
-    })};
+      });
+    }
   };
 
   // Toggles the visibility of the password input field
@@ -99,6 +102,7 @@ export function useRegistrationForm({ onSuccessFunction }) {
     registerMutation.mutate(formData, {
       onSuccess: () => {
         resetOnValidation();
+        toast.success("Verification email sent!");
         onSuccessFunction();
       },
       onError: (error) => {
@@ -118,6 +122,7 @@ export function useRegistrationForm({ onSuccessFunction }) {
     formErrors,
     hasErrors,
     passwordVisible,
+    isPending: registerMutation.isPending,
     serverErrorMessage: registerMutation.error?.response?.data?.message,
     mutateError: registerMutation.error,
     handlePasswordToggle,

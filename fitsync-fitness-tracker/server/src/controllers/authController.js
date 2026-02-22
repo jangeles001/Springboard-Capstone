@@ -11,14 +11,14 @@ export const createUser = async (req, res) => {
     res.cookie("accessToken", results.accessToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
-      sameSite: "strict", // CSRF protection
+      sameSite: getEnv("NODE_ENV") === "production" ? "none" : "lax",
       maxAge: 15 * 60 * 1000, // 15 min lifetime
     });
 
     res.cookie("refreshToken", results.refreshToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
-      sameSite: "strict", // CSRF protection
+      sameSite: getEnv("NODE_ENV") === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
 
@@ -49,14 +49,14 @@ export async function login(req, res) {
     res.cookie("accessToken", validatedUser.accessToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
-      sameSite: "strict", // CSRF protection
+      sameSite: getEnv("NODE_ENV") === "production" ? "none" : "lax",
       maxAge: 15 * 60 * 1000, // 15 min lifetime
     });
 
     res.cookie("refreshToken", validatedUser.refreshToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
-      sameSite: "strict", // CSRF protection
+      sameSite: getEnv("NODE_ENV") === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
 
@@ -111,14 +111,14 @@ export async function refreshSessionTokens(req, res) {
     res.cookie("accessToken", results.newAccessToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
-      sameSite: "strict", // CSRF protection
+      sameSite: getEnv("NODE_ENV") === "production" ? "none" : "lax",
       maxAge: 15 * 60 * 1000, // 15 min lifetime
     });
 
     res.cookie("refreshToken", results.newRefreshToken, {
       httpOnly: true, // prevents access via JavaScript
       secure: getEnv("NODE_ENV") === "production", // only HTTPS in prod
-      sameSite: "strict", // CSRF protection
+      sameSite: getEnv("NODE_ENV") === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day lifetime
     });
 

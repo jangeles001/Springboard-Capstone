@@ -3,6 +3,7 @@ import { useRegistrationForm } from '../hooks/useRegistrationForm'
 import FieldErrorMessages from '../../../components/FieldErrorMessages';
 import { FormField } from '../../../components/FormField';
 import { FormInput } from '../../../components/FormInput'
+import Loading from "../../../components/Loading"
 
 export default function RegistrationForm() {
     const router = useRouter();
@@ -23,6 +24,7 @@ export default function RegistrationForm() {
         agreeToTerms,
         formErrors,
         hasErrors,
+        isPending,
         serverErrorMessage,
         handlePasswordToggle,
         handleChange,
@@ -30,6 +32,8 @@ export default function RegistrationForm() {
     } = useRegistrationForm({ 
             onSuccessFunction: () => router.navigate({ to: "/dashboard/" })
         });
+
+    if(isPending) return <Loading type="overlay" />
     
     return (
         <div className='flex justify-center-safe mt-5 mb-auto  md:h-full min-w-[600px]'>
@@ -249,7 +253,7 @@ export default function RegistrationForm() {
                         <span className='col-span-1 text-red-500'>
                             {serverErrorMessage && <p>{serverErrorMessage}</p>}
                         </span>
-                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100'>Submit</button>
+                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100' disabled={isPending}>Submit</button>
                     </div>
                 </form>
             </div>

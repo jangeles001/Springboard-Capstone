@@ -18,7 +18,7 @@ export default function Loading({ type }){
             }
             {type === 'overlay' &&
                 <div 
-                    className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm z-50"
+                    className="absolute inset-0 flex items-center justify-center bg-gray-300/50 backdrop-blur-sm z-50"
                     role="status"
                     aria-live="polite" 
                 >

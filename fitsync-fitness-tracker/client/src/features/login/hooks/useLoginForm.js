@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import {
   useFormDataPassword,
@@ -37,11 +37,12 @@ export function useLoginForm({ onSuccessFunction }) {
 
     // If there is an error message for the field being updated, remove it from the formErrors state
     if (Object.keys(formErrors).includes(name)) {
-      setFormErrors(prev => {
+      setFormErrors((prev) => {
         const next = { ...prev };
         delete next[name];
         return next;
-    })};
+      });
+    }
   };
 
   // Handles password visibility toggle
@@ -59,7 +60,7 @@ export function useLoginForm({ onSuccessFunction }) {
         return next;
       });
     }
-  }
+  };
 
   // Validates and submit the form
   const handleSubmit = async (e) => {
@@ -110,6 +111,10 @@ export function useLoginForm({ onSuccessFunction }) {
       },
     );
   };
+
+  useEffect(() => {
+    return () => resetForm(); // ensure form state when component unmounts
+  }, []);
 
   return {
     formDataEmail,
