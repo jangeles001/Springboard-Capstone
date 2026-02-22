@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   useMealFormDataName,
   useMealFormDataDescription,
@@ -35,6 +35,9 @@ export function useMealsForm() {
 
   // Global User State
   const publicId = usePublicId();
+
+  // Initialize query client and navigation
+  const queryClient = useQueryClient();
 
   // Notification State
   const { message, notify } = useNotification();

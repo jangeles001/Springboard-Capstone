@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   useCreatedWorkout,
   useFormErrors,
@@ -12,6 +12,9 @@ export default function useWorkouts() {
   // Store state selector
   const createdWorkout = useCreatedWorkout();
   const formErrors = useFormErrors();
+
+  // Initialize query client and navigation
+  const queryClient = useQueryClient();
 
   // Store actions selector
   const {
