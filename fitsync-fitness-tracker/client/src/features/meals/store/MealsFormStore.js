@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { removeKey } from "../../../utils/stateHelpers";
 
 /*
 ingredient object ex. {
@@ -15,13 +16,27 @@ const initialFormData = {
   mealName: "",
   mealDescription: "",
   ingredients: [],
-  mealMacros: { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
+  mealMacros: {
+    protein: 0,
+    fat: 0,
+    carbs: 0,
+    fiber: 0,
+    netCarbs: 0,
+    calories: 0,
+  },
 };
 
 const validators = {
   mealName: [(value) => (!value ? "Meal name is required!" : "")],
   mealDescription: [(value) => (!value ? "Meal description is required!" : "")],
-  ingredients: [(value) =>  (value.length <= 0 ? "You must select at least one ingredient!" : "")],
+  ingredients: [
+    (value) =>
+      value.length <= 0 ? "You must select at least one ingredient!" : "",
+    (value) => {
+      const invalid = value.some((ingredient) => !ingredient.quantity);
+      return invalid ? "One or more ingredients has invalid values" : "";
+    },
+  ],
 };
 
 const useMealsStore = create((set, get) => ({
@@ -35,6 +50,11 @@ const useMealsStore = create((set, get) => ({
           [field]: value,
         },
       }));
+
+      const { formErrors, actions } = get();
+      if (field in formErrors) {
+        actions.setFormErrors((prev) => removeKey(prev, field));
+      }
     },
     updateMacros: () => {
       const ingredients = get().mealFormData.ingredients;
@@ -46,7 +66,7 @@ const useMealsStore = create((set, get) => ({
           });
           return acc;
         },
-        { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 }
+        { protein: 0, fat: 0, carbs: 0, fiber: 0, netCarbs: 0, calories: 0 },
       );
 
       set((state) => ({
@@ -56,9 +76,17 @@ const useMealsStore = create((set, get) => ({
         },
       }));
     },
+    // Sets formErrors state via updater function or direct value
+    setFormErrors: (updater) =>
+      set((state) => ({
+        formErrors:
+          typeof updater === "function" ? updater(state.formErrors) : updater,
+      })),
     getIngredientField: (itemId, field) => {
       const ingredients = get().mealFormData.ingredients;
-      const ingredient = ingredients.find((item) => item.ingredientId === itemId);
+      const ingredient = ingredients.find(
+        (item) => item.ingredientId === itemId,
+      );
       return ingredient ? ingredient[field] : undefined;
     },
     addIngredient: (ingredient) => {
@@ -68,6 +96,11 @@ const useMealsStore = create((set, get) => ({
           ingredients: [...state.mealFormData.ingredients, { ...ingredient }],
         },
       }));
+
+      const { formErrors, actions } = get();
+      if (formErrors?.ingredients) {
+        actions.setFormErrors((prev) => removeKey(prev, "ingredients"));
+      }
     },
     changeIngredientField: (ingredientId, field, value) => {
       set((state) => ({
@@ -76,20 +109,30 @@ const useMealsStore = create((set, get) => ({
           ingredients: state.mealFormData.ingredients.map((ingredient) =>
             ingredient.ingredientId === ingredientId
               ? { ...ingredient, [field]: value }
-              : ingredient
+              : ingredient,
           ),
         },
       }));
+      const { formErrors, actions } = get();
+      if (formErrors?.ingredients) {
+        actions.setFormErrors((prev) => removeKey(prev, "ingredients"));
+      }
     },
-    removeIngredient: (id) =>
+    removeIngredient: (id) => {
       set((state) => ({
         mealFormData: {
           ...state.mealFormData,
           ingredients: state.mealFormData.ingredients.filter(
-            (ingredient) => ingredient.ingredientId !== id
+            (ingredient) => ingredient.ingredientId !== id,
           ),
         },
-      })),
+      }));
+
+      const { formErrors, actions } = get();
+      if (formErrors?.ingredients) {
+        actions.setFormErrors((prev) => removeKey(prev, "ingredients"));
+      }
+    },
     resetForm: () => {
       set(() => ({
         mealFormData: initialFormData,
@@ -115,9 +158,6 @@ const useMealsStore = create((set, get) => ({
 
       return { isValid };
     },
-    // Sets formErrors state
-    setFormErrors: (errors) => 
-      set({formErrors: errors}),
   },
 }));
 
@@ -134,12 +174,13 @@ export const useMealFormDataCalories = () =>
   useMealsStore((state) =>
     state.mealFormData.ingredients.reduce(
       (sum, ingredient) => sum + (ingredient.macros.calories || 0),
-      0
-    )
+      0,
+    ),
   );
 export const useMealFormDataMealMacros = () =>
   useMealsStore((state) => state.mealFormData.mealMacros);
-export const useMealFormErrors = () => useMealsStore((state) => state.formErrors);
+export const useMealFormErrors = () =>
+  useMealsStore((state) => state.formErrors);
 
 // Actions selector
 export const useMealsActions = () => useMealsStore((state) => state.actions);

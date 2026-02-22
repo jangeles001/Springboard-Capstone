@@ -48,7 +48,6 @@ export async function findAllMealLogsByUserPublicId(userPublicId, range) {
       $match: {
         creatorPublicId: userPublicId,
         consumedAt: { $gte: start, $lt: end },
-        isDeleted: false,
       },
     },
     {

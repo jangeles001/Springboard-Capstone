@@ -30,6 +30,7 @@ export function useMealId(mealId) {
       queryClient.invalidateQueries({
         queryKey: ["meals"],
       });
+      toast.success("Meal deleted successfully!");
     },
     onError: () => toast.error("Something went wrong! Please try again later."),
   });

@@ -5,7 +5,7 @@ export function WorkoutsBuilderComposer({ children }) {
     const workouts = useWorkouts();
     return (
         <WorkoutsBuilderContext.Provider value={workouts}>
-          <div className="flex h-min flex-col rounded-2xl border bg-white shadow-sm">
+          <div className="flex h-min min-w-[300px] flex-col rounded-2xl border bg-white shadow-sm">
 
             <form
               onSubmit={workouts?.handleSubmit}

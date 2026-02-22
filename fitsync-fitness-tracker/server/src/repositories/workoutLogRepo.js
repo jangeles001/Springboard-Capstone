@@ -41,7 +41,6 @@ export async function findAllWorkoutLogsByUserPublicId(userPublicId, range) {
       $match: {
         creatorPublicId: userPublicId,
         executedAt: { $gte: start, $lt: end },
-        isDeleted: false,
       },
     },
 

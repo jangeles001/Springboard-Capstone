@@ -1,11 +1,13 @@
 import { useWorkoutsBuilderContext } from '../../hooks/useWorkoutsBuilder'
 import { PortalTooltip } from '../../../../components/PortalTooltip'
+import FieldErrorMessages from '../../../../components/FieldErrorMessages';
 
 const GRID =
   "grid grid-cols-1 md:grid-cols-8 gap-x-4 gap-y-3";
 
 export function WorkoutsBuilderSelectedExercises() {
   const { 
+    formErrors,
     createdWorkout,
     UNIT_OPTIONS,
     handleExerciseInformationChange,
@@ -13,11 +15,11 @@ export function WorkoutsBuilderSelectedExercises() {
   } = useWorkoutsBuilderContext();
 
   return (
-    <div className="flex flex-col gap-6">
-      <h3 className="text-lg font-semibold text-gray-900">
+    <div className="flex flex-col gap-6 min-w-[200px]">
+      <h3 className={ formErrors?.exercises ? `form-label-error` : `text-lg font-semibold text-gray-900`}>
         Selected Exercises
       </h3>
-
+      <FieldErrorMessages field="exercises" error={formErrors?.exercises} />
       <div className="rounded-xl border bg-gray-50 p-4">
 
         <div className={`${GRID} hidden md:grid font-semibold text-sm`}>
@@ -41,15 +43,13 @@ export function WorkoutsBuilderSelectedExercises() {
 
           return (
             <div key={exercise.id} className={GRID}>
-
-
               <div className="md:col-span-3">
                 <span className="md:hidden text-xs font-semibold text-gray-500">
                   Exercise
                 </span>
 
                 <PortalTooltip
-                  text={exercise.translations?.[0]?.description || "No description"}
+                  text={exercise?.translations?.[0]?.description || "No description"}
                 >
                   <button
                     type="button"
@@ -62,6 +62,7 @@ export function WorkoutsBuilderSelectedExercises() {
                       shadow-sm
                       p-3
                       ml-4
+                      md:ml-0
                       text-left
                       hover:bg-gray-50
                       hover:cursor-pointer
@@ -76,7 +77,6 @@ export function WorkoutsBuilderSelectedExercises() {
                   </button>
                 </PortalTooltip>
               </div>
-
               <div className="md:col-span-1">
                 <span className="md:hidden text-xs font-semibold text-gray-500">
                   Reps
@@ -91,7 +91,6 @@ export function WorkoutsBuilderSelectedExercises() {
                   }
                 />
               </div>
-
               {!isBodyWeight && (
                 <>
                   <div className="md:col-span-2">
@@ -116,15 +115,15 @@ export function WorkoutsBuilderSelectedExercises() {
                       <option value="Duration">Duration</option>
                     </select>
                   </div>
-
                   <div className="md:col-span-2 grid grid-cols-2 gap-2">
                     <div>
                       <span className="md:hidden text-xs font-semibold text-gray-500">
-                        Value
+                        Weight/Duration
                       </span>
                       <input
                         type="text"
                         className="w-full mt-1 p-2 border rounded-md"
+                        disabled={!exercise.measurementType}
                         maxLength={4}
                         placeholder="0"
                         onChange={(e) =>
@@ -136,7 +135,6 @@ export function WorkoutsBuilderSelectedExercises() {
                         }
                       />
                     </div>
-
                     <div>
                       <span className="md:hidden text-xs font-semibold text-gray-500">
                         Unit

@@ -10,7 +10,6 @@ import {
 } from "../store/MealsFormStore";
 import { getMacros } from "../utils/nutritionCalculations";
 import { api } from "../../../services/api";
-import { useNotification } from "../../../hooks/useNotification";
 import { usePublicId } from "../../../store/UserStore";
 import toast from "react-hot-toast";
 
@@ -39,16 +38,9 @@ export function useMealsForm() {
   // Initialize query client and navigation
   const queryClient = useQueryClient();
 
-  // Notification State
-  const { message, notify } = useNotification();
-
-  // Local hook state
-  const [hasErrors, setHasErrors] = useState(false);
-
   const mealMutation = useMutation({
     mutationFn: (mealData) => {
-      const response = api.post("api/v1/meals/create", mealData);
-      return response?.data?.message;
+      api.post("api/v1/meals/create", mealData);
     },
   });
 
@@ -56,14 +48,10 @@ export function useMealsForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setField(name, value);
-    if (Object.keys(formErrors).includes(name)) delete formErrors[name];
   };
 
   // Handles adding selected ingredients from dropdown to selected list state
   const handleClick = (item) => {
-    if (Object.keys(formErrors).includes("ingredients"))
-      delete formErrors["ingredients"];
-
     const macros = getMacros(item) ?? {}; // Gets macros or returns empty object
     addIngredient({
       ingredientId: String(item.fdcId),
@@ -122,7 +110,6 @@ export function useMealsForm() {
   // Handles form submition
   const handleSubmit = (e) => {
     e.preventDefault();
-    setHasErrors(false);
 
     const mealData = {
       mealName,
@@ -134,7 +121,6 @@ export function useMealsForm() {
     const { isValid } = validateForm();
 
     if (!isValid) {
-      setHasErrors(true);
       return;
     }
 
@@ -160,7 +146,6 @@ export function useMealsForm() {
             setFormErrors(details);
           }
         }
-        setHasErrors(true);
       },
     });
   };
@@ -171,9 +156,7 @@ export function useMealsForm() {
     ingredients,
     mealMacros,
     getIngredientField,
-    message,
     formErrors,
-    hasErrors,
     isPending: mealMutation.isPending,
     handleChange,
     handleClick,

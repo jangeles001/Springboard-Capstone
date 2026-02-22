@@ -23,7 +23,6 @@ export default function useWorkouts() {
     removeFromCreatedWorkout,
     resetCreatedWorkout,
     validateCreatedWorkout,
-    setFormErrors,
   } = useWorkoutActions();
 
   // Local State
@@ -31,7 +30,6 @@ export default function useWorkouts() {
     Weight: ["lbs"],
     Duration: ["sec"],
   };
-  const [hasErrors, setHasErrors] = useState(false); // Holds value for both client and mutation errors.
 
   const mutation = useMutation({
     mutationFn: (workout) => {
@@ -59,15 +57,6 @@ export default function useWorkouts() {
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
     setFormField(name, value);
-
-    // If there is an error message for the field being updated, remove it from the formErrors state
-    if (formErrors && Object.keys(formErrors).includes(name)) {
-      setFormErrors((prev) => {
-        const next = { ...prev };
-        delete next[name];
-        return next;
-      });
-    }
   };
 
   const handleExerciseInformationChange = (e, id, field) => {
@@ -86,22 +75,21 @@ export default function useWorkouts() {
     // Runs validation logic from the store
     const { isValid } = await validateCreatedWorkout();
     if (!isValid) {
-      setHasErrors(true);
       return;
     }
 
     const normalizedeExercises = createdWorkout.exercises.map((exercise) => {
       return {
-        exerciseId: String(exercise.id),
-        exerciseName: exercise.translations?.[0]?.name,
-        muscles: exercise.muscles?.map(
-          (muscle) => muscle.name_en || muscle.name,
+        exerciseId: String(exercise?.id),
+        exerciseName: exercise?.translations?.[0]?.name,
+        muscles: exercise?.muscles?.map(
+          (muscle) => muscle?.name_en || muscle?.name,
         ) || [""],
         description:
-          exercise.translations?.[0]?.description || "No Description Provided",
-        reps: Number(exercise.reps) || 0,
-        weight: Number(exercise.weight) || 0,
-        duration: Number(exercise.duration) || 0,
+          exercise?.translations?.[0]?.description || "No Description Provided",
+        reps: Number(exercise?.reps) || 0,
+        weight: Number(exercise?.weight) || 0,
+        duration: Number(exercise?.duration) || 0,
       };
     });
 
