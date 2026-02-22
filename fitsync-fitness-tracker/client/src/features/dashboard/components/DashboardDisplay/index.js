@@ -1,4 +1,4 @@
-import { DashboardDisplayComposer as DashboardDisplay } from "./dashboardDisplayComposer";
+import { DashboardDisplayComposer as DashboardDisplay } from "./DashboardDisplayComposer";
 import { DashboardDisplayHeader } from "./DashboardDisplayHeader";
 import { DashboardDisplayBody } from "./DashboardDisplayBody";
 import { DashboardDisplayFooter } from "./DashboardDisplayFooter";
