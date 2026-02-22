@@ -36,7 +36,7 @@ export function useLoginForm({ onSuccessFunction }) {
     setFormField(name, value);
 
     // If there is an error message for the field being updated, remove it from the formErrors state
-    if (Object.keys(formErrors).includes(name)) {
+    if (formErrors && Object.keys(formErrors).includes(name)) {
       setFormErrors((prev) => {
         const next = { ...prev };
         delete next[name];
@@ -101,7 +101,7 @@ export function useLoginForm({ onSuccessFunction }) {
         onError: (error) => {
           recaptchaRef.current?.reset();
           if (error.status === 400) {
-            const details = error.response?.data?.details;
+            const details = error?.response?.data?.details;
             if (details) {
               setFormErrors(details);
             }
