@@ -121,7 +121,6 @@ export function useLoginForm({ onSuccessFunction }) {
     formDataPassword,
     passwordVisible,
     recaptchaRef,
-    setCaptchaValue,
     formErrors,
     error: loginMutation.error,
     isLoading: loginMutation.isLoading,

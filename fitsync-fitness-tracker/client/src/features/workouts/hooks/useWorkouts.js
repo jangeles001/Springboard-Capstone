@@ -36,6 +36,16 @@ export default function useWorkouts() {
     },
     onSuccess: () => {
       resetCreatedWorkout();
+      // Invalidates query cache so dashboard charts refreshes with updated data
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "workouts"],
+      });
+
+      // Invalidates query cache so workouts collections refreshes with updated data
+      queryClient.invalidateQueries({
+        queryKey: ["workouts"],
+      });
+      toast.success("Workout created successfully!");
     },
     onError: (error) => {
       toast.error("Something went wrong! Please try again later.");
@@ -48,7 +58,7 @@ export default function useWorkouts() {
     setFormField(name, value);
 
     // If there is an error message for the field being updated, remove it from the formErrors state
-    if (Object.keys(formErrors).includes(name)) {
+    if (formErrors && Object.keys(formErrors).includes(name)) {
       setFormErrors((prev) => {
         const next = { ...prev };
         delete next[name];
@@ -99,7 +109,6 @@ export default function useWorkouts() {
         exercises: [...normalizedeExercises],
       };
       mutation.mutate(workoutData);
-      resetCreatedWorkout();
     }
   };
 

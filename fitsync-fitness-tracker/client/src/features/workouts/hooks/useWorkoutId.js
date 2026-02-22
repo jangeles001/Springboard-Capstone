@@ -29,10 +29,7 @@ export function useWorkoutId(workoutId) {
         queryKey: ["workouts", workoutId, publicId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["workouts", "All"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["workouts", "Personal"],
+        queryKey: ["workouts"],
       });
     },
     onError: () => toast.error("Something went wrong! Please try again later."),

@@ -28,10 +28,7 @@ export function useMealId(mealId) {
         queryKey: ["meal", mealId, publicId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["meals", "All"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["meals", "Personal"],
+        queryKey: ["meals"],
       });
     },
     onError: () => toast.error("Something went wrong! Please try again later."),
@@ -69,7 +66,7 @@ export function useMealId(mealId) {
   // Function calls delete meal mutation and removes any data associated with its key from the query client cache.
   const handleDelete = () => {
     deleteMealMutation.mutate(mealId);
-    if (deleteMealMutation.isError) handleReturn();
+    if (!deleteMealMutation.isError) handleReturn();
   };
 
   return {

@@ -12,7 +12,6 @@ export default function LoginForm() {
         formDataPassword,
         passwordVisible,
         recaptchaRef,
-        setCaptchaValue,
         formErrors,
         error,
         isLoading,
