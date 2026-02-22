@@ -8,6 +8,7 @@ export const envConfigZodSchema = z.object({
   MONGO_URI: z
     .string()
     .startsWith("mongodb", "Mongodb url should start with mongodb:"),
+  MONGO_TEST_URI: z.string().optional(),
   PORT: z.string().regex(/^\d+$/).transform(Number),
   JWT_SECRET: z
     .string()

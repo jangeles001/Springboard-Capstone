@@ -46,7 +46,7 @@ export default function Loading({ type }){
             }
             { type === 'content-only' &&
                 <div 
-                    className="flex items-center justify-center min-h-screen min-w-full bg-gray-50"
+                    className="flex items-center justify-center min-h-screen min-w-full"
                     role="status"
                     aria-live="polite"
                 >

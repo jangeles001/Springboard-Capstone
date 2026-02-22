@@ -8,7 +8,7 @@ export default function ExerciseLibrary() {
         response,
         nextLink, 
         prevLink, 
-        status,  
+        isLoading,  
         loadData, 
         handleClick,
         loadByCategory
@@ -29,7 +29,7 @@ export default function ExerciseLibrary() {
         className='flex flex-col items-center w-full gap-6 pt-4 hover:cursor-pointer'
         data-testid='library'
         >
-          {status !== "success" ? <Loading type='content-only' /> : response?.map((exercise) => {
+          {isLoading ? <Loading type='content-only' /> : response?.map((exercise) => {
             return (
               <div key={exercise.id}
               onClick={() => handleClick(exercise)}

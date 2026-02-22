@@ -31,6 +31,7 @@ export function useWorkoutId(workoutId) {
       queryClient.invalidateQueries({
         queryKey: ["workouts"],
       });
+      toast.success("Workout deleted successfully!");
     },
     onError: () => toast.error("Something went wrong! Please try again later."),
   });
@@ -60,14 +61,14 @@ export function useWorkoutId(workoutId) {
   };
 
   // Function calls the add workout mutation to add the workout to personal and log it if already in personal.
-  const handleLog = (workoutId) => {
+  const handleLog = () => {
     addWorkoutMutation.mutate(workoutId);
   };
 
   // Function calls delete workout mutation and removes any data associated with its key from the query client cache.
-  const handleDelete = (workoutId) => {
+  const handleDelete = () => {
     deleteWorkoutMutation.mutate(workoutId);
-    if (deleteWorkoutMutation.isSuccess) handleReturn();
+    if (!deleteWorkoutMutation.isError) handleReturn();
   };
 
   return {
@@ -76,7 +77,8 @@ export function useWorkoutId(workoutId) {
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
-    isPending: deleteWorkoutMutation.isPending,
+    logIsPending: addWorkoutMutation.isPending,
+    deleteIsPending: deleteWorkoutMutation.isPending,
     handleDelete,
     handleReturn,
     handleLog,

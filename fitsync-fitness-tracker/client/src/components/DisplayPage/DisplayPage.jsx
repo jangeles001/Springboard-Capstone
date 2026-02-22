@@ -8,7 +8,8 @@ export default function DisplayPage({ hook, CardComponent, ResourceId, type }) {
     data, 
     isLoading, 
     isError, 
-    error, 
+    error,
+    logIsPending, 
     handleDelete, 
     publicId, 
     handleReturn, 
@@ -29,7 +30,7 @@ export default function DisplayPage({ hook, CardComponent, ResourceId, type }) {
       handleLog={handleLog}
       resourceId={ResourceId}
       publicId={publicId}
-      data={data}
+      logIsPending={logIsPending}
       />
 
       <DisplayPageBody
