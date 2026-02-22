@@ -8,7 +8,9 @@ export const Route = createRootRoute({
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Toaster />
       <Outlet />
-      <TanStackRouterDevtools initialIsOpen={false} />
+      { import.meta.env.VITE_APP_ENV === 'development' &&
+        <TanStackRouterDevtools initialIsOpen={false} />
+      }
     </div>
   ),
   notFoundComponent: NotFoundPage,
