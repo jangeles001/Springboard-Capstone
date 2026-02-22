@@ -58,7 +58,9 @@ export async function registerNewUser(userData) {
     JSON.stringify({ uuid: newUser.uuid }),
   );
 
-  await sendUserVerificationEmail(newUser, verificationToken);
+  sendUserVerificationEmail(newUser, verificationToken).catch((err) =>
+    console.error("Email failed:", err),
+  );
 
   return {
     accessToken,
@@ -98,7 +100,9 @@ export async function initiatePasswordReset(email) {
     JSON.stringify({ uuid: user.uuid }),
   );
 
-  await sendPasswordResetEmail(user, resetToken);
+  sendPasswordResetEmail(user, resetToken).catch((err) =>
+    console.error("Email failed:", err),
+  );
 
   return;
 }
