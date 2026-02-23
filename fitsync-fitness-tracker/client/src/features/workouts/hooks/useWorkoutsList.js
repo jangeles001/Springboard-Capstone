@@ -117,5 +117,6 @@ export function useWorkoutsList({ limit }) {
     onClick: handleWorkoutClick,
     handleDelete,
     isRemoving: deleteWorkoutMutation.isLoading,
+    isPending: deleteWorkoutMutation.isPending,
   };
 }

@@ -92,7 +92,7 @@ export default function GraphCarousel({
         onClick={handlePrev}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-10
                    bg-white/80 hover:bg-white text-gray-800
-                   rounded-full p-2 shadow-md transition"
+                   rounded-full p-2 shadow-md transition hover:cursor-pointer"
         aria-label="Previous chart button"
       >
         &lt;
@@ -102,7 +102,7 @@ export default function GraphCarousel({
         onClick={handleNext}
         className="absolute right-4 top-1/2 -translate-y-1/2 z-10
                    bg-white/80 hover:bg-white text-gray-800
-                   rounded-full p-2 shadow-md transition"
+                   rounded-full p-2 shadow-md transition hover:cursor-pointer"
         aria-label="Next chart button"
       >
         &gt;

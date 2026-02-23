@@ -67,7 +67,7 @@ export function useExercises(initialUrl = BASE_URL) {
   return {
     response: filteredResults,
     nextLink: fetchExercisesQuery.data?.next,
-    prevLink: fetchExercisesQuery.data?.previous,
+    prevLink: fetchExercisesQuery.data?.prev,
     isLoading: fetchExercisesQuery.isLoading,
     error: fetchExercisesQuery.error,
     loadData,

@@ -34,13 +34,13 @@ export default function ForgotPasswordPage() {
                         </FormField>
                     </div>
                     <div className="col-span-1 md:col-span-1 flex justify-center mt-5 max-h-20">
-                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100' disabled={isLoading}>Send Reset Link</button>
+                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100 hover:cursor-pointer' disabled={isLoading}>Send Reset Link</button>
                     </div>
                 </form>
             </div>
             <div className='flex w-full max-w-2xl  mt-4 gap-5'>
-                <section className='max-w-2xl '><Link to='/landing/' className='text-white hover:underline'>&lt; Back to home page</Link></section>
-                <section className='max-w-2xl ml-auto'><Link to='/auth/login/' className='text-white hover:underline'> Back to Login Page &gt;</Link></section>
+                <section className='max-w-2xl '><Link to='/landing/' className='text-white hover:underline hover:cursor-pointer'>&lt; Back to home page</Link></section>
+                <section className='max-w-2xl ml-auto'><Link to='/auth/login/' className='text-white hover:underline hover:cursor-pointer'> Back to Login Page &gt;</Link></section>
             </div>
         </div>
     )

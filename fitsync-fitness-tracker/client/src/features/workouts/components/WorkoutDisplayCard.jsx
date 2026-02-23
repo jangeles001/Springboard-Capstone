@@ -41,11 +41,11 @@ export function WorkoutDisplayCard({ data, isPersonal, handleDelete }) {
             </div>
           </div>
         ))}
-        {/* Delete Button */}
+        
         <div className="w-max mx-auto">
           { isPersonal && 
             <button
-            className="mt-8 bg-blue-500 text-white px-4 py-2 rounded-lg"
+            className="mt-8 bg-blue-500 text-white px-4 py-2 rounded-lg hover:cursor-pointer"
             onClick={() => handleDelete(data?.data?.uuid)}
             >
               Delete Workout

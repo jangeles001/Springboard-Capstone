@@ -48,7 +48,7 @@ export default function ExerciseLibrary() {
               onClick={
                 () => loadData(prevLink)
               } 
-              className='hover:underline'
+              className='hover:underline hover:cursor-pointer'
               data-testid='prev-button'
               >
                 Prev
@@ -59,7 +59,7 @@ export default function ExerciseLibrary() {
               onClick={
                 () => loadData(nextLink)
               } 
-              className='hover:underline'
+              className='hover:underline hover:cursor-pointer'
               data-testid='next-button'
               >
                 Next

@@ -15,6 +15,7 @@ export default function DisplayPage({ hook, CardComponent, ResourceId, type }) {
     handleReturn, 
     handleLog 
   } = hook(ResourceId);
+  
   const isPersonal = publicId === data?.data?.creatorPublicId;
   const dynamicCrumb = data?.data?.uuid ?? type;
   

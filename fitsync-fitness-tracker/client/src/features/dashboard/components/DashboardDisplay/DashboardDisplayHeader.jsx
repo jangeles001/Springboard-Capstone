@@ -23,7 +23,7 @@ export function DashboardDisplayHeader(){
           <button
             disabled={nutritionQuery.isLoading}
             onClick={() => handleActiveChange("nutrition")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition hover:cursor-pointer
               ${
                 activeView === "nutrition"
                   ? "bg-blue-600 text-white shadow"
@@ -36,7 +36,7 @@ export function DashboardDisplayHeader(){
           <button
             disabled={workoutQuery.isLoading}
             onClick={() => handleActiveChange("workouts")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition hover:cursor-pointer
               ${
                 activeView === "workouts"
                   ? "bg-blue-600 text-white shadow"

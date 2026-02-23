@@ -107,7 +107,7 @@ export default function LoginForm() {
                     className='mt-[10px]'
                     />
                     <div className="col-span-1 md:col-span-1 flex justify-center mt-5 max-h-20">
-                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100' disabled={isLoading}>Login</button>
+                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100 hover:cursor-pointer' disabled={isLoading}>Login</button>
                     </div>
                 </form>
             </div>

@@ -1,6 +1,6 @@
 import Ingredient from "./ingredient";
 
-export function MealCard({ item: meal, onClick, handleDelete, active}) {
+export function MealCard({ item: meal, onClick, handleDelete, active, isPending}) {
   return (
     <div className="flex flex-col min-w-md max-w-md bg-white rounded-2xl shadow-md p-6 border border-gray-200 transition hover:shadow-lg">
       <h2
@@ -37,8 +37,9 @@ export function MealCard({ item: meal, onClick, handleDelete, active}) {
 
       {active === "Personal" &&  
         <button
-        className="mt-8 bg-blue-500 text-white px-4 py-2 rounded-lg"
+        className="mt-auto bg-blue-500 text-white px-4 py-2 rounded-lg hover:cursor-pointer"
         onClick={() => handleDelete(meal.uuid)}
+        disabled={isPending}
         data-testid={`delete-button-${meal?.uuid}`}
         >
           Delete Meal

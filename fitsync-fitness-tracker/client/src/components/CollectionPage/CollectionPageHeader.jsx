@@ -16,7 +16,7 @@ export function CollectionPageHeader({
             key={type}
             disabled={isLoading}
             onClick={() => onChange(type)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition hover:cursor-pointer
               ${
                 active === type
                   ? "bg-blue-600 text-white"

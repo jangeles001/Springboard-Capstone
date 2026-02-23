@@ -25,7 +25,7 @@ export function ResetPasswordPage() {
                         <FormField name="password" label="New Password" formError={formErrors?.password}>
                             <FormInput
                             name="password"
-                            inputType="text"
+                            inputType="password"
                             inputValue={password}
                             inputErrors={formErrors?.password}
                             handleChange={handleChange}
@@ -35,7 +35,7 @@ export function ResetPasswordPage() {
                         <FormField name="confirmPassword" label="Confirm Password" formError={formErrors?.confirmPassword}>
                             <FormInput
                             name="confirmPassword"
-                            inputType="text"
+                            inputType="password"
                             inputValue={confirmPassword}
                             inputErrors={formErrors?.confirmPassword}
                             handleChange={handleChange}
@@ -44,12 +44,12 @@ export function ResetPasswordPage() {
                         </FormField>
                     </div>
                     <div className="col-span-1 md:col-span-1 flex justify-center mt-5 max-h-20">
-                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100' disabled={isLoading}>Reset Password</button>
+                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100 hover:cursor-pointer' disabled={isLoading}>Reset Password</button>
                     </div>
                     <p className="text-red-500">{formErrors?.general?.[0]}</p>
                 </form>
             </div>
-            <section className='w-full max-w-2xl mt-4 flex justify-self-start'><Link to='/landing/' className='text-white hover:underline'>&lt; Back to landing page</Link></section>
+            <section className='w-full max-w-2xl mt-4 flex justify-self-start'><Link to='/landing/' className='text-white hover:underline hover:cursor-pointer'>&lt; Back to landing page</Link></section>
         </div>
     )
 }

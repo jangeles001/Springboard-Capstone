@@ -12,7 +12,7 @@ export function MealsFormFooter(){
             w-full rounded-xl
             bg-gradient-to-r from-blue-600 to-indigo-600
             py-3 text-sm font-medium text-white
-            shadow hover:opacity-90 transition
+            shadow hover:opacity-90 transition hover:cursor-pointer
             "
             disabled={isPending}
             onClick={handleSubmit}

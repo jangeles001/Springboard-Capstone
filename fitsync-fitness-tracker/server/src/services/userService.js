@@ -136,7 +136,7 @@ export async function refreshTokens(refreshToken) {
   if (!stored) throw new UnauthorizedError();
 
   // Checks if the refreshToken has expired
-  const { userUUID, iat } = JSON.parse(stored);
+  const { userUUID, iat } = stored;
   const now = Date.now();
   const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
   const timeElapsed = now - iat;

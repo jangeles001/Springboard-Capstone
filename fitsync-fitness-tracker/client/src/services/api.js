@@ -83,14 +83,14 @@ api.interceptors.response.use(
 
     try {
       await api.get("/api/v1/auth/refresh");
+      isRefreshing = false;
       processQueue(null);
       return api(originalRequest);
     } catch (refreshError) {
+      isRefreshing = false;
       processQueue(refreshError);
       redirectToHome();
       return Promise.reject(refreshError);
-    } finally {
-      isRefreshing = false;
     }
-  }
+  },
 );

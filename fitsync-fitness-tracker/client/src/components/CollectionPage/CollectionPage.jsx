@@ -11,15 +11,17 @@ export function CollectionPage({
 }) {
   const {
     active,
-    publicId,
     isLoading,
+    isPending,
     handleActiveChange,
+    handleNextPage,
+    handlePreviousPage,
     onClick,
     handleDelete,
     data,
     isError,
     error,
-  } = hook({ limit: 12 });
+  } = hook({ limit: 6 });
 
   return (
     <div className="mx-auto px-6 py-10">
@@ -42,9 +44,10 @@ export function CollectionPage({
         CardComponent={CardComponent}
         onClick={onClick}
         handleDelete={handleDelete}
+        isPending={isPending}
       />
 
-      <CollectionPageFooter data={data} />
+      <CollectionPageFooter data={data} next={handleNextPage} previous={handlePreviousPage}/>
 
     </div>
   );

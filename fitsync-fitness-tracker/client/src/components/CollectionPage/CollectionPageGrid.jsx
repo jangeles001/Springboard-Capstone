@@ -3,6 +3,7 @@ import Loading from "../Loading.jsx";
 export function CollectionPageGrid({
     active,
     isLoading,
+    isPending,
     isError,
     error,
     data,
@@ -24,14 +25,15 @@ export function CollectionPageGrid({
         );
     }
     return (
-        <div className="flex flex-row flex-wrap gap-20 justify-center p-0">
+        <div className="flex flex-row flex-wrap gap-20 justify-center p-0 min-h-[400px]">
             {items.map((item) => (
             <CardComponent 
             key={item.uuid || item.id} 
             item={item} 
             onClick={onClick} 
             handleDelete={handleDelete} 
-            active={active} 
+            active={active}
+            isPending={isPending}
             />
             ))}
         </div>

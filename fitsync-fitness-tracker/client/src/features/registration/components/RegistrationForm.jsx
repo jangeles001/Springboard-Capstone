@@ -253,7 +253,7 @@ export default function RegistrationForm() {
                         <span className='col-span-1 text-red-500'>
                             {serverErrorMessage && <p>{serverErrorMessage}</p>}
                         </span>
-                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100' disabled={isPending}>Submit</button>
+                        <button type='submit' className='border-1 border rounded-lg w-50 hover:bg-blue-100 hover:cursor-pointer' disabled={isPending}>Submit</button>
                     </div>
                 </form>
             </div>

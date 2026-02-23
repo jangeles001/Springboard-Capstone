@@ -119,5 +119,6 @@ export function useMealsList({ limit }) {
     handleNextPage,
     handlePreviousPage,
     isRemoving: deleteMealMutation.isLoading,
+    isPending: deleteMealMutation.isPending,
   };
 }

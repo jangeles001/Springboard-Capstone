@@ -58,7 +58,7 @@ export default function CookiesNotification() {
                         />
                         Decline all cookies
                     </label><br></br>
-                    <button className="border-2 hover:border-blue-800" type='submit'>Continue</button>
+                    <button className="border-2 hover:border-blue-800 hover:cursor-pointer" type='submit'>Continue</button>
                 </form>
             </div>
         </div>
