@@ -175,7 +175,7 @@ export default function RegistrationForm() {
                                     ></FormInput>
                                     <button 
                                     type="button" 
-                                    className={passwordVisible === true ? 'border rounded-md p-1 bg-gray-100 hover:bg-gray-100 ' : 'border rounded-md p-1 hover:bg-gray-100'}
+                                    className={passwordVisible === true ? 'border rounded-md p-1 bg-gray-100 hover:bg-gray-100 hover:cursor-pointer' : 'border rounded-md p-1 hover:bg-gray-100 hover:cursor-pointer'}
                                     onClick={handlePasswordToggle}
                                     >
                                         <svg

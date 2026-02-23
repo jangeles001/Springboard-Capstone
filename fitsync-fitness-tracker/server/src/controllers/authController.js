@@ -124,7 +124,6 @@ export async function refreshSessionTokens(req, res) {
 
     return res.status(201).json({ message: "TOKENS_REFRESHED" });
   } catch (error) {
-    console.log(error);
     // Checks if refresh token was invalid and deletes session and cookies
     if (error instanceof UnauthorizedError) {
       // Clears cookies

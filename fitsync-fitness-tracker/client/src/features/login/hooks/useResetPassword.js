@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { sendResetPasswordRequest } from "../services/sendResetPasswordRequest";
+import { toast } from "react-hot-toast";
 
-export function useResetPassword({token, onSuccess}) {
+export function useResetPassword({ token, onSuccess }) {
   // Local state for form data and form errors
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formErrors, setFormErrors] = useState(null);
 
-// Mutation hook for handling the reset password API call
+  // Mutation hook for handling the reset password API call
   const resetPasswordMutation = useMutation({
     mutationFn: ({ token, password }) =>
       sendResetPasswordRequest(token, password),
-    onSuccess: (response) => {
-      console.log("Password reset successful:", response);
+    onSuccess: () => {
+      toast.success("Your Password has been reset!");
       onSuccess();
     },
     onError: (err) =>
@@ -42,12 +43,12 @@ export function useResetPassword({token, onSuccess}) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!password) {
-      setFormErrors({...formErrors, password: ["Password is required"]});
+      setFormErrors({ ...formErrors, password: ["Password is required"] });
     }
     if (!confirmPassword) {
       setFormErrors({
         ...formErrors,
-        confirmPassword: ["Confirm password is required"]
+        confirmPassword: ["Confirm password is required"],
       });
     }
     if (password !== confirmPassword) {
@@ -56,7 +57,7 @@ export function useResetPassword({token, onSuccess}) {
         confirmPassword: ["Passwords do not match"],
       });
     }
-    if(formErrors) return;
+    if (formErrors) return;
     resetPasswordMutation.mutate({ token, password });
   };
 

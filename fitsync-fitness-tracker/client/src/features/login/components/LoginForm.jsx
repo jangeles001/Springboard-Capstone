@@ -54,8 +54,8 @@ export default function LoginForm() {
                                 type='button'
                                 onClick={handlePasswordToggle} 
                                 className={passwordVisible ? 
-                                    `bg-gray-200 border h-min mt-auto rounded-md shadow-sm hover:opacity-90 transition p-2` : 
-                                    `border rounded-md h-min mt-auto shadow-sm p-2 hover:bg-gray-200 hover:opacity-90 transition`}
+                                    `bg-gray-200 border h-min mt-auto rounded-md shadow-sm hover:opacity-90 transition p-2 hover:cursor-pointer` : 
+                                    `border rounded-md h-min mt-auto shadow-sm p-2 hover:bg-gray-200 hover:opacity-90 transition hover:cursor-pointer`}
                                 aria-label="Toggle password visibility"
                                 >
                                     <svg

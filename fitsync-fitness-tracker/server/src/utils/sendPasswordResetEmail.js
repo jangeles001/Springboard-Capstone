@@ -2,7 +2,7 @@ import { sendEmail } from "../config/nodeMailer.js";
 import { getEnv } from "../config/envConfig.js";
 
 export async function sendPasswordResetEmail(user, token) {
-  const resetUrl = `${getEnv("CLIENT_ORIGIN")}/auth/change-password/${token}`;
+  const resetUrl = `${getEnv("CLIENT_ORIGIN")}/auth/reset-password/${token}`;
 
   await sendEmail({
     to: user.email,

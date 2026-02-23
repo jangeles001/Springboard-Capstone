@@ -3,6 +3,7 @@ import { getEnv } from "./envConfig.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  pool: true,
   auth: {
     user: getEnv("GMAIL_EMAIL"),
     pass: getEnv("GMAIL_APP_PASSWORD"),
@@ -26,4 +27,14 @@ export async function sendEmail({ to, subject, html }) {
   });
 }
 
-console.log("Email services configured");
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("Connection error:", error);
+  } else {
+    console.log("Server is ready to take messages");
+  }
+});
+
+transporter.on("idle", () => {
+  console.log("Transporter is idle and ready to send more mail");
+});

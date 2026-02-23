@@ -207,7 +207,7 @@ export async function verifyUserAccount(token) {
   const user = await redisClient.get(`emailVerificationToken:${token}`);
   if (!user) throw new UnauthorizedError();
 
-  const uuid = JSON.parse(user).uuid; // Parses the Json.stringify data for the specified key
+  const uuid = user.uuid;
 
   // Delets key and updates verifid field for the user in parallel
   await Promise.all([

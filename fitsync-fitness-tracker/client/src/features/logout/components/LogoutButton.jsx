@@ -7,7 +7,7 @@ export default function LogoutButton({ className = "" }) {
 
   // Sets up the logout handler using the custom useLogout hook, with a success callback to navigate to the home page
   const handleLogout = useLogout({
-    onSuccess: () => navigate({ to: "/" }),
+    onSuccess: () => navigate({ to: "/auth/login" }),
   });
 
   return (
