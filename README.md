@@ -1,40 +1,84 @@
 # Springboard-Capstone
 
-🧠 Capstone Project Repository
-This repository will host my final capstone project for Sprinboard’s Software Engineering Career Track program. The project will be a full-stack web application built with modern technologies such as React, Node.js, and a RESTful API.
+Fitness Tracker App
 
-The final topic is a health and fitness web app with the specifications listed in my Capstone-Proposal.md
+A full-stack fitness app where you can build workouts, log exercises, and track your progress in one place.
+I built this as my capstone project to showcase real-world frontend + backend development skills.
 
-FitSync
-A full-stack fitness tracking application for logging workouts and meals.
+# Live App
 
-Features
--Create and manage workouts
--Log meals and track nutrition
--Responsive UI built with React and Tailwind
--RESTful API built with Node.js and Express
+## Frontend: https://springboard-capstone.vercel.app/landing
 
-Tech Stack [Full list can be found in Capstone-Proposal.md]
--Frontend: React, Vite, Tailwind CSS
--Backend: Node.js, Express
--Database: MongoDB
+## API: https://springboard-capstone-server.onrender.com
 
-What I Learned
-Structuring scalable React applications
-Designing RESTful APIs
-Managing application state cleanly
-Balancing features with maintainability
+# What You Can Do
 
-App Status
+## Accounts
 
-- Landing Page: Need to convert image carousel into testimonial carousel.
-- About Page: COMPLETED
-- Privacy Policy Page: COMPLETED
-- Terms of Service Page: COMPLETED
-- Registration Page: COMPLETED
-- Sign Up: COMPLETED
-- Dashboard: Need to connect to database to fetch user workout history, posts, and friends list.
-- Exercises: COMPLETED
-- Meals: COMPLETED
-- Workouts: COMPLETED
-- AI Component: TBD
+Sign up and log in securely
+
+Stay logged in with authentication tokens
+
+Protected pages for your personal data
+
+## Workouts
+
+Create your own workouts
+
+Add exercises from an external database
+
+Log reps, weight, or duration
+
+Edit or delete workouts anytime
+
+Browse large workout lists with pagination
+
+## Meals
+
+Create meals and track food items
+
+Keep everything organized in one place
+
+## Exercise Search
+
+Powered by the wger exercise database.
+
+Search thousands of exercises
+
+View muscles worked and descriptions
+
+Quickly add exercises to your workout
+
+# Built With
+
+## Frontend
+
+React
+
+Vite
+
+Tailwind CSS
+
+TanStack Router
+
+TanStack Query
+
+Zustand
+
+## Backend
+
+Node.js
+
+Express
+
+MongoDB + Mongoose
+
+JWT authentication
+
+## Hosting & Services
+
+Frontend on Vercel
+
+Backend on Render
+
+Database on MongoDB Atlas
