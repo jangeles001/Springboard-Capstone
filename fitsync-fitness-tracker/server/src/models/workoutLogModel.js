@@ -15,7 +15,7 @@ const workoutLogSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Snapshot data (DO NOT reference Meal dynamically)
+    // Snapshot data
     workoutNameSnapshot: {
       type: String,
       required: true,

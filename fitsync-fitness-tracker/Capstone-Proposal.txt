@@ -6,12 +6,12 @@ and I will implement full CRUD functionality across all core user activities, gi
 
 Problem:
 Many workout tracking tools require users to adopt rigid plans without personalization.
-Users need a customizable platform that tailors workouts based on their own health metrics and physical needs.
+Users need a customizable platform that tailors workouts based on their own health metrics.
 
 Inputs/Data:
 User inputed health data. (e.g., weight, age, height, lifestyle, weight goals)
 
-User base: Health-conscious individuals of any fitness level whom want to manage their workouts-
+User base: Health-conscious individuals of any fitness level whom want to manage their workouts
 and diet in one personalized, data-driven platform.
 
 External API: 
@@ -27,9 +27,9 @@ USDA: https://api.nal.usda.gov
 I will use this data with personalization engine to generate tailored recommendations for users.
 
 Tech Stack:
-1.) Authentication:  Crypto + JWT    Difficulty: Medium
+1.) Authentication:  Bcrypt + JWT    Difficulty: Medium
 BCrypt + Json WebToken will provide the tools I will need to authenticate users. I will pass a token to
-the client stored as a cookie and will verify the token before using the payload to identify the user.
+the client stored as a cookie and will verify the token before using the payload to identify the user and service their request.
 
 2.) Frontend: React.js          Difficulty: Medium
 React efficiently builds modular, scalable interfaces. My app will benefit from:
@@ -39,7 +39,7 @@ React efficiently builds modular, scalable interfaces. My app will benefit from:
 
 State Management: Zustand
 Lightweight and lower learning curve than redux. A better fit for the size of my project.I will use Zustand for scoped,
-component-level state in complex forms to centralize logic and avoid prop drilling.
+component-level state in complex forms to centralize logic and (try to) avoid to much prop drilling.
 
 Routing: Tanstack Router
 File-based routing and integrated data fetching and caching. Seems to be easier to work with than React Router.
@@ -50,27 +50,26 @@ Easy to use for inline styling of elements, great utilities, and greater control
 3.) Backend: Node.js + Express.js       Difficulty: Medium/Hard
 Node.js handles asynchronous operations, which will help with fetching data from the external API and managing the personalized recommendations.
 Express.js is lightweight and can manage user authentication, health data, and logged workouts. AI component uses Google gemini-2.5-flash to receive a
-structured prompt with user data and provide recommendations.
+structured prompt from the backend with user data and provide recommendations.
 
 Middleware 
 CORS:CORS middleware is used to control and secure cross-origin HTTP requests between the client and server. It defines which domains are permitted 
-to access backend resources and which HTTP methods and headers are allowed. This is especially important for protecting sensitive endpoints 
-in a full-stack application where the frontend and backend are deployed on different origins.
+to access backend resources and which HTTP methods and headers are allowed. This will be important for protecting my endpoints.
 
-Zod: Enforce strict data schemas for incoming requests. It ensures that payloads such as authentication credentials, form submissions, 
-and API inputs conform to expected types and formats before reaching business logic. This improves application reliability, prevents 
-malformed data from entering the system, and provides consistent, structured error responses.
+Zod: Enforces strict data schemas for incoming requests. It ensures that payloads such as authentication credentials, form submissions, 
+and API inputs conform to expected types and formats before reaching business logic. This will prevent malformed data from entering my server, 
+and provide structured error responses.
 
-Recaptcha: Protect public-facing endpoints—such as registration, login, and password recovery—from automated abuse 
-and bot attacks. It verifies client-side reCAPTCHA tokens with Google’s API before allowing requests to proceed, adding an
-additional security layer that reduces spam, credential-stuffing attempts, and denial-of-service risks.
+Recaptcha: Protects public-facing endpoints—such as registration, login, and password recovery. 
+It will verify client-side reCAPTCHA tokens with Google’s API before allowing requests to proceed, adding an
+additional security layer.
 
 4.) AI Component: Google Gemini Microservice     Difficulty: Hard 
-Prompt google gemini to provide recommendations from the collection 
+Prompt google gemini to provide recommendations from the wger api exercise catalog
 
 5.) Database: MongoDB       Difficulty: Easy/Medium
 Stores dynamic or evolving user data well (e.g., different combinations of health metrics). **No SQL**.
-Example Collections:
+Example Collections: (these have changes A LOT.. Please see DB-Schema-Example folder for updated diagram)
 users: 
   { _id, uuid, firstName, lastName, username, passwordHash, email, promoConsent, agreeToTerms, verified,   createdAt, profile[] }
 
@@ -98,7 +97,7 @@ Modern looking graphs and chart animations will provide unique and interesting w
 compare metrics over time.
 
 Security:
-- Crypto + JWT to handle secure sign-in. 
+- Bcrypt + JWT to handle secure sign-in. 
 - HTTPS for secure data transmission.
 - JWT handles both authentication and user sessions. Each client is provided a jwt refresh and auth token. Once
 the short lived auth token expires, the user is redirected to the refresh endpoint automatically to be assigned a new auth
@@ -107,20 +106,28 @@ and refresh token. If the refresh token expires or doesn't exits, the user is re
 by the back end and returned to the user.
 
 Hosting:
-Vercel or Netlify for free website hosting.
+Frontend:
+Vercel for free website hosting.
+
+Backend:
+Render for free service hosting.
+
+Database:
+MongoDB Atlas for free db hosting
+
 
 Actions/App Functions:
-Custom Workout Recommendations – Create flexible routines with automatic weight progression rules based on specific user needs.
+Custom Workout Recommendations – Create two recommendations based on the users current workout trends.
 Comprehensive Tracking – Tracks meals and workouts.
 Generates Charts - Generates charts based on the tracked metrics.
 Nutrition Management – Logs your macros with a food database from USDA API.
 
 User Flow: 
-1. Register by entering personal health data through an onboarding form. (Privacy Banner: What is being collected and why?)
+1. Register by entering personal data through registration form. (Privacy Banner: What is being collected and why?)
 2. User logs in after registering or logs in via the log in page both provide the user with an JWT on success. (Bcrypt + JWT)
-3. Gets AI-generated workout/diet plan. (Stretch goal)
+3. Gets AI-generated recommendations. (Stretch goal)
 4. User logs workouts and meals via their respective builders/pages.
-5. Reviews progress through charts and provide Bi-weekly AI overview on areas to improve. [Offer advice based on progress]
+5. Reviews progress through charts and execute Bi-weekly AI overview on areas to improve. [Offer advice based on progress]
 
 Desired Outcome:
-Help users achieve their health goals through personalized, data-driven fitness and diet plans.
+Help users achieve their health goals through personalized, data-driven fitness plans.
